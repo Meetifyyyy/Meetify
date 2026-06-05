@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { initialMessages } from '../../data/messages';
 import ConversationList from './ConversationList';
 import ChatArea from './ChatArea';
+import styles from './MessagesLayout.module.css';
 
 export default function MessagesLayout() {
   const [conversations, setConversations] = useState(initialMessages);
@@ -79,12 +80,13 @@ export default function MessagesLayout() {
   };
 
   return (
-    <div className="feed feed--messages">
-      <div className={`messages-layout${showChatOnMobile ? ' show-chat' : ''}`}>
+    <div className={`feed ${styles.feedMessages}`}>
+      <div className={`${styles.messagesLayout}${showChatOnMobile ? ' show-chat' : ''}`}>
         <ConversationList
           conversations={conversations}
           activeChatId={activeChatId}
           onSelect={handleSelectChat}
+          showChatOnMobile={showChatOnMobile}
         />
         <ChatArea
           conversation={activeConv}
@@ -93,9 +95,9 @@ export default function MessagesLayout() {
           onClearChat={() => handleClearChat(activeChatId)}
           onBlockUser={() => handleBlockUser(activeChatId)}
           onBack={handleBack}
+          showChatOnMobile={showChatOnMobile}
         />
       </div>
     </div>
   );
 }
-

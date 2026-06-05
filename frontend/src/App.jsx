@@ -1,12 +1,18 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate, Outlet, ScrollRestoration, useLocation } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import LandingPage from './pages/LandingPage';
-import HomePage from './pages/HomePage';
+import DashboardLayoutWrapper from './pages/DashboardLayoutWrapper';
+import FeedRoute from './pages/FeedRoute';
+import CommunitiesRoute from './pages/CommunitiesRoute';
+import CommunityDetailRoute from './pages/CommunityDetailRoute';
+import PostDetailRoute from './pages/PostDetailRoute';
+import MessagesRoute from './pages/MessagesRoute';
 import ProfilePage from './pages/ProfilePage';
 
 function ProtectedRoute({ children }) {
   const { isLoggedIn } = useAuth();
-  if (!isLoggedIn) return <Navigate to="/" replace />;
+  const location = useLocation();
+  if (!isLoggedIn) return <Navigate to="/" replace state={{ from: location }} />;
   return children;
 }
 
@@ -16,34 +22,51 @@ function PublicRoute({ children }) {
   return children;
 }
 
-export default function App() {
-  return (
-    <Routes>
-      <Route
-        path="/"
-        element={
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: (
+      <>
+        <ScrollRestoration />
+        <Outlet />
+      </>
+    ),
+    children: [
+      {
+        path: "/",
+        element: (
           <PublicRoute>
             <LandingPage />
           </PublicRoute>
-        }
-      />
-      <Route
-        path="/home"
-        element={
+        ),
+      },
+      {
+        element: (
           <ProtectedRoute>
-            <HomePage />
+            <DashboardLayoutWrapper />
           </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/profile/:profileUsername?"
-        element={
+        ),
+        children: [
+          { path: "/home", element: <FeedRoute /> },
+          { path: "/communities", element: <CommunitiesRoute /> },
+          { path: "/communities/:id", element: <CommunityDetailRoute /> },
+          { path: "/messages", element: <MessagesRoute /> },
+          { path: "/post/:id", element: <PostDetailRoute /> },
+        ]
+      },
+      {
+        path: "/profile/:profileUsername?",
+        element: (
           <ProtectedRoute>
             <ProfilePage />
           </ProtectedRoute>
-        }
-      />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
-  );
+        ),
+      },
+      { path: "*", element: <Navigate to="/" replace /> }
+    ]
+  }
+]);
+
+export default function App() {
+  return <RouterProvider router={router} />;
 }

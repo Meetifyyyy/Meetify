@@ -20,9 +20,9 @@ export const communities = {
       { name: 'Lena Q.', avatar: 'L', role: 'Brand Designer' },
     ],
     posts: [
-      { user: 'Emma L.', avatar: 'E', time: '1 hour ago', text: 'Just redesigned my portfolio using glassmorphism — love how this trend is evolving! Thoughts on neumorphism vs glass? ✨', likes: 31, comments: 14 },
-      { user: 'David K.', avatar: 'D', time: '3 hours ago', text: "Anyone here using Figma plugins for auto-layout? Just discovered \"Autoflow\" and it's a game changer for wireframing 🎨", likes: 18, comments: 7 },
-      { user: 'Sophie M.', avatar: 'S', time: '6 hours ago', text: "Weekly design challenge: redesign a music player app. Here's my take on a minimal Spotify concept. Feedback welcome!", likes: 45, comments: 22 },
+      { id: 'c_design_1', user: 'Emma L.', avatar: 'E', time: '1 hour ago', text: 'Just redesigned my portfolio using glassmorphism — love how this trend is evolving! Thoughts on neumorphism vs glass? ✨', likes: 31, comments: 14 },
+      { id: 'c_design_2', user: 'David K.', avatar: 'D', time: '3 hours ago', text: "Anyone here using Figma plugins for auto-layout? Just discovered \"Autoflow\" and it's a game changer for wireframing 🎨", likes: 18, comments: 7 },
+      { id: 'c_design_3', user: 'Sophie M.', avatar: 'S', time: '6 hours ago', text: "Weekly design challenge: redesign a music player app. Here's my take on a minimal Spotify concept. Feedback welcome!", likes: 45, comments: 22 },
     ],
   },
   aiml: {
@@ -46,9 +46,9 @@ export const communities = {
       { name: 'Ethan G.', avatar: 'E', role: 'MLOps' },
     ],
     posts: [
-      { user: 'Rahul V.', avatar: 'R', time: '2 hours ago', text: 'Fine-tuned Llama 3 on my own dataset this weekend — the results are incredible. Open-sourcing the notebook soon! 🤖', likes: 52, comments: 18 },
-      { user: 'Mia W.', avatar: 'M', time: '5 hours ago', text: 'Can we talk about RAG architectures? Just implemented a hybrid search pipeline with dense + sparse retrievers. Huge improvement over vanilla semantic search.', likes: 27, comments: 11 },
-      { user: 'Alex J.', avatar: 'A', time: '8 hours ago', text: 'New to ML and feeling overwhelmed. Any recommendations for structured learning paths that actually work?', likes: 33, comments: 26 },
+      { id: 'c_aiml_1', user: 'Rahul V.', avatar: 'R', time: '2 hours ago', text: 'Fine-tuned Llama 3 on my own dataset this weekend — the results are incredible. Open-sourcing the notebook soon! 🤖', likes: 52, comments: 18 },
+      { id: 'c_aiml_2', user: 'Mia W.', avatar: 'M', time: '5 hours ago', text: 'Can we talk about RAG architectures? Just implemented a hybrid search pipeline with dense + sparse retrievers. Huge improvement over vanilla semantic search.', likes: 27, comments: 11 },
+      { id: 'c_aiml_3', user: 'Alex J.', avatar: 'A', time: '8 hours ago', text: 'New to ML and feeling overwhelmed. Any recommendations for structured learning paths that actually work?', likes: 33, comments: 26 },
     ],
   },
   startup: {
@@ -72,9 +72,9 @@ export const communities = {
       { name: 'Drew H.', avatar: 'D', role: 'CTO' },
     ],
     posts: [
-      { user: 'Jordan B.', avatar: 'J', time: '1 hour ago', text: 'Launched our MVP today! A micro-SaaS for remote team standups. Bootstrapped and proud. Would love some beta testers 🚀', likes: 67, comments: 23 },
-      { user: 'Taylor R.', avatar: 'T', time: '4 hours ago', text: "Hot take: founder-market fit matters more than product-market fit in early stages. What's your take?", likes: 41, comments: 19 },
-      { user: 'Casey L.', avatar: 'C', time: '9 hours ago', text: 'Looking for a technical co-founder (full-stack, React/Node) for my ed-tech startup. Have 2k waitlist users already. DM me!', likes: 29, comments: 15 },
+      { id: 'c_startup_1', user: 'Jordan B.', avatar: 'J', time: '1 hour ago', text: 'Launched our MVP today! A micro-SaaS for remote team standups. Bootstrapped and proud. Would love some beta testers 🚀', likes: 67, comments: 23 },
+      { id: 'c_startup_2', user: 'Taylor R.', avatar: 'T', time: '4 hours ago', text: "Hot take: founder-market fit matters more than product-market fit in early stages. What's your take?", likes: 41, comments: 19 },
+      { id: 'c_startup_3', user: 'Casey L.', avatar: 'C', time: '9 hours ago', text: 'Looking for a technical co-founder (full-stack, React/Node) for my ed-tech startup. Have 2k waitlist users already. DM me!', likes: 29, comments: 15 },
     ],
   },
   hackathon: {
@@ -98,9 +98,9 @@ export const communities = {
       { name: 'Casey N.', avatar: 'C', role: 'UI Designer' },
     ],
     posts: [
-      { user: 'Jamie N.', avatar: 'J', time: '30 min ago', text: '48-hour hackathon done! We built an AI-powered study buddy using Whisper + GPT-4o. 2nd place overall! 🏆', likes: 89, comments: 31 },
-      { user: 'Sam W.', avatar: 'S', time: '3 hours ago', text: "Tips for first-timers at hackathons: 1) Sleep is optional 2) Pizza is fuel 3) Don't over-scope — build the demo, not the production app", likes: 56, comments: 12 },
-      { user: 'Riley P.', avatar: 'R', time: '7 hours ago', text: 'Looking for team members for the upcoming ClimateTech Hackathon in SF. Need a designer and a backend dev!', likes: 22, comments: 9 },
+      { id: 'c_hackathon_1', user: 'Jamie N.', avatar: 'J', time: '30 min ago', text: '48-hour hackathon done! We built an AI-powered study buddy using Whisper + GPT-4o. 2nd place overall! 🏆', likes: 89, comments: 31 },
+      { id: 'c_hackathon_2', user: 'Sam W.', avatar: 'S', time: '3 hours ago', text: "Tips for first-timers at hackathons: 1) Sleep is optional 2) Pizza is fuel 3) Don't over-scope — build the demo, not the production app", likes: 56, comments: 12 },
+      { id: 'c_hackathon_3', user: 'Riley P.', avatar: 'R', time: '7 hours ago', text: 'Looking for team members for the upcoming ClimateTech Hackathon in SF. Need a designer and a backend dev!', likes: 22, comments: 9 },
     ],
   },
 };

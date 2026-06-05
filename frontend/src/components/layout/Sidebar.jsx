@@ -1,7 +1,11 @@
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate, useLocation } from 'react-router-dom';
+import styles from './Sidebar.module.css';
 
-export default function Sidebar({ activeTab, onTabChange, onCommunityClick }) {
+export default function Sidebar({ onCommunityClick }) {
   const { username, initial } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const communityItems = [
     { id: 'design', name: 'Design Buddies', letter: 'D', members: '12.4k', gradient: 'linear-gradient(135deg, #EC4899, #F97316)' },
@@ -11,21 +15,21 @@ export default function Sidebar({ activeTab, onTabChange, onCommunityClick }) {
   ];
 
   return (
-    <aside className="sidebar">
-      <div className="sidebar-user">
-        <div className="sidebar-avatar">{initial}</div>
+    <aside className={styles.sidebar}>
+      <div className={styles.sidebarUser}>
+        <div className={styles.sidebarAvatar}>{initial}</div>
         <div>
-          <div className="sidebar-name">{username}</div>
-          <div className="sidebar-username">@{username}</div>
-          <div className="sidebar-status">Online</div>
+          <div className={styles.sidebarName}>{username}</div>
+          <div className={styles.sidebarUsername}>@{username}</div>
+          <div className={styles.sidebarStatus}>Online</div>
         </div>
       </div>
 
-      <nav className="sidebar-nav">
+      <nav className={styles.sidebarNav}>
         <a
           href="#"
-          className={`sidebar-link${activeTab === 'home' ? ' active' : ''}`}
-          onClick={(e) => { e.preventDefault(); onTabChange('home'); }}
+          className={`${styles.sidebarLink}${location.pathname === '/home' ? ` ${styles.active}` : ''}`}
+          onClick={(e) => { e.preventDefault(); navigate('/home'); }}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
@@ -35,8 +39,8 @@ export default function Sidebar({ activeTab, onTabChange, onCommunityClick }) {
         </a>
         <a
           href="#"
-          className={`sidebar-link${activeTab === 'communities' ? ' active' : ''}`}
-          onClick={(e) => { e.preventDefault(); onTabChange('communities'); }}
+          className={`${styles.sidebarLink}${location.pathname.startsWith('/communities') ? ` ${styles.active}` : ''}`}
+          onClick={(e) => { e.preventDefault(); navigate('/communities'); }}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -48,8 +52,8 @@ export default function Sidebar({ activeTab, onTabChange, onCommunityClick }) {
         </a>
         <a
           href="#"
-          className={`sidebar-link${activeTab === 'messages' ? ' active' : ''}`}
-          onClick={(e) => { e.preventDefault(); onTabChange('messages'); }}
+          className={`${styles.sidebarLink}${location.pathname.startsWith('/messages') ? ` ${styles.active}` : ''}`}
+          onClick={(e) => { e.preventDefault(); navigate('/messages'); }}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
@@ -59,14 +63,14 @@ export default function Sidebar({ activeTab, onTabChange, onCommunityClick }) {
         </a>
       </nav>
 
-      <div className="sidebar-section">
-        <div className="sidebar-section-title">Top Communities</div>
+      <div className={styles.sidebarSection}>
+        <div className={styles.sidebarSectionTitle}>Top Communities</div>
         {communityItems.map((c) => (
-          <div key={c.id} className="community-item" onClick={() => onCommunityClick(c.id)}>
-            <div className="community-avatar" style={{ background: c.gradient }}>{c.letter}</div>
-            <div className="community-info">
-              <div className="community-name">{c.name}</div>
-              <div className="community-meta">{c.members} members</div>
+          <div key={c.id} className={styles.communityItem} onClick={() => onCommunityClick(c.id)}>
+            <div className={styles.communityAvatar} style={{ background: c.gradient }}>{c.letter}</div>
+            <div className={styles.communityInfo}>
+              <div className={styles.communityName}>{c.name}</div>
+              <div className={styles.communityMeta}>{c.members} members</div>
             </div>
           </div>
         ))}

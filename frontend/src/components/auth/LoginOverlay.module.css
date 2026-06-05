@@ -1,0 +1,140 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.overlay.visible {
+  opacity: 1;
+}
+
+.overlay.visible .authCard {
+  pointer-events: auto;
+  animation: authCardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes authCardIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+.authCard {
+  padding: 3.5rem 3rem;
+  width: 100%;
+  max-width: 500px;
+}
+
+.authCard h1 {
+  font-family: var(--font-family-display);
+  font-weight: 600;
+  font-size: 2.15rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 1.05rem;
+  color: var(--color-text-main);
+  opacity: 0.55;
+  margin-bottom: 2.25rem;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--color-text-main);
+  margin-bottom: 0.5rem;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 0.95rem 1.15rem;
+  font-family: var(--font-family-sans);
+  font-size: 1.08rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-bg-white);
+  color: var(--color-text-main);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.formGroup input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(109, 93, 252, 0.12);
+}
+
+.formGroup input::placeholder {
+  color: var(--color-text-main);
+  opacity: 0.35;
+}
+
+.authBtn {
+  width: 100%;
+  padding: 1.05rem;
+  font-family: var(--font-family-display);
+  font-weight: 600;
+  font-size: 1.15rem;
+  color: var(--color-bg-white);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+  margin-top: 0.75rem;
+}
+
+.authBtn:hover {
+  box-shadow: 0 4px 20px rgba(109, 93, 252, 0.35);
+  transform: translateY(-1px);
+}
+
+.authBtn:active {
+  transform: translateY(0);
+}
+
+.authFooter {
+  text-align: center;
+  margin-top: 1.75rem;
+  font-size: 1rem;
+  color: var(--color-text-main);
+  opacity: 0.55;
+}
+
+.authFooter a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 600;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.authFooter a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .authCard {
+    padding: 2rem 1.5rem;
+  }
+}

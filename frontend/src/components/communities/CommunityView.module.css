@@ -1,0 +1,230 @@
+.commViewWrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.commViewHeader {
+  position: relative;
+  margin-bottom: 1.5rem;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.commViewBanner {
+  height: 160px;
+  width: 100%;
+  position: relative;
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.1);
+  border-radius: 16px 16px 0 0;
+}
+
+.commViewHeaderContent {
+  display: flex;
+  align-items: flex-end;
+  padding: 0 1.5rem 1.5rem;
+  margin-top: -36px;
+}
+
+.commViewAvatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 4px solid var(--color-bg-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-display);
+  font-weight: 700;
+  font-size: 2.2rem;
+  color: var(--color-bg-white);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.commViewInfo {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-left: 1.25rem;
+  margin-top: 36px;
+}
+
+.commViewTitle {
+  font-family: var(--font-family-display);
+  font-weight: 800;
+  font-size: 1.8rem;
+  color: var(--color-text-main);
+  margin: 0;
+  line-height: 1;
+}
+
+.commViewActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.commJoinBtn {
+  margin-left: 0;
+  border-radius: 100px;
+  padding: 0.5rem 1.4rem;
+  background: var(--color-primary);
+  color: var(--color-bg-white);
+  font-family: var(--font-family-sans);
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.commJoinBtn:hover {
+  background: var(--color-primary-hover);
+}
+
+.commJoinBtn.joined {
+  background: transparent;
+  color: var(--color-text-main);
+  border: 1px solid rgba(24, 24, 27, 0.2);
+}
+
+.commJoinBtn.joined:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-danger);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.commCreateBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 100px;
+  background: transparent;
+  border: 1px solid rgba(24, 24, 27, 0.15);
+  font-family: var(--font-family-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.commCreateBtn:hover {
+  background: rgba(24, 24, 27, 0.05);
+  border-color: rgba(24, 24, 27, 0.3);
+}
+
+.commViewMain {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 1.5rem;
+  align-items: start;
+  padding: 0 1.5rem;
+}
+
+.commViewSidebar {
+  position: sticky;
+  top: 0;
+}
+
+.commViewLeftBox {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.commSectionLabel {
+  font-family: var(--font-family-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--color-text-main);
+}
+
+.commFeedIntegrated {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.commAboutCard {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+}
+
+.panelTitle {
+  font-family: var(--font-family-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--color-text-main);
+  margin-bottom: 0.75rem;
+}
+
+.commCardDesc {
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.commAboutStats {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 1.25rem;
+}
+
+.commAboutStat {
+  display: flex;
+  flex-direction: column;
+}
+
+.statValue {
+  font-family: var(--font-family-display);
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--color-text-main);
+  display: flex;
+  align-items: center;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.2rem;
+}
+
+.onlineDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22C55E;
+  display: inline-block;
+}
+
+.commCardCreated {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

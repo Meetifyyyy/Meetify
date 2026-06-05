@@ -1,5 +1,6 @@
 import { useFollow } from '../../context/FollowContext';
 import { useAuth } from '../../context/AuthContext';
+import styles from './FollowButton.module.css';
 
 export default function FollowButton({ targetUsername, size = 'md' }) {
   const { following, toggleFollow } = useFollow();
@@ -17,24 +18,14 @@ export default function FollowButton({ targetUsername, size = 'md' }) {
     toggleFollow(targetUsername);
   };
 
-  const btnStyle = {
-    padding: size === 'sm' ? '0.25rem 0.75rem' : '0.45rem 1.1rem',
-    fontSize: size === 'sm' ? '0.75rem' : '0.8rem',
-    fontFamily: 'Manrope, sans-serif',
-    fontWeight: 600,
-    borderRadius: '100px',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    border: isFollowing ? '1px solid rgba(24, 24, 27, 0.15)' : 'none',
-    background: isFollowing ? 'transparent' : 'linear-gradient(135deg, #6D5DFC, #A855F7)',
-    color: isFollowing ? '#18181B' : '#fff',
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '0.25rem',
-  };
+  const sizeClass = size === 'sm' ? styles.sizeSm : styles.sizeMd;
+  const stateClass = isFollowing ? styles.following : styles.notFollowing;
 
   return (
-    <button onClick={handleClick} style={btnStyle} className="follow-btn">
+    <button 
+      onClick={handleClick} 
+      className={`${styles.followBtn} ${sizeClass} ${stateClass}`}
+    >
       {isFollowing ? 'Following' : 'Follow'}
     </button>
   );

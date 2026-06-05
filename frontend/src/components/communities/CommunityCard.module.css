@@ -1,0 +1,99 @@
+.commGridCard {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.commGridCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 35px rgba(109, 93, 252, 0.14);
+}
+
+.commGridCover {
+  height: 120px;
+  position: relative;
+}
+
+.commGridAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--color-bg-white);
+  position: absolute;
+  bottom: 0;
+  left: 14px;
+  transform: translateY(50%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.commGridBody {
+  padding: 1.75rem 0.9rem 0.9rem;
+}
+
+.commGridNameRow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.25rem;
+}
+
+.commGridOnlineDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22C55E;
+  flex-shrink: 0;
+}
+
+.commGridTitle {
+  font-family: var(--font-family-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--color-text-main);
+  margin: 0;
+}
+
+.commGridDesc {
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  margin-bottom: 0.75rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.commGridFooter {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  padding-top: 0.6rem;
+  border-top: 1px solid rgba(24, 24, 27, 0.05);
+}
+
+.commGridFooter svg {
+  flex-shrink: 0;
+  color: var(--color-primary);
+}
+
+.commGridOnlineCount {
+  margin-left: auto;
+  color: #22C55E;
+  font-weight: 600;
+  font-size: 0.72rem;
+}

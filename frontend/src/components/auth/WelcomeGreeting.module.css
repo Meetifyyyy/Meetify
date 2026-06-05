@@ -1,0 +1,50 @@
+.welcomeGreeting {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  filter: blur(8px);
+  transform: scale(0.96);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), 
+              filter 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  z-index: 100;
+}
+
+.welcomeGreeting.visible {
+  opacity: 1;
+  filter: blur(0);
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.welcomeGreeting.fadingOut {
+  opacity: 0;
+  filter: blur(8px);
+  transform: scale(1.04);
+}
+
+.greetingContent h1 {
+  font-family: var(--font-family-display);
+  font-weight: 700;
+  font-size: clamp(2.2rem, 6vw, 4.5rem);
+  color: var(--color-text-main);
+}
+
+.cursor {
+  display: inline-block;
+  width: 3px;
+  height: 1.15em;
+  background: var(--color-primary);
+  margin-left: 4px;
+  vertical-align: text-bottom;
+  animation: blink 0.7s steps(1) infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}

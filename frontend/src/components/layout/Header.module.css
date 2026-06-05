@@ -1,0 +1,282 @@
+.header {
+  padding: 0.85rem 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.headerMessages {
+  /* overrides for messages layout */
+}
+.headerMessages .headerSearch {
+  display: none !important;
+}
+
+.navLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.logo {
+  height: 34px;
+  width: auto;
+  display: block;
+  border-radius: 10px;
+}
+
+.brand {
+  font-family: var(--font-family-display);
+  font-weight: 600;
+  font-size: 1.8rem;
+  color: var(--color-text-main);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.nav a {
+  text-decoration: none;
+  font-family: var(--font-family-sans);
+  font-weight: 500;
+  font-size: 0.88rem;
+  color: var(--color-text-main);
+  opacity: 0.7;
+  position: relative;
+  padding-bottom: 2px;
+  transition: opacity 0.2s;
+}
+
+.nav a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s ease;
+  border-radius: 2px;
+}
+
+.nav a:hover {
+  opacity: 1;
+}
+
+.nav a:hover::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+.collegeBtn {
+  background: rgba(109, 93, 252, 0.1);
+  color: var(--color-primary);
+  border: 1px solid rgba(109, 93, 252, 0.2);
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-sans);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.collegeBtn:hover {
+  background: rgba(109, 93, 252, 0.15);
+  border-color: rgba(109, 93, 252, 0.3);
+}
+
+.headerSearch {
+  flex: 1;
+  max-width: 480px;
+  margin: 0 2rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchLogo {
+  position: absolute;
+  left: 0.75rem;
+  height: 18px;
+  width: auto;
+  border-radius: 4px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.searchBar {
+  width: 100%;
+  padding: 0.45rem 1rem 0.45rem 2.6rem;
+  font-family: var(--font-family-sans);
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--color-text-main);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+  border-radius: 100px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.searchBar:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(109, 93, 252, 0.1);
+}
+
+.searchBar::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.6;
+}
+
+.headerUsername {
+  font-family: var(--font-family-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+  margin-right: 0.25rem;
+}
+
+.notifIcon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: var(--color-text-main);
+  opacity: 0.6;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.notifIcon:hover {
+  opacity: 1;
+  background: rgba(109, 93, 252, 0.08);
+}
+
+.notifBadge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--color-danger);
+  color: var(--color-bg-white);
+  font-size: 0.65rem;
+  font-weight: 700;
+  font-family: var(--font-family-display);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.avatarWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.userAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-bg-white);
+  cursor: pointer;
+  transition: box-shadow var(--transition-normal);
+}
+
+.userAvatar:hover {
+  box-shadow: 0 0 0 3px rgba(109, 93, 252, 0.25);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 200;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 0.5rem;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+  pointer-events: none;
+  transition: all var(--transition-normal);
+}
+
+.dropdown.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.dropdown button {
+  width: 100%;
+  padding: 0.55rem 1rem;
+  font-family: var(--font-family-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-main);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transition-fast);
+}
+
+.dropdown button:hover {
+  background: rgba(109, 93, 252, 0.08);
+}
+
+.dropdown .divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: 0.3rem 0;
+}
+
+.dropdown .logoutBtn {
+  color: var(--color-danger);
+}
+
+.dropdown .logoutBtn:hover {
+  background: rgba(239, 68, 68, 0.08);
+}
+
+@media (max-width: 768px) {
+  .header { padding: 0.65rem 1.5rem; flex-wrap: wrap; gap: 0.6rem; }
+  .logo { height: 30px; }
+  .headerSearch { order: 3; max-width: 100%; margin: 0; flex-basis: 100%; }
+}
+
+@media (max-width: 480px) {
+  .header { padding: 0.5rem 1rem; }
+}

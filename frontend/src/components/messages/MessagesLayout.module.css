@@ -1,0 +1,23 @@
+.feedMessages {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0 !important;
+}
+
+.messagesLayout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  gap: 1px;
+  background: rgba(24, 24, 27, 0.04);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .messagesLayout {
+    border-radius: 12px;
+  }
+}

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { communities, categoriesList } from '../../data/communities';
 import CommunityCard from './CommunityCard';
 import CommunityGrid from './CommunityGrid';
+import styles from './CommunitiesBrowse.module.css';
 
 import artBanner from '../../assets/images/art-banner.png';
 import techBanner from '../../assets/images/tech-banner.png';
@@ -14,6 +15,7 @@ import sportsBanner from '../../assets/images/sports-banner.png';
 import photographyBanner from '../../assets/images/photography-banner.png';
 import foodBanner from '../../assets/images/food-banner.png';
 import travelBanner from '../../assets/images/travel-banner.png';
+import defaultBanner from '../../assets/images/community-banner.webp';
 
 const getHeroContent = (category) => {
   switch (category) {
@@ -87,7 +89,7 @@ const getHeroContent = (category) => {
       return {
         title: 'FIND YOUR\nCOMMUNITY',
         sub: 'From design, to tech, to startups — there\'s a place for you.',
-        bgImage: null,
+        bgImage: `url(${defaultBanner})`,
       };
   }
 };
@@ -107,10 +109,10 @@ export default function CommunitiesBrowse({ onOpenCommunity }) {
 
   return (
     <div className="feed">
-      <div className="comm-browse-hero" style={heroStyle}>
-        <nav className="comm-cat-nav">
+      <div className={styles.commBrowseHero} style={heroStyle}>
+        <nav className={styles.commCatNav}>
           <a
-            className={`comm-cat-tab${activeCategory === null ? ' comm-cat-tab-active' : ''}`}
+            className={`${styles.commCatTab}${activeCategory === null ? ` ${styles.commCatTabActive}` : ''}`}
             onClick={() => setActiveCategory(null)}
           >
             Home
@@ -118,14 +120,14 @@ export default function CommunitiesBrowse({ onOpenCommunity }) {
           {categoriesList.map((cat) => (
             <a
               key={cat.id}
-              className={`comm-cat-tab${activeCategory === cat.id ? ' comm-cat-tab-active' : ''}`}
+              className={`${styles.commCatTab}${activeCategory === cat.id ? ` ${styles.commCatTabActive}` : ''}`}
               onClick={() => setActiveCategory(cat.id)}
             >
               {cat.label}
             </a>
           ))}
         </nav>
-        <h1 className="comm-browse-hero-title">
+        <h1 className={styles.commBrowseHeroTitle}>
           {heroContent.title.split('\n').map((line, i) => (
             <span key={i}>
               {line}
@@ -133,10 +135,10 @@ export default function CommunitiesBrowse({ onOpenCommunity }) {
             </span>
           ))}
         </h1>
-        <p className="comm-browse-hero-sub">{heroContent.sub}</p>
+        <p className={styles.commBrowseHeroSub}>{heroContent.sub}</p>
       </div>
 
-      <div className="comm-section-heading">Featured Communities</div>
+      <div className={styles.commSectionHeading}>Featured Communities</div>
 
       <CommunityGrid>
         {filtered.map((c) => (
@@ -145,7 +147,7 @@ export default function CommunitiesBrowse({ onOpenCommunity }) {
       </CommunityGrid>
 
       {filtered.length === 0 && (
-        <div className="comm-empty">No communities found in this category.</div>
+        <div className={styles.commEmpty}>No communities found in this category.</div>
       )}
     </div>
   );

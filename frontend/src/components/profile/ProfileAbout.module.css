@@ -1,0 +1,42 @@
+.profileSection {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+}
+
+.sectionTitle {
+  font-family: var(--font-family-display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--color-text-main);
+  margin-bottom: 1rem;
+}
+
+.aboutText {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-text-main);
+  margin-bottom: 1.5rem;
+}
+
+.aboutDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.aboutItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.aboutItem svg {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}

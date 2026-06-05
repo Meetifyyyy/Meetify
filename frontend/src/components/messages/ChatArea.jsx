@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
+import styles from './ChatArea.module.css';
 
-export default function ChatArea({ conversation, onSendMessage, onReactMessage, onClearChat, onBlockUser, onBack }) {
+export default function ChatArea({ conversation, onSendMessage, onReactMessage, onClearChat, onBlockUser, onBack, showChatOnMobile }) {
   const [inputValue, setInputValue] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
@@ -41,7 +42,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
     };
   }, [isCalling]);
 
-  if (!conversation) return <div className="msg-chat-area" />;
+  if (!conversation) return <div className={`${styles.msgChatArea}${!showChatOnMobile ? ` ${styles.hideOnMobile}` : ''}`} />;
 
   const formatDuration = (secs) => {
     const m = Math.floor(secs / 60).toString().padStart(2, '0');
@@ -61,38 +62,38 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
   const reactionsList = ['❤️', '👍', '😂', '😮', '😢', '🙏'];
 
   return (
-    <div className="msg-chat-area" onClick={() => setShowMoreMenu(false)}>
+    <div className={`${styles.msgChatArea}${!showChatOnMobile ? ` ${styles.hideOnMobile}` : ''}`} onClick={() => setShowMoreMenu(false)}>
       {/* Voice Call UI Overlay */}
       {isCalling && (
-        <div className="voice-call-overlay">
-          <div className="voice-call-card">
-            <div className="voice-call-avatar-container">
-              <div className="voice-call-avatar-pulse pulse-1" />
-              <div className="voice-call-avatar-pulse pulse-2" />
-              <div className="voice-call-avatar" style={{ background: conversation.color }}>
+        <div className={styles.voiceCallOverlay}>
+          <div className={styles.voiceCallCard}>
+            <div className={styles.voiceCallAvatarContainer}>
+              <div className={`${styles.voiceCallAvatarPulse} ${styles.pulse1}`} />
+              <div className={`${styles.voiceCallAvatarPulse} ${styles.pulse2}`} />
+              <div className={styles.voiceCallAvatar} style={{ background: conversation.color }}>
                 {conversation.avatar}
               </div>
             </div>
-            <div className="voice-call-name">{conversation.name}</div>
-            <div className="voice-call-status">
+            <div className={styles.voiceCallName}>{conversation.name}</div>
+            <div className={styles.voiceCallStatus}>
               {callDuration === 0 ? 'Connecting...' : `Active • ${formatDuration(callDuration)}`}
             </div>
             
             {callDuration > 0 && (
-              <div className="voice-call-waveform">
-                <span className="wave-bar bar-1"></span>
-                <span className="wave-bar bar-2"></span>
-                <span className="wave-bar bar-3"></span>
-                <span className="wave-bar bar-4"></span>
-                <span className="wave-bar bar-5"></span>
-                <span className="wave-bar bar-6"></span>
-                <span className="wave-bar bar-7"></span>
+              <div className={styles.voiceCallWaveform}>
+                <span className={`${styles.waveBar} ${styles.bar1}`}></span>
+                <span className={`${styles.waveBar} ${styles.bar2}`}></span>
+                <span className={`${styles.waveBar} ${styles.bar3}`}></span>
+                <span className={`${styles.waveBar} ${styles.bar4}`}></span>
+                <span className={`${styles.waveBar} ${styles.bar5}`}></span>
+                <span className={`${styles.waveBar} ${styles.bar6}`}></span>
+                <span className={`${styles.waveBar} ${styles.bar7}`}></span>
               </div>
             )}
 
-            <div className="voice-call-controls">
+            <div className={styles.voiceCallControls}>
               <button 
-                className={`voice-call-btn ${isMuted ? 'active' : ''}`} 
+                className={`${styles.voiceCallBtn} ${isMuted ? styles.active : ''}`} 
                 onClick={() => setIsMuted(!isMuted)}
                 title={isMuted ? "Unmute Mic" : "Mute Mic"}
               >
@@ -117,7 +118,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
               </button>
               
               <button 
-                className="voice-call-btn end-call" 
+                className={`${styles.voiceCallBtn} ${styles.endCall}`} 
                 onClick={() => setIsCalling(false)}
                 title="End Call"
               >
@@ -128,7 +129,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
               </button>
 
               <button 
-                className={`voice-call-btn ${isSpeakerOn ? 'active' : ''}`} 
+                className={`${styles.voiceCallBtn} ${isSpeakerOn ? styles.active : ''}`} 
                 onClick={() => setIsSpeakerOn(!isSpeakerOn)}
                 title={isSpeakerOn ? "Speaker Off" : "Speaker On"}
               >
@@ -142,31 +143,31 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
         </div>
       )}
 
-      <div className="msg-chat-header">
-        <div className="msg-chat-user">
+      <div className={styles.msgChatHeader}>
+        <div className={styles.msgChatUser}>
           {onBack && (
-            <button className="msg-chat-back-btn" onClick={onBack} title="Back">
+            <button className={styles.msgChatBackBtn} onClick={onBack} title="Back">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <polyline points="15 18 9 12 15 6" />
               </svg>
             </button>
           )}
-          <div className="msg-chat-avatar" style={{ background: conversation.color }}>
+          <div className={styles.msgChatAvatar} style={{ background: conversation.color }}>
             {conversation.avatar}
           </div>
           <div>
-            <div className="msg-chat-name" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            <div className={styles.msgChatName}>
               {conversation.name}
               {conversation.blocked && (
-                <span className="msg-blocked-badge">Blocked</span>
+                <span className={styles.msgBlockedBadge}>Blocked</span>
               )}
             </div>
-            <div className="msg-chat-status">{conversation.online ? 'Online' : 'Offline'}</div>
+            <div className={styles.msgChatStatus}>{conversation.online ? 'Online' : 'Offline'}</div>
           </div>
         </div>
-        <div className="msg-chat-actions" onClick={(e) => e.stopPropagation()}>
+        <div className={styles.msgChatActions} onClick={(e) => e.stopPropagation()}>
           <button 
-            className={`msg-chat-action-btn ${isCalling ? 'active' : ''}`} 
+            className={`${styles.msgChatActionBtn} ${isCalling ? styles.msgChatActionBtnActive : ''}`} 
             title="Voice Call"
             onClick={() => setIsCalling(true)}
           >
@@ -176,7 +177,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
           </button>
           <div style={{ position: 'relative' }}>
             <button 
-              className={`msg-chat-action-btn ${showMoreMenu ? 'active' : ''}`} 
+              className={`${styles.msgChatActionBtn} ${showMoreMenu ? styles.msgChatActionBtnActive : ''}`} 
               title="More"
               onClick={() => setShowMoreMenu(!showMoreMenu)}
             >
@@ -185,9 +186,9 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
               </svg>
             </button>
             {showMoreMenu && (
-              <div className="msg-more-dropdown">
+              <div className={styles.msgMoreDropdown}>
                 <button 
-                  className="msg-dropdown-item" 
+                  className={styles.msgDropdownItem} 
                   onClick={() => { setShowSearchBar(!showSearchBar); setShowMoreMenu(false); }}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -196,7 +197,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                   Find
                 </button>
                 <button 
-                  className="msg-dropdown-item" 
+                  className={styles.msgDropdownItem} 
                   onClick={() => { setIsMutedNotifications(!isMutedNotifications); setShowMoreMenu(false); }}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -209,7 +210,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                   {isMutedNotifications ? 'Unmute Alerts' : 'Mute Alerts'}
                 </button>
                 <button 
-                  className="msg-dropdown-item" 
+                  className={styles.msgDropdownItem} 
                   onClick={() => { onClearChat(); setShowMoreMenu(false); }}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -218,7 +219,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                   Clear Chat
                 </button>
                 <button 
-                  className="msg-dropdown-item msg-dropdown-item-danger" 
+                  className={`${styles.msgDropdownItem} ${styles.msgDropdownItemDanger}`} 
                   onClick={() => { onBlockUser(); setShowMoreMenu(false); }}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -234,7 +235,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
 
       {/* Inline Search Bar */}
       {showSearchBar && (
-        <div className="msg-search-bar">
+        <div className={styles.msgSearchBar}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
@@ -243,11 +244,11 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
             placeholder="Search messages..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="msg-search-bar-input"
+            className={styles.msgSearchBarInput}
             autoFocus
           />
           <button 
-            className="msg-search-bar-close" 
+            className={styles.msgSearchBarClose} 
             onClick={() => { setShowSearchBar(false); setSearchQuery(''); }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -257,9 +258,9 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
         </div>
       )}
 
-      <div className="msg-chat-body" ref={bodyRef}>
+      <div className={styles.msgChatBody} ref={bodyRef}>
         {conversation.messages.length === 0 ? (
-          <div className="msg-empty-state">No messages in this chat.</div>
+          <div className={styles.msgEmptyState}>No messages in this chat.</div>
         ) : (
           conversation.messages.map((msg, i) => {
             const hasQuery = searchQuery && msg.text.toLowerCase().includes(searchQuery.toLowerCase());
@@ -268,22 +269,22 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
             return (
               <div 
                 key={i} 
-                className={`msg-bubble-container ${msg.from === 'me' ? 'msg-bubble-container-me' : 'msg-bubble-container-them'}`}
+                className={`${styles.msgBubbleContainer} ${msg.from === 'me' ? styles.msgBubbleContainerMe : styles.msgBubbleContainerThem}`}
                 style={{ opacity: shouldDim ? 0.45 : 1 }}
               >
-                <div className="msg-bubble-wrapper">
-                  <div className={`msg-bubble ${msg.from === 'me' ? 'msg-bubble-me' : 'msg-bubble-them'}`}>
+                <div className={styles.msgBubbleWrapper}>
+                  <div className={`${styles.msgBubble} ${msg.from === 'me' ? styles.msgBubbleMe : styles.msgBubbleThem}`}>
                     {/* Replied text reference inside bubble */}
                     {msg.replyTo && (
-                      <div className="msg-bubble-reply-ref">
-                        <div className="msg-bubble-reply-ref-header">
+                      <div className={styles.msgBubbleReplyRef}>
+                        <div className={styles.msgBubbleReplyRefHeader}>
                           {msg.replyTo.from === 'me' ? 'You' : conversation.name}
                         </div>
-                        <div className="msg-bubble-reply-ref-text">{msg.replyTo.text}</div>
+                        <div className={styles.msgBubbleReplyRefText}>{msg.replyTo.text}</div>
                       </div>
                     )}
 
-                    <div className="msg-text">
+                    <div className={styles.msgText}>
                       {searchQuery && hasQuery ? (
                         (() => {
                           const idx = msg.text.toLowerCase().indexOf(searchQuery.toLowerCase());
@@ -291,7 +292,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                           return (
                             <>
                               {msg.text.substring(0, idx)}
-                              <mark className="msg-search-highlight">{msg.text.substring(idx, idx + length)}</mark>
+                              <mark className={styles.msgSearchHighlight}>{msg.text.substring(idx, idx + length)}</mark>
                               {msg.text.substring(idx + length)}
                             </>
                           );
@@ -300,11 +301,11 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                         msg.text
                       )}
                     </div>
-                    <div className="msg-time-label">{msg.time}</div>
+                    <div className={styles.msgTimeLabel}>{msg.time}</div>
 
                     {/* Render reactions badge */}
                     {msg.reactions && msg.reactions.length > 0 && (
-                      <div className="msg-reactions-badge">
+                      <div className={styles.msgReactionsBadge}>
                         {msg.reactions.map((r, rIdx) => (
                           <span key={rIdx}>{r}</span>
                         ))}
@@ -313,9 +314,9 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                   </div>
 
                   {/* Hover options menu for message */}
-                  <div className="msg-hover-actions">
-                    <div className="msg-hover-reaction-trigger">
-                      <button className="msg-hover-action-btn" title="React">
+                  <div className={styles.msgHoverActions}>
+                    <div className={styles.msgHoverReactionTrigger}>
+                      <button className={styles.msgHoverActionBtn} title="React">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                           <circle cx="12" cy="12" r="10" />
                           <path d="M8 14s1.5 2 4 2 4-2 4-2" />
@@ -323,11 +324,11 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                           <line x1="15" y1="9" x2="15.01" y2="9" strokeWidth="2.5" />
                         </svg>
                       </button>
-                      <div className="msg-hover-reactions-popover">
+                      <div className={styles.msgHoverReactionsPopover}>
                         {reactionsList.map((emoji) => (
                           <button 
                             key={emoji} 
-                            className="msg-hover-reaction-btn" 
+                            className={styles.msgHoverReactionBtn} 
                             onClick={() => onReactMessage(i, emoji)}
                           >
                             {emoji}
@@ -336,7 +337,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                       </div>
                     </div>
                     <button 
-                      className="msg-hover-action-btn" 
+                      className={styles.msgHoverActionBtn} 
                       title="Reply"
                       onClick={() => setReplyingTo({ text: msg.text, from: msg.from, index: i })}
                     >
@@ -353,17 +354,17 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
       </div>
 
       {/* Input container */}
-      <div className="msg-chat-input-wrap">
+      <div className={styles.msgChatInputWrap}>
         {/* Reply preview bar */}
         {replyingTo && (
-          <div className="msg-reply-preview">
-            <div className="msg-reply-preview-details">
-              <span className="msg-reply-preview-label">
+          <div className={styles.msgReplyPreview}>
+            <div className={styles.msgReplyPreviewDetails}>
+              <span className={styles.msgReplyPreviewLabel}>
                 Replying to {replyingTo.from === 'me' ? 'yourself' : conversation.name}
               </span>
-              <span className="msg-reply-preview-text">{replyingTo.text}</span>
+              <span className={styles.msgReplyPreviewText}>{replyingTo.text}</span>
             </div>
-            <button className="msg-reply-preview-close" onClick={() => setReplyingTo(null)}>
+            <button className={styles.msgReplyPreviewClose} onClick={() => setReplyingTo(null)}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
               </svg>
@@ -382,25 +383,25 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
         )}
         
         {conversation.blocked ? (
-          <div className="msg-blocked-input-overlay">
+          <div className={styles.msgBlockedInputOverlay}>
             This contact is blocked. Click the menu to unblock.
           </div>
         ) : (
           <>
-            <button className="msg-emoji-btn" title="Emoji" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+            <button className={styles.msgEmojiBtn} title="Emoji" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" y1="9" x2="9" y2="9" /><line x1="15" y1="9" x2="15" y2="9" />
               </svg>
             </button>
             <input
               type="text"
-              className="msg-input"
+              className={styles.msgInput}
               placeholder="Type a message..."
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') handleSend(); }}
             />
-            <button className="msg-send-btn" onClick={handleSend}>
+            <button className={styles.msgSendBtn} onClick={handleSend}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
               </svg>
@@ -411,4 +412,3 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
     </div>
   );
 }
-

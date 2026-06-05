@@ -1,0 +1,158 @@
+.rightPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
+  height: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.rightPanel::-webkit-scrollbar {
+  display: none;
+}
+
+.panelCard {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+}
+
+.panelTitle {
+  font-family: var(--font-family-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-text-main);
+  margin-bottom: 1rem;
+}
+
+.actionBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.85rem;
+  margin-bottom: 0.35rem;
+  font-family: var(--font-family-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-main);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.actionBtn:hover {
+  background: rgba(109, 93, 252, 0.08);
+  color: var(--color-primary);
+}
+
+.actionBtn svg {
+  color: var(--color-text-muted);
+  transition: color 0.15s;
+}
+
+.actionBtn:hover svg {
+  color: var(--color-primary);
+}
+
+.friendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.friendItem:last-child {
+  border-bottom: none;
+}
+
+.friendAvatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-display);
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: var(--color-bg-white);
+  flex-shrink: 0;
+}
+
+.friendInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.friendName {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.friendStatus {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.friendStatus.online {
+  color: var(--color-success);
+  font-weight: 500;
+}
+
+.eventItem {
+  display: flex;
+  gap: 0.85rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.eventItem:last-child {
+  border-bottom: none;
+}
+
+.eventDate {
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  line-height: 1.3;
+  min-width: 40px;
+}
+
+.eventDate span {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.eventDetail {
+  flex: 1;
+  min-width: 0;
+}
+
+.eventName {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+  margin-bottom: 0.15rem;
+}
+
+.eventMeta {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 1024px) {
+  .rightPanel {
+    display: none !important;
+  }
+}

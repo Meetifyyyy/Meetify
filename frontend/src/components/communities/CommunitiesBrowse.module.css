@@ -1,0 +1,113 @@
+.commBrowseHero {
+  border-radius: 16px;
+  padding: 0 0 2rem;
+  margin-bottom: 0.75rem;
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+}
+
+.commCatNav {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 1.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  background: rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.commCatNav::-webkit-scrollbar {
+  display: none;
+}
+
+.commCatTab {
+  padding: 0.8rem 1rem;
+  font-family: var(--font-family-sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color var(--transition-fast);
+  position: relative;
+}
+
+.commCatTab:hover {
+  color: var(--color-bg-white);
+}
+
+.commCatTabActive {
+  color: var(--color-bg-white);
+}
+
+.commCatTabActive::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--color-bg-white);
+  transform: translateX(-50%) scaleX(1);
+}
+
+.commBrowseHeroTitle {
+  font-family: var(--font-family-display);
+  font-weight: 700;
+  font-size: 3.5rem;
+  color: var(--color-bg-white);
+  letter-spacing: -0.02em;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  padding: 0 2rem 0.5rem;
+  margin-top: 90px;
+  line-height: 1.1;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.commBrowseHeroSub {
+  font-family: var(--font-family-sans);
+  font-size: 1rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 0 2rem;
+  text-align: left;
+}
+
+.commSectionHeading {
+  font-family: var(--font-family-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--color-text-main);
+  padding: 0 0 0.5rem;
+}
+
+.commEmpty {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--color-text-muted);
+  font-family: var(--font-family-sans);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .commBrowseHeroTitle {
+    font-size: clamp(1.6rem, 8vw, 2.2rem) !important;
+    padding: 1.5rem 1rem 0.5rem !important;
+    margin-top: 40px !important;
+  }
+  .commBrowseHeroSub {
+    padding: 0 1rem !important;
+    font-size: 0.85rem !important;
+  }
+  .commCatNav {
+    padding: 0 1rem !important;
+  }
+}

@@ -1,3 +1,5 @@
+import styles from './CommunityGrid.module.css';
+
 export default function CommunityGrid({ children }) {
-  return <div className="comm-grid">{children}</div>;
+  return <div className={styles.commGrid}>{children}</div>;
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import styles from './WelcomeGreeting.module.css';
 
 export default function WelcomeGreeting({ visible, username, onComplete }) {
   const [text, setText] = useState('');
@@ -35,11 +36,11 @@ export default function WelcomeGreeting({ visible, username, onComplete }) {
   }, [visible, username, onComplete, fullText]);
 
   return (
-    <div className={`welcome-greeting${visible ? ' visible' : ''}${fadingOut ? ' fading-out' : ''}`}>
-      <div className="greeting-content">
+    <div className={`${styles.welcomeGreeting}${visible ? ` ${styles.visible}` : ''}${fadingOut ? ` ${styles.fadingOut}` : ''}`}>
+      <div className={styles.greetingContent}>
         <h1>
-          <span className="typewriter">{text}</span>
-          <span className="cursor" />
+          <span className={styles.typewriter}>{text}</span>
+          <span className={styles.cursor} />
         </h1>
       </div>
     </div>

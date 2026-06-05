@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import styles from './LoginOverlay.module.css';
 
 export default function LoginOverlay({ visible, onLogin, onSwitchToSignup, toastMsg, setToastMsg }) {
   const [user, setUser] = useState('');
@@ -6,7 +7,10 @@ export default function LoginOverlay({ visible, onLogin, onSwitchToSignup, toast
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (user.trim() === 'sarthak' && pass.trim() === '208') {
+    if (
+      (user.trim() === 'sarthak' && pass.trim() === '208') ||
+      (user.trim() === 'student@gla.ac.in' && pass.trim() === 'gla123')
+    ) {
       onLogin(user.trim());
     } else {
       setToastMsg('Invalid username or password');
@@ -14,12 +18,12 @@ export default function LoginOverlay({ visible, onLogin, onSwitchToSignup, toast
   };
 
   return (
-    <div className={`overlay${visible ? ' visible' : ''}`} style={visible ? {} : { display: 'none' }}>
-      <div className="auth-card">
+    <div className={`${styles.overlay}${visible ? ` ${styles.visible}` : ''}`} style={visible ? {} : { display: 'none' }}>
+      <div className={styles.authCard}>
         <h1>Welcome backk!</h1>
-        <p className="subtitle">let's pick up where we left off</p>
+        <p className={styles.subtitle}>let's pick up where we left off</p>
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
+          <div className={styles.formGroup}>
             <label htmlFor="username">Username</label>
             <input
               type="text"
@@ -29,7 +33,7 @@ export default function LoginOverlay({ visible, onLogin, onSwitchToSignup, toast
               onChange={(e) => setUser(e.target.value)}
             />
           </div>
-          <div className="form-group">
+          <div className={styles.formGroup}>
             <label htmlFor="password">Password</label>
             <input
               type="password"
@@ -39,9 +43,9 @@ export default function LoginOverlay({ visible, onLogin, onSwitchToSignup, toast
               onChange={(e) => setPass(e.target.value)}
             />
           </div>
-          <button type="submit" className="auth-btn">Log in</button>
+          <button type="submit" className={styles.authBtn}>Log in</button>
         </form>
-        <p className="auth-footer">
+        <p className={styles.authFooter}>
           Don't have an account? <a onClick={onSwitchToSignup}>Sign up</a>
         </p>
       </div>

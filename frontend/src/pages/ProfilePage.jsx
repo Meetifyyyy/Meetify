@@ -10,6 +10,7 @@ import ProfileHeader from '../components/profile/ProfileHeader';
 import ProfileActivity from '../components/profile/ProfileActivity';
 import BottomNav from '../components/layout/BottomNav';
 import UserListModal from '../components/common/UserListModal';
+import rightPanelStyles from '../components/layout/RightPanel.module.css';
 
 export default function ProfilePage() {
   const { profileUsername } = useParams();
@@ -20,12 +21,8 @@ export default function ProfilePage() {
   
   const [modalType, setModalType] = useState(null); // 'followers' or 'following'
 
-  const handleTabChange = (tab) => {
-    navigate('/home');
-  };
-
   const handleCommunityClick = (id) => {
-    navigate('/home');
+    navigate(`/communities/${id}`);
   };
 
   return (
@@ -33,28 +30,27 @@ export default function ProfilePage() {
       <Background />
       <Header variant="dashboard" />
       <DashboardLayout>
-        <Sidebar activeTab="" onTabChange={handleTabChange} onCommunityClick={handleCommunityClick} />
+        <Sidebar onCommunityClick={handleCommunityClick} />
         <main className="centre">
           <div className="profile">
             <ProfileHeader 
               profileUsername={targetUsername} 
               onViewFollowers={() => setModalType('followers')}
               onViewFollowing={() => setModalType('following')}
-              onBack={() => navigate(-1)}
             />
             <ProfileActivity />
           </div>
         </main>
         <RightPanel>
-          <div className="panel-card">
-            <h3 className="panel-title">Quick Actions</h3>
-            <button className="action-btn">
+          <div className={rightPanelStyles.panelCard}>
+            <h3 className={rightPanelStyles.panelTitle}>Quick Actions</h3>
+            <button className={rightPanelStyles.actionBtn}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
               Edit Profile
             </button>
-            <button className="action-btn">
+            <button className={rightPanelStyles.actionBtn}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
               </svg>
@@ -63,7 +59,7 @@ export default function ProfilePage() {
           </div>
         </RightPanel>
       </DashboardLayout>
-      <BottomNav activeTab="" />
+      <BottomNav />
       {modalType && (
         <UserListModal 
           type={modalType} 

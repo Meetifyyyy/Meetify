@@ -1,29 +1,24 @@
 import { useNavigate, useLocation } from 'react-router-dom';
+import styles from './BottomNav.module.css';
 
-export default function BottomNav({ activeTab, onTabChange }) {
+export default function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleTabClick = (tab) => {
-    if (location.pathname !== '/home') {
-      navigate('/home', { state: { tab } });
-    } else {
-      if (onTabChange) {
-        onTabChange(tab);
-      }
-    }
+  const handleTabClick = (path) => {
+    navigate(path);
   };
 
-  const isHomeActive = location.pathname === '/home' && activeTab === 'home';
-  const isCommunitiesActive = location.pathname === '/home' && (activeTab === 'communities' || activeTab === 'community-detail');
-  const isMessagesActive = location.pathname === '/home' && activeTab === 'messages';
-  const isProfileActive = location.pathname === '/profile';
+  const isHomeActive = location.pathname === '/home';
+  const isCommunitiesActive = location.pathname.startsWith('/communities');
+  const isMessagesActive = location.pathname.startsWith('/messages');
+  const isProfileActive = location.pathname.startsWith('/profile');
 
   return (
-    <div className="bottom-nav">
+    <div className={styles.bottomNav}>
       <button 
-        className={`bottom-nav-item${isHomeActive ? ' active' : ''}`}
-        onClick={() => handleTabClick('home')}
+        className={`${styles.bottomNavItem}${isHomeActive ? ` ${styles.active}` : ''}`}
+        onClick={() => handleTabClick('/home')}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
@@ -33,8 +28,8 @@ export default function BottomNav({ activeTab, onTabChange }) {
       </button>
 
       <button 
-        className={`bottom-nav-item${isCommunitiesActive ? ' active' : ''}`}
-        onClick={() => handleTabClick('communities')}
+        className={`${styles.bottomNavItem}${isCommunitiesActive ? ` ${styles.active}` : ''}`}
+        onClick={() => handleTabClick('/communities')}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -46,8 +41,8 @@ export default function BottomNav({ activeTab, onTabChange }) {
       </button>
 
       <button 
-        className={`bottom-nav-item${isMessagesActive ? ' active' : ''}`}
-        onClick={() => handleTabClick('messages')}
+        className={`${styles.bottomNavItem}${isMessagesActive ? ` ${styles.active}` : ''}`}
+        onClick={() => handleTabClick('/messages')}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
@@ -57,7 +52,7 @@ export default function BottomNav({ activeTab, onTabChange }) {
       </button>
 
       <button 
-        className={`bottom-nav-item${isProfileActive ? ' active' : ''}`}
+        className={`${styles.bottomNavItem}${isProfileActive ? ` ${styles.active}` : ''}`}
         onClick={() => navigate('/profile')}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

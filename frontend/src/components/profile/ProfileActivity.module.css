@@ -1,0 +1,114 @@
+.profileSection {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+}
+
+.sectionTitle {
+  font-family: var(--font-family-display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--color-text-main);
+  margin-bottom: 1rem;
+}
+
+.profilePost {
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(24, 24, 27, 0.06);
+}
+
+.profilePost:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.profilePostHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.75rem;
+}
+
+.profilePostAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-bg-white);
+}
+
+.profilePostUser {
+  flex: 1;
+}
+
+.profilePostName {
+  font-family: var(--font-family-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text-main);
+}
+
+.profilePostTime {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.menuWrapper {
+  position: relative;
+  margin-left: auto;
+}
+
+.menuBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem;
+  border-radius: 50%;
+}
+
+.reportBtn {
+  color: var(--color-danger);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.profilePostBody {
+  font-size: 0.9rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #27272A;
+  margin-bottom: 0.75rem;
+}
+
+.profilePostActions {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.actionItem {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.actionItem:hover {
+  color: var(--color-primary);
+}

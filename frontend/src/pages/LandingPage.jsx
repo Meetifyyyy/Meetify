@@ -8,6 +8,7 @@ import SignupOverlay from '../components/auth/SignupOverlay';
 import WelcomeGreeting from '../components/auth/WelcomeGreeting';
 import logo from '../assets/images/logo.webp';
 import heroImg from '../assets/images/hero-illustration.webp';
+import '../styles/landing.css';
 
 export default function LandingPage() {
   const { login } = useAuth();
