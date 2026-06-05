@@ -1,4 +1,5 @@
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Background from '../components/common/Background';
 import Header from '../components/layout/Header';
@@ -6,13 +7,18 @@ import Sidebar from '../components/layout/Sidebar';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import RightPanel from '../components/layout/RightPanel';
 import ProfileHeader from '../components/profile/ProfileHeader';
-import ProfileAbout from '../components/profile/ProfileAbout';
 import ProfileActivity from '../components/profile/ProfileActivity';
 import BottomNav from '../components/layout/BottomNav';
+import UserListModal from '../components/common/UserListModal';
 
 export default function ProfilePage() {
+  const { profileUsername } = useParams();
   const navigate = useNavigate();
   const { username } = useAuth();
+  
+  const targetUsername = profileUsername || username;
+  
+  const [modalType, setModalType] = useState(null); // 'followers' or 'following'
 
   const handleTabChange = (tab) => {
     navigate('/home');
@@ -22,13 +28,6 @@ export default function ProfilePage() {
     navigate('/home');
   };
 
-  const friends = [
-    { name: 'Alice', letter: 'A', status: '3 mutual', online: true },
-    { name: 'Marcus', letter: 'M', status: '5 mutual', online: true },
-    { name: 'Priya', letter: 'P', status: '2 mutual', online: false },
-    { name: 'Jordan', letter: 'J', status: '1 mutual', online: false },
-  ];
-
   return (
     <>
       <Background />
@@ -36,9 +35,15 @@ export default function ProfilePage() {
       <DashboardLayout>
         <Sidebar activeTab="" onTabChange={handleTabChange} onCommunityClick={handleCommunityClick} />
         <main className="centre">
-          <ProfileHeader />
-          <ProfileAbout />
-          <ProfileActivity />
+          <div className="profile">
+            <ProfileHeader 
+              profileUsername={targetUsername} 
+              onViewFollowers={() => setModalType('followers')}
+              onViewFollowing={() => setModalType('following')}
+              onBack={() => navigate(-1)}
+            />
+            <ProfileActivity />
+          </div>
         </main>
         <RightPanel>
           <div className="panel-card">
@@ -55,29 +60,17 @@ export default function ProfilePage() {
               </svg>
               Share Profile
             </button>
-            <button className="action-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" />
-              </svg>
-              Share Feedback
-            </button>
-          </div>
-
-          <div className="panel-card">
-            <h3 className="panel-title">Mutual Friends</h3>
-            {friends.map((f, i) => (
-              <div key={i} className="friend-item">
-                <div className="friend-avatar">{f.letter}</div>
-                <div className="friend-info">
-                  <div className="friend-name">{f.name}</div>
-                  <div className={`friend-status${f.online ? ' online' : ''}`}>{f.status}</div>
-                </div>
-              </div>
-            ))}
           </div>
         </RightPanel>
       </DashboardLayout>
       <BottomNav activeTab="" />
+      {modalType && (
+        <UserListModal 
+          type={modalType} 
+          profileUsername={targetUsername} 
+          onClose={() => setModalType(null)} 
+        />
+      )}
     </>
   );
 }

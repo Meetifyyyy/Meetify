@@ -655,10 +655,13 @@
 .comm-browse-hero {
   background: linear-gradient(rgba(109, 93, 252, 0.35), rgba(168, 85, 247, 0.45)), url('../assets/images/community-banner.webp') no-repeat center/cover;
   border-radius: 16px;
-  padding: 0 0 1.25rem;
+  padding: 0 0 2rem;
   margin-bottom: 0.75rem;
   box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.15);
   overflow: hidden;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
 }
 
 .comm-cat-nav {
@@ -689,7 +692,6 @@
   white-space: nowrap;
   transition: color 0.2s;
   position: relative;
-  border-bottom: 2px solid transparent;
 }
 
 .comm-cat-tab:hover {
@@ -698,26 +700,32 @@
 
 .comm-cat-tab-active {
   color: #fff;
-  border-bottom: 2px solid #fff;
+}
+
+.comm-cat-tab-active::after {
+  transform: translateX(-50%) scaleX(1) !important;
+  background: #fff !important;
 }
 
 .comm-browse-hero-title {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   font-weight: 700;
-  font-size: 2.4rem;
+  font-size: 3.5rem;
   color: #fff;
-  letter-spacing: 0.04em;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-  padding: 2rem 2rem 0.5rem;
-  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  padding: 0 2rem 0.5rem;
+  margin-top: 90px;
+  line-height: 1.1;
   text-align: left;
+  text-transform: uppercase;
 }
 
 .comm-browse-hero-sub {
   font-family: 'Manrope', sans-serif;
-  font-size: 0.92rem;
+  font-size: 1rem;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.9);
   padding: 0 2rem;
   text-align: left;
 }
@@ -732,7 +740,7 @@
 
 .comm-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 1rem;
 }
 

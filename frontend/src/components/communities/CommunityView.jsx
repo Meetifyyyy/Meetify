@@ -3,7 +3,7 @@ import { communities } from '../../data/communities';
 import Post from '../feed/Post';
 import ConfirmModal from '../common/ConfirmModal';
 
-export default function CommunityView({ communityId, onBack }) {
+export default function CommunityView({ communityId, onBack, onViewMembers }) {
   const comm = communities[communityId];
   const [joined, setJoined] = useState(false);
   const [memberCount, setMemberCount] = useState(comm.members);
@@ -11,7 +11,8 @@ export default function CommunityView({ communityId, onBack }) {
 
   if (!comm) return null;
 
-  const handleToggleJoin = () => {
+  const handleToggleJoin = (e) => {
+    e.stopPropagation();
     if (joined) {
       setShowConfirm(true);
     } else {
@@ -47,7 +48,7 @@ export default function CommunityView({ communityId, onBack }) {
           <div className="comm-card-body">
             <h2 className="comm-card-title">{comm.name}</h2>
             <p className="comm-card-desc">{comm.desc}</p>
-            <div className="comm-card-members">
+            <div className="comm-card-members" onClick={onViewMembers}>
               <div className="comm-avatar-stack">
                 {comm.memberList.slice(0, maxAvatars).map((m, i) => (
                   <div key={i} className="comm-member-mini" style={{ background: comm.tagColor }}>{m.avatar}</div>

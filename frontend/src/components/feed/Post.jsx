@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 export default function Post({ name, avatar, time, text, initialLikes = 0, initialComments = 0, communityTag }) {
   const [likes, setLikes] = useState(initialLikes);
@@ -9,12 +10,18 @@ export default function Post({ name, avatar, time, text, initialLikes = 0, initi
     setLikes(liked ? likes - 1 : likes + 1);
   };
 
+  const username = name.toLowerCase().replace(/\s+/g, '');
+
   return (
     <div className="post">
       <div className="post-header">
-        <div className="post-avatar">{avatar}</div>
+        <Link to={`/profile/${username}`} style={{ textDecoration: 'none' }}>
+          <div className="post-avatar">{avatar}</div>
+        </Link>
         <div className="post-user">
-          <div className="post-name">{name}</div>
+          <Link to={`/profile/${username}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <div className="post-name">{name}</div>
+          </Link>
           <div className="post-time">{time}</div>
         </div>
         {communityTag && (
