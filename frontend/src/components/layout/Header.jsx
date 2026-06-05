@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import logo from '../../assets/images/logo.webp';
+import glaCrest from '../../assets/images/gla-crest.png';
 import styles from './Header.module.css';
 
 export default function Header({ variant = 'dashboard' }) {
@@ -42,7 +43,8 @@ export default function Header({ variant = 'dashboard' }) {
         <nav className={styles.nav}>
           {isCollegeUser && (
             <button className={styles.collegeBtn}>
-              GLA University
+              <img src={glaCrest} alt="GLA University" />
+              <span>GLA University</span>
             </button>
           )}
           <div className={styles.notifIcon} title="Notifications">
