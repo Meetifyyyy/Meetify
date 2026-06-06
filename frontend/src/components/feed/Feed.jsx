@@ -6,7 +6,7 @@ import PostSkeleton from './PostSkeleton';
 import styles from './Feed.module.css';
 
 export default function Feed({ onPostClick }) {
-  const { posts, addPost } = useData();
+  const { posts, addPost, searchQuery, getUserById, communities } = useData();
   const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
@@ -22,6 +22,16 @@ export default function Feed({ onPostClick }) {
     }
   };
 
+  const filteredPosts = posts.filter((p) => {
+    if (!searchQuery) return true;
+    const author = getUserById(p.authorId);
+    return (
+      p.text?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      author?.displayName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      author?.username?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  });
+
   return (
     <div className={styles.feed}>
       <PostComposer onSubmit={handleNewPost} />
@@ -32,9 +42,12 @@ export default function Feed({ onPostClick }) {
           <PostSkeleton />
         </>
       ) : (
-        posts.map((p) => (
-          <Post key={p.id} postData={p} onClick={() => onPostClick && onPostClick(p, 'feed')} />
-        ))
+        filteredPosts.map((p) => {
+          const cTag = p.communityId ? communities[p.communityId] : null;
+          return (
+            <Post key={p.id} postData={p} communityTag={cTag} onClick={() => onPostClick && onPostClick(p, 'feed')} />
+          );
+        })
       )}
     </div>
   );

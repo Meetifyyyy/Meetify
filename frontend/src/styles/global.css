@@ -358,6 +358,8 @@ nav a:hover::after {
   .centre--messages {
     padding-bottom: 64px !important;
     overflow: hidden !important;
+    height: calc(100vh - 124px) !important;
+    max-height: calc(100vh - 124px) !important;
   }
 }
 

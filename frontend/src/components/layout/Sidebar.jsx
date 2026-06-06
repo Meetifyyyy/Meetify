@@ -1,23 +1,32 @@
 import { useAuth } from '../../context/AuthContext';
+import { useData } from '../../context/DataContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './Sidebar.module.css';
 
 export default function Sidebar({ onCommunityClick }) {
-  const { username, initial } = useAuth();
+  const { username, initial, currentUser } = useAuth();
+  const { communities } = useData();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const communityItems = [
-    { id: 'design', name: 'Design Buddies', letter: 'D', members: '12.4k', gradient: 'linear-gradient(135deg, #EC4899, #F97316)' },
-    { id: 'aiml', name: 'AI/ML Enthusiasts', letter: 'A', members: '8.2k', gradient: 'linear-gradient(135deg, #3B82F6, #06B6D4)' },
-    { id: 'startup', name: 'Startup Hub', letter: 'S', members: '6.7k', gradient: 'linear-gradient(135deg, #22C55E, #10B981)' },
-    { id: 'hackathon', name: 'Hackathon Heroes', letter: 'H', members: '4.1k', gradient: 'linear-gradient(135deg, #A855F7, #EC4899)' },
-  ];
+  const communityItems = Object.values(communities).slice(0, 4).map(c => ({
+    id: c.id,
+    name: c.name,
+    letter: c.avatar,
+    members: c.members >= 1000 ? `${(c.members / 1000).toFixed(1)}k` : c.members,
+    gradient: c.color
+  }));
 
   return (
     <aside className={styles.sidebar}>
       <div className={styles.sidebarUser}>
-        <div className={styles.sidebarAvatar}>{initial}</div>
+        <div className={styles.sidebarAvatar}>
+          {currentUser?.avatar && currentUser.avatar.length > 1 ? (
+            <img src={currentUser.avatar} alt="user avatar" className={styles.sidebarAvatarImg} />
+          ) : (
+            initial
+          )}
+        </div>
         <div>
           <div className={styles.sidebarName}>{username}</div>
           <div className={styles.sidebarUsername}>@{username}</div>
@@ -49,6 +58,17 @@ export default function Sidebar({ onCommunityClick }) {
             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
           </svg>
           Communities
+        </a>
+        <a
+          href="#"
+          className={`${styles.sidebarLink}${location.pathname.startsWith('/colleges') ? ` ${styles.active}` : ''}`}
+          onClick={(e) => { e.preventDefault(); navigate('/colleges'); }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+            <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
+          </svg>
+          Colleges
         </a>
         <a
           href="#"

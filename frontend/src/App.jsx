@@ -8,6 +8,8 @@ import CommunityDetailRoute from './pages/CommunityDetailRoute';
 import PostDetailRoute from './pages/PostDetailRoute';
 import MessagesRoute from './pages/MessagesRoute';
 import ProfilePage from './pages/ProfilePage';
+import CollegesRoute from './pages/CollegesRoute';
+import CollegeDetailRoute from './pages/CollegeDetailRoute';
 import ErrorBoundary from './components/common/ErrorBoundary';
 
 function ProtectedRoute({ children }) {
@@ -51,7 +53,9 @@ const router = createBrowserRouter([
           { path: "/home", element: <FeedRoute /> },
           { path: "/communities", element: <CommunitiesRoute /> },
           { path: "/communities/:id", element: <CommunityDetailRoute /> },
-          { path: "/messages", element: <MessagesRoute /> },
+          { path: "/colleges", element: <CollegesRoute /> },
+          { path: "/colleges/:id", element: <CollegeDetailRoute /> },
+          { path: "/messages/:conversationId?", element: <MessagesRoute /> },
           { path: "/post/:id", element: <PostDetailRoute /> },
           { path: "/profile/:profileUsername?", element: <ProfilePage /> },
         ]

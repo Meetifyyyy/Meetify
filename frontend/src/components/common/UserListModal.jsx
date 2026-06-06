@@ -1,41 +1,60 @@
 import { useFollow } from '../../context/FollowContext';
 import { useAuth } from '../../context/AuthContext';
+import { useData } from '../../context/DataContext';
 import FollowButton from './FollowButton';
 import styles from './UserListModal.module.css';
 
 export default function UserListModal({ type, profileUsername, onClose }) {
   const { following } = useFollow();
   const { username: currentUser } = useAuth();
+  const { users: allUsers, getUserByUsername } = useData();
   const isFollowingTarget = following.includes(profileUsername);
 
-  let users = [];
+  let usersList = [];
   if (type === 'followers') {
-    users = [
-      { name: 'Alice', username: 'alice', role: 'Designer' },
-      { name: 'Marcus', username: 'marcus', role: 'Developer' },
-      { name: 'Priya', username: 'priya', role: 'Product Manager' },
-      { name: 'Jordan', username: 'jordan', role: 'Engineer' }
-    ];
+    const otherUsers = Object.values(allUsers).filter(u => u.username !== profileUsername);
+    usersList = otherUsers.slice(0, 4).map(u => ({
+      name: u.displayName,
+      username: u.username,
+      role: u.role,
+      avatar: u.avatar
+    }));
     if (profileUsername !== currentUser && isFollowingTarget) {
-      users.unshift({
-        name: currentUser.charAt(0).toUpperCase() + currentUser.slice(1),
-        username: currentUser,
-        role: 'You'
-      });
+      const meUser = getUserByUsername(currentUser);
+      if (meUser && !usersList.some(u => u.username === currentUser)) {
+        usersList.unshift({
+          name: meUser.displayName,
+          username: meUser.username,
+          role: meUser.role || 'You',
+          avatar: meUser.avatar
+        });
+      }
     }
   } else {
     // following
     if (profileUsername === currentUser) {
-      users = following.map(u => ({
-        name: u.charAt(0).toUpperCase() + u.slice(1),
-        username: u,
-        role: 'Community Member'
-      }));
+      usersList = following.map(uName => {
+        const u = getUserByUsername(uName);
+        return u ? {
+          name: u.displayName,
+          username: u.username,
+          role: u.role,
+          avatar: u.avatar
+        } : {
+          name: uName.charAt(0).toUpperCase() + uName.slice(1),
+          username: uName,
+          role: 'Member',
+          avatar: uName.charAt(0).toUpperCase()
+        };
+      });
     } else {
-      users = [
-        { name: 'Marcus', username: 'marcus', role: 'Developer' },
-        { name: 'Priya', username: 'priya', role: 'Product Manager' }
-      ];
+      const otherUsers = Object.values(allUsers).filter(u => u.username !== profileUsername);
+      usersList = otherUsers.slice(2, 5).map(u => ({
+        name: u.displayName,
+        username: u.username,
+        role: u.role,
+        avatar: u.avatar
+      }));
     }
   }
 
@@ -53,15 +72,15 @@ export default function UserListModal({ type, profileUsername, onClose }) {
         </div>
 
         <div className={styles.body}>
-          {users.length === 0 ? (
+          {usersList.length === 0 ? (
             <div className={styles.empty}>
               No {type} yet.
             </div>
           ) : (
-            users.map((user, i) => (
+            usersList.map((user, i) => (
               <div key={i} className={styles.userItem}>
                 <div className={styles.userAvatar}>
-                  {user.name.charAt(0)}
+                  {user.avatar && user.avatar.length === 1 ? user.avatar : <img src={user.avatar} alt="avatar" className={styles.avatarImg} />}
                 </div>
                 <div className={styles.userInfo}>
                   <div className={styles.userName}>{user.name}</div>

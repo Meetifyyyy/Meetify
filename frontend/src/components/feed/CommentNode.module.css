@@ -1,5 +1,6 @@
 .nodeContainer {
   position: relative;
+  text-align: left;
 }
 
 .level0 {
@@ -201,4 +202,27 @@
 .repliesContainer {
   margin-left: 1.2rem;
   padding-left: 1rem;
+}
+
+.replyAvatarImg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .repliesContainer {
+    margin-left: 0.6rem;
+    padding-left: 0.6rem;
+  }
+  .replyAvatar {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+  .threadLine {
+    top: 32px;
+    left: 15px;
+  }
 }

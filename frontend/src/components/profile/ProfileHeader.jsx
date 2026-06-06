@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from './ProfileHeader.module.css';
 
 export default function ProfileHeader({ profileUsername, onViewFollowers, onViewFollowing, onBack }) {
-  const { getUserByUsername, currentUser } = useData();
+  const { getUserByUsername, currentUser, communities, startConversation } = useData();
   const { following } = useFollow();
   const navigate = useNavigate();
   
@@ -16,6 +16,15 @@ export default function ProfileHeader({ profileUsername, onViewFollowers, onView
   const displayName = profileUser.displayName;
   const isCurrentUser = profileUser.username === currentUser.username;
   const isFollowing = following.includes(profileUser.username);
+
+  // Get college info
+  const college = profileUser.collegeId ? communities[profileUser.collegeId] : null;
+
+  const handleMessageClick = async () => {
+    if (isCurrentUser) return; // Optional: maybe don't message self, or do
+    const convId = await startConversation(profileUser);
+    navigate(`/messages/${convId}`);
+  };
 
   // Mock stats - in real app would come directly from backend
   let followersCount = profileUser.followers;
@@ -45,13 +54,22 @@ export default function ProfileHeader({ profileUsername, onViewFollowers, onView
       </div>
 
       <div className={styles.profileAvatarContainer}>
-        <div className={styles.profileAvatarLarge}>
-          {profileUser.username === 'sammydoe' ? (
-             <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=150&h=150" alt="avatar" />
-          ) : (
-             avatarContent
-          )}
-        </div>
+        {college && college.avatar ? (
+          <div className={styles.avatarFlipCard}>
+            <div className={styles.avatarFlipInner}>
+              <div className={styles.avatarFront}>
+                {avatarContent}
+              </div>
+              <div className={styles.avatarBack} title={college.name}>
+                <img src={college.avatar} alt={college.name} className={styles.collegeBackLogo} />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className={styles.profileAvatarLarge}>
+            {avatarContent}
+          </div>
+        )}
       </div>
 
       <div className={styles.profileInfo}>
@@ -77,12 +95,14 @@ export default function ProfileHeader({ profileUsername, onViewFollowers, onView
           <div className={styles.followBtnWrapper}>
             <FollowButton targetUsername={profileUser.username} />
           </div>
-          <button className={styles.messageBtn} aria-label="Message">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-              <polyline points="22,6 12,13 2,6" />
-            </svg>
-          </button>
+          {!isCurrentUser && (
+            <button className={styles.messageBtn} aria-label="Message" onClick={handleMessageClick}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -40,3 +40,20 @@
   color: var(--color-primary);
   flex-shrink: 0;
 }
+
+@media (max-width: 768px) {
+  .profileSection {
+    padding: 1.1rem 1rem;
+  }
+  .sectionTitle {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  .aboutText {
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+  }
+  .aboutItem {
+    font-size: 0.84rem;
+  }
+}

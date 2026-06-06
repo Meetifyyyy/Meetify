@@ -142,3 +142,10 @@
   flex-direction: column;
   padding: 0 1.5rem 1.5rem;
 }
+
+.composerAvatarImg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}

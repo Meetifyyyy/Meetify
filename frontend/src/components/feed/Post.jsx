@@ -83,7 +83,7 @@ function PollCard({ poll }) {
 }
 
 export default function Post({ postData, communityTag, onClick }) {
-  const { getUserById, likePost } = useData();
+  const { getUserById, likePost, communities } = useData();
   const [showMenu, setShowMenu] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -92,6 +92,7 @@ export default function Post({ postData, communityTag, onClick }) {
 
   const { id, authorId, time, text, poll, likes, comments, isLikedByMe } = postData;
   const author = getUserById(authorId) || { displayName: 'Unknown', username: 'unknown', avatar: '?' };
+  const authorCollege = author.collegeId ? communities[author.collegeId] : null;
 
   const toggleLike = async (e) => {
     e.stopPropagation();
@@ -105,24 +106,34 @@ export default function Post({ postData, communityTag, onClick }) {
     <div className={styles.post} onClick={onClick} style={{ cursor: onClick ? 'pointer' : 'default' }}>
       <div className={styles.postHeader}>
         <Link to={`/profile/${author.username}`} style={{ textDecoration: 'none' }} onClick={(e) => e.stopPropagation()}>
-          <div className={styles.postAvatar}>{author.avatar}</div>
+          <div className={styles.postAvatar}>
+            {author.avatar && author.avatar.length > 1 ? (
+              <img src={author.avatar} alt={author.displayName} className={styles.postAvatarImg} />
+            ) : (
+              author.avatar
+            )}
+          </div>
         </Link>
         <div className={styles.postUser}>
-          <Link to={`/profile/${author.username}`} style={{ textDecoration: 'none', color: 'inherit', display: 'inline-block' }} onClick={(e) => e.stopPropagation()}>
+          <Link to={`/profile/${author.username}`} style={{ textDecoration: 'none', color: 'inherit', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }} onClick={(e) => e.stopPropagation()}>
             <div className={`hover-underline ${styles.postName}`}>{author.displayName}</div>
+            {authorCollege && (
+              <img 
+                src={authorCollege.avatar} 
+                alt={authorCollege.name} 
+                className={styles.postCollegeIcon} 
+                title={authorCollege.name}
+              />
+            )}
           </Link>
-        <div className={styles.postTime} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <div className={styles.postTime} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
             <span>@{author.username}</span>
             <span style={{ opacity: 0.5 }}>•</span>
             <span>{time}</span>
           </div>
         </div>
-        {communityTag && (
-          <span className={styles.postCommTag} style={{ background: `${communityTag.color}18`, color: communityTag.color }}>
-            {communityTag.name}
-          </span>
-        )}
-        <div style={{ position: 'relative', marginLeft: communityTag ? '0.5rem' : 'auto' }}>
+
+        <div className={styles.postMenuWrapper}>
           <button 
             onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); }}
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.2rem', borderRadius: '50%' }}
@@ -166,7 +177,7 @@ export default function Post({ postData, communityTag, onClick }) {
             <polyline points="15 14 20 9 15 4" />
             <path d="M4 20v-7a4 4 0 0 1 4-4h12" />
           </svg>
-          <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Share</span>
+          <span className={styles.shareText} style={{ fontSize: '0.85rem', fontWeight: 600 }}>Share</span>
         </button>
       </div>
     </div>

@@ -1,12 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useData } from '../../context/DataContext';
+import { showToast } from '../../utils/toast';
 import logo from '../../assets/images/logo.webp';
 import glaCrest from '../../assets/images/gla-crest.png';
+import GlobalSearch from '../search/GlobalSearch';
 import styles from './Header.module.css';
 
 export default function Header({ variant = 'dashboard' }) {
-  const { username, initial, logout } = useAuth();
+  const { username, initial, logout, currentUser } = useAuth();
+  const { searchQuery, setSearchQuery } = useData();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,7 +28,7 @@ export default function Header({ variant = 'dashboard' }) {
     navigate('/');
   };
 
-  const isCollegeUser = username && username.includes('@gla.ac.in');
+
 
   return (
     <header className={`${styles.header} ${activeTab === 'messages' ? styles.headerMessages : ''}`}>
@@ -34,19 +38,16 @@ export default function Header({ variant = 'dashboard' }) {
 
       {variant === 'dashboard' && (
         <div className={styles.headerSearch}>
-          <img className={styles.searchLogo} src={logo} alt="Meetify" />
-          <input type="text" className={styles.searchBar} placeholder="Search for people, meetings, or topics..." />
+          <GlobalSearch />
         </div>
       )}
 
       {variant === 'dashboard' ? (
         <nav className={styles.nav}>
-          {isCollegeUser && (
-            <button className={styles.collegeBtn}>
-              <img src={glaCrest} alt="GLA University" />
-              <span>GLA University</span>
-            </button>
-          )}
+          <button className={styles.collegeBtn} onClick={() => navigate('/colleges/gla')}>
+            <img src="/images/gla-logo.png" alt="GLA University" />
+            <span>GLA University</span>
+          </button>
           <div className={styles.notifIcon} title="Notifications">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
@@ -59,12 +60,16 @@ export default function Header({ variant = 'dashboard' }) {
               className={styles.userAvatar}
               onClick={(e) => { e.stopPropagation(); setDropdownOpen(!dropdownOpen); }}
             >
-              {initial}
+              {currentUser?.avatar && currentUser.avatar.length > 1 ? (
+                <img src={currentUser.avatar} alt="user avatar" className={styles.userAvatarImg} />
+              ) : (
+                initial
+              )}
             </div>
             <div className={`${styles.dropdown}${dropdownOpen ? ` ${styles.open}` : ''}`} ref={dropdownRef}>
               <button onClick={() => navigate('/profile')}>Profile</button>
-              <button>Account</button>
-              <button>Settings</button>
+              <button onClick={() => showToast('Account details coming soon')}>Account</button>
+              <button onClick={() => showToast('Settings coming soon')}>Settings</button>
               <div className={styles.divider} />
               <button className={styles.logoutBtn} onClick={handleLogout}>Log out</button>
             </div>

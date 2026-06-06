@@ -90,7 +90,7 @@
 }
 
 .commEmpty {
-  text-align: center;
+  text-align: left;
   padding: 4rem 1rem;
   color: var(--color-text-muted);
   font-family: var(--font-family-sans);

@@ -1,0 +1,164 @@
+.collegesHero {
+  border-radius: 16px;
+  padding: 3.5rem 2.5rem;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, rgba(109, 93, 252, 0.8), rgba(168, 85, 247, 0.8));
+  box-shadow: 0 8px 32px rgba(109, 93, 252, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.collegesHeroTitle {
+  font-family: var(--font-family-display);
+  font-weight: 700;
+  font-size: 2.5rem;
+  color: var(--color-bg-white);
+  letter-spacing: -0.02em;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.collegesHeroSub {
+  font-family: var(--font-family-sans);
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 600px;
+}
+
+.sectionHeading {
+  font-family: var(--font-family-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--color-text-main);
+  padding: 0 0 1rem;
+}
+
+.collegesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+.collegeCard {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.collegeCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(109, 93, 252, 0.15);
+}
+
+.collegeCover {
+  height: 90px;
+  position: relative;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+}
+
+.collegeLogoWrapper {
+  position: absolute;
+  bottom: -24px;
+  left: 1.25rem;
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  background: var(--color-bg-white);
+  padding: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.collegeLogo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.collegeBody {
+  padding: 2.25rem 1.25rem 1.25rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.collegeTitle {
+  font-family: var(--font-family-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  line-height: 1.2;
+}
+
+.collegeDesc {
+  font-family: var(--font-family-sans);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  flex: 1;
+}
+
+.collegeFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(24, 24, 27, 0.05);
+  padding-top: 0.85rem;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.onlineStat {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.onlineDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-success);
+}
+
+.empty {
+  text-align: left;
+  padding: 4rem 1rem;
+  color: var(--color-text-muted);
+  font-family: var(--font-family-sans);
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 768px) {
+  .collegesHero {
+    padding: 2rem 1.5rem;
+  }
+  .collegesHeroTitle {
+    font-size: 1.8rem;
+  }
+  .collegesHeroSub {
+    font-size: 0.9rem;
+  }
+}

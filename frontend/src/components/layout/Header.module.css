@@ -132,7 +132,8 @@
 
 .searchBar {
   width: 100%;
-  padding: 0.45rem 1rem 0.45rem 2.6rem;
+  height: 40px;
+  padding: 0 1rem 0 2.6rem;
   font-family: var(--font-family-sans);
   font-size: 0.82rem;
   font-weight: 400;
@@ -144,6 +145,7 @@
   border-radius: 100px;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
 }
 
 .searchBar:focus {
@@ -169,17 +171,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   color: var(--color-text-main);
-  opacity: 0.6;
+  border: 1px solid var(--color-border);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .notifIcon:hover {
-  opacity: 1;
   background: rgba(109, 93, 252, 0.08);
 }
 
@@ -210,8 +211,8 @@
 }
 
 .userAvatar {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
   display: flex;
@@ -223,6 +224,14 @@
   color: var(--color-bg-white);
   cursor: pointer;
   transition: box-shadow var(--transition-normal);
+  overflow: hidden;
+}
+
+.userAvatarImg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .userAvatar:hover {
@@ -302,14 +311,23 @@
   }
 
   .headerSearch {
-    order: 3;
-    max-width: 100%;
-    margin: 0;
-    flex-basis: 100%;
+    display: none;
   }
 
   .headerMessages .headerSearch {
     display: none !important;
+  }
+
+  .collegeBtn {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 50%;
+    justify-content: center;
+  }
+
+  .collegeBtn span {
+    display: none;
   }
 }
 

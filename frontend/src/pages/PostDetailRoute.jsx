@@ -2,26 +2,38 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import PostView from '../components/feed/PostView';
 import RightPanel from '../components/layout/RightPanel';
-import { communities } from '../data/communities';
 import rightPanelStyles from '../components/layout/RightPanel.module.css';
 
 export default function PostDetailRoute() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { getUserById } = useData();
-
-  // Retrieve post data passed from navigation state. 
-  // In a real app, if state is missing (e.g. direct URL hit), you'd fetch it using the id.
-  const activePost = location.state; 
+  const { id } = useParams();
+  const { getUserById, getPostById, communities } = useData();
 
   const handleBack = () => {
     navigate(-1);
   };
 
-  if (!activePost || !activePost.post) {
+  let post = location.state?.post;
+  let sourceContext = location.state?.sourceContext;
+  let communityId = location.state?.communityId;
+
+  if (!post) {
+    post = getPostById(id);
+    if (post) {
+      if (post.communityId) {
+        sourceContext = 'community';
+        communityId = post.communityId;
+      } else {
+        sourceContext = 'feed';
+      }
+    }
+  }
+
+  if (!post) {
     return (
       <main className="centre">
-        <div style={{ padding: '2rem', textAlign: 'center' }}>
+        <div style={{ padding: '2rem', textAlign: 'left' }}>
           <h3>Post not found</h3>
           <button onClick={() => navigate('/home')} style={{ marginTop: '1rem', padding: '0.5rem 1rem', background: 'var(--color-primary)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
             Go Home
@@ -30,10 +42,6 @@ export default function PostDetailRoute() {
       </main>
     );
   }
-
-  const post = activePost.post;
-  const sourceContext = activePost.sourceContext;
-  const communityId = activePost.communityId;
 
   const renderRightPanel = () => {
     if (sourceContext === 'community' && communityId) {

@@ -25,8 +25,12 @@ export default function ConversationList({ conversations, activeChatId, onSelect
             className={`${styles.convItem}${activeChatId === conv.id ? ` ${styles.convItemActive}` : ''}`}
             onClick={() => onSelect(conv.id)}
           >
-            <div className={styles.convAvatar} style={{ background: conv.color }}>
-              {conv.avatar}
+            <div className={styles.convAvatar} style={{ background: conv.avatar && conv.avatar.length > 1 ? 'none' : conv.color }}>
+              {conv.avatar && conv.avatar.length > 1 ? (
+                <img src={conv.avatar} alt={conv.name} className={styles.convAvatarImg} />
+              ) : (
+                conv.avatar
+              )}
               {conv.online && <span className={styles.convOnlineDot} />}
             </div>
             <div className={styles.convInfo}>

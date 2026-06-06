@@ -36,19 +36,47 @@ export function AuthProvider({ children }) {
 
   const login = useCallback((username) => {
     // Find the user in mockData, or create a fallback guest if not found
-    const user = Object.values(initialUsers).find(u => u.username === username) || {
-      id: `u_${Date.now()}`,
-      username: username || 'guest',
-      displayName: username ? username.charAt(0).toUpperCase() + username.slice(1) : 'Guest',
-      avatar: username ? username.charAt(0).toUpperCase() : '?',
-      bio: 'Just joined Meetify!',
-      location: 'Earth',
-      role: 'New User',
-      email: `${username || 'guest'}@meetify.app`,
-      followers: 0,
-      following: 0,
-      communities: []
-    };
+    let user = Object.values(initialUsers).find(u => u.username === username);
+    
+    if (!user) {
+      const isGla = username && username.includes('@gla.ac.in');
+      const isIitd = username && username.includes('@iitd.ac.in');
+      const baseName = username ? username.split('@')[0] : 'guest';
+      
+      let collegeId = undefined;
+      let communitiesList = [];
+      let bioText = 'Just joined Meetify!';
+      let roleText = 'New User';
+      
+      if (isGla) {
+        collegeId = 'gla';
+        communitiesList = ['GLA University'];
+        bioText = 'Student at GLA University';
+        roleText = 'Student';
+      } else if (isIitd) {
+        collegeId = 'iitdelhi';
+        communitiesList = ['IIT Delhi'];
+        bioText = 'Student at IIT Delhi';
+        roleText = 'Student';
+      }
+
+      user = {
+        id: `u_${Date.now()}`,
+        username: username || 'guest',
+        displayName: baseName.charAt(0).toUpperCase() + baseName.slice(1),
+        avatar: baseName.charAt(0).toUpperCase(),
+        bio: bioText,
+        location: 'Earth',
+        role: roleText,
+        email: username && username.includes('@') ? username : `${username || 'guest'}@meetify.app`,
+        followers: 0,
+        following: 0,
+        communities: communitiesList,
+        collegeId,
+        course: collegeId ? 'B.Tech CS' : undefined,
+        year: collegeId ? '1st Year' : undefined
+      };
+    }
 
     localStorage.setItem('loggedIn', 'true');
     localStorage.setItem('currentUser', JSON.stringify(user));

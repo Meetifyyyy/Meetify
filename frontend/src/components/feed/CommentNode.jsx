@@ -59,7 +59,11 @@ export default function CommentNode({ postId, comment, onReplySubmit, level = 0,
           className={styles.replyAvatar} 
           onClick={handleProfileClick}
         >
-          {author.avatar}
+          {author.avatar && author.avatar.length > 1 ? (
+            <img src={author.avatar} alt={author.displayName} className={styles.replyAvatarImg} />
+          ) : (
+            author.avatar
+          )}
         </div>
         
         <div className={styles.replyContent}>

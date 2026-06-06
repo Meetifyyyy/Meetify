@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import ProfileHeader from '../components/profile/ProfileHeader';
+import ProfileAbout from '../components/profile/ProfileAbout';
 import ProfileActivity from '../components/profile/ProfileActivity';
 import UserListModal from '../components/common/UserListModal';
 import profileStyles from './ProfilePage.module.css';
@@ -27,7 +28,10 @@ export default function ProfilePage() {
         </div>
         
         <div className={profileStyles.profileContentScrollable}>
-          <ProfileActivity profileUsername={targetUsername} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
+            <ProfileAbout profileUsername={targetUsername} />
+            <ProfileActivity profileUsername={targetUsername} />
+          </div>
         </div>
       </main>
       

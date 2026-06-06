@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import data from '@emoji-mart/data';
-import Picker from '@emoji-mart/react';
 import styles from './ChatArea.module.css';
+
+const Picker = lazy(() => import('@emoji-mart/react'));
 
 export default function ChatArea({ conversation, onSendMessage, onReactMessage, onClearChat, onBlockUser, onBack, showChatOnMobile }) {
   const [inputValue, setInputValue] = useState('');
@@ -75,8 +76,12 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
             <div className={styles.voiceCallAvatarContainer}>
               <div className={`${styles.voiceCallAvatarPulse} ${styles.pulse1}`} />
               <div className={`${styles.voiceCallAvatarPulse} ${styles.pulse2}`} />
-              <div className={styles.voiceCallAvatar} style={{ background: conversation.color }}>
-                {conversation.avatar}
+              <div className={styles.voiceCallAvatar} style={{ background: conversation.avatar && conversation.avatar.length > 1 ? 'none' : conversation.color }}>
+                {conversation.avatar && conversation.avatar.length > 1 ? (
+                  <img src={conversation.avatar} alt={conversation.name} className={styles.voiceCallAvatarImg} />
+                ) : (
+                  conversation.avatar
+                )}
               </div>
             </div>
             <div className={styles.voiceCallName}>{conversation.name}</div>
@@ -157,8 +162,12 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
               </svg>
             </button>
           )}
-          <div className={styles.msgChatAvatar} style={{ background: conversation.color }}>
-            {conversation.avatar}
+          <div className={styles.msgChatAvatar} style={{ background: conversation.avatar && conversation.avatar.length > 1 ? 'none' : conversation.color }}>
+            {conversation.avatar && conversation.avatar.length > 1 ? (
+              <img src={conversation.avatar} alt={conversation.name} className={styles.msgChatAvatarImg} />
+            ) : (
+              conversation.avatar
+            )}
           </div>
           <div>
             <div className={styles.msgChatName}>
@@ -390,11 +399,13 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
 
         {showEmojiPicker && (
           <div style={{ position: 'absolute', bottom: '100%', left: '1.25rem', marginBottom: '0.5rem', zIndex: 100 }}>
-            <Picker 
-              data={data} 
-              onEmojiSelect={(emoji) => setInputValue((prev) => prev + emoji.native)} 
-              theme="light"
-            />
+            <Suspense fallback={<div style={{ padding: '1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e4e4e7', fontSize: '0.85rem' }}>Loading Emojis...</div>}>
+              <Picker 
+                data={data} 
+                onEmojiSelect={(emoji) => setInputValue((prev) => prev + emoji.native)} 
+                theme="light"
+              />
+            </Suspense>
           </div>
         )}
         

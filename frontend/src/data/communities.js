@@ -135,6 +135,150 @@ export const communities = {
       { id: 'c_gaming_4', authorId: 'u2', time: '1 day ago', text: 'Just beat Elden Ring for the first time. What a masterpiece. What game should I play next?', likes: 200, comments: 65 },
       { id: 'c_gaming_5', authorId: 'u6', time: '2 days ago', text: 'Looking to form a team for the upcoming Valorant community tournament. Must be Ascendant+.', likes: 30, comments: 14 },
     ]
+  },
+  gla: {
+    id: 'gla',
+    name: 'GLA University',
+    avatar: '/images/gla-logo.png',
+    color: 'linear-gradient(135deg, #1D4ED8, #3B82F6)',
+    desc: 'The official community for GLA University students. Connect with batchmates, discuss courses, and stay updated on campus events.',
+    members: 4200,
+    online: 854,
+    created: 'August 2023',
+    categories: ['university'],
+    tagColor: '#1D4ED8',
+    isUniversity: true,
+    domain: '@gla.ac.in',
+    events: [
+      { id: 'e1', title: 'Tech Fest 2026', date: 'Oct 15', time: '10:00 AM', location: 'Main Auditorium', desc: 'Annual technical festival featuring hackathons, workshops, and guest lectures.', image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80', organizer: 'GLA Tech Club', registrationLink: 'https://example.com/register' },
+      { id: 'e2', title: 'Campus Recruitment Drive', date: 'Nov 02', time: '9:00 AM', location: 'Placement Block', desc: 'Pre-placement talks and initial screening rounds for final year students.', image: 'https://images.unsplash.com/photo-1515169067868-5387ec356754?w=800&q=80', organizer: 'Placement Cell', registrationLink: 'https://example.com/register' },
+      { id: 'e3', title: 'Alumni Meet', date: 'Dec 10', time: '4:00 PM', location: 'University Ground', desc: 'Connect with GLA alumni from various industries.', image: 'https://images.unsplash.com/photo-1523580494112-071d16940a43?w=800&q=80', organizer: 'Alumni Association', registrationLink: 'https://example.com/register' }
+    ],
+    memberList: [
+      { name: 'Rahul S.', avatar: 'R', role: 'Student Council', admin: true, branch: 'B.Tech CS', year: '4th Year', online: true },
+      { name: 'Priya K.', avatar: 'P', role: 'Student', branch: 'B.Tech CS', year: '3rd Year', online: true },
+      { name: 'Amit V.', avatar: 'A', role: 'Student', branch: 'B.Tech IT', year: '2nd Year', online: false },
+      { name: 'Neha G.', avatar: 'N', role: 'Student', branch: 'BCA', year: '1st Year', online: true },
+      { name: 'Vikram M.', avatar: 'V', role: 'Student', branch: 'MCA', year: '2nd Year', online: false },
+      { name: 'Sneha T.', avatar: 'S', role: 'Student', branch: 'B.Tech EE', year: '3rd Year', online: true },
+      { name: 'Rohan D.', avatar: 'R', role: 'Student', branch: 'BBA', year: '2nd Year', online: false },
+    ],
+    posts: [
+      { id: 'c_gla_1', authorId: 'u1', time: '2 hours ago', text: 'Does anyone have the notes for Data Structures unit 3? 📚', likes: 12, comments: 4 },
+      { id: 'c_gla_2', authorId: 'u2', time: '5 hours ago', text: 'The new cafeteria menu is finally out! The cold coffee is actually good now.', likes: 45, comments: 18 },
+      { id: 'c_gla_3', authorId: 'u3', time: 'Yesterday', text: 'Reminder: The submission deadline for the web dev assignment is tomorrow at 11:59 PM. Don\'t wait until the last minute!', likes: 89, comments: 5 },
+      { id: 'c_gla_4', authorId: 'u4', time: '2 days ago', text: 'Looking for teammates for the upcoming Hackathon. Need someone good with React.', likes: 34, comments: 12 },
+    ]
+  },
+  iitdelhi: {
+    id: 'iitdelhi',
+    name: 'IIT Delhi',
+    avatar: '/images/iitd-logo.png',
+    color: 'linear-gradient(135deg, #0f766e, #0d9488)',
+    desc: 'The official community for Indian Institute of Technology Delhi. Discuss research, campus life, events, and connect with peers.',
+    members: 5800,
+    online: 1210,
+    created: 'July 1961',
+    categories: ['university'],
+    tagColor: '#0f766e',
+    isUniversity: true,
+    domain: '@iitd.ac.in',
+    events: [
+      { id: 'e4', title: 'Tryst 2026', date: 'Oct 22', time: '09:30 AM', location: 'Dogra Hall', desc: 'North India\'s largest science and technology festival.', image: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&q=80', organizer: 'Co-Curricular & Academic Interaction Council', registrationLink: 'https://example.com/register' },
+      { id: 'e5', title: 'Rendezvous 2026', date: 'Dec 05', time: '06:00 PM', location: 'OAT', desc: 'Annual cultural festival with star nights, drama, and musical battles.', image: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&q=80', organizer: 'Board for Recreational and Creative Activities', registrationLink: 'https://example.com/register' },
+      { id: 'e6', title: 'Inter-IIT Tech Meet', date: 'Jan 18', time: '10:00 AM', location: 'LHC', desc: 'The ultimate showcase of technical solutions and innovations.', image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&q=80', organizer: 'Tech Board IITD', registrationLink: 'https://example.com/register' }
+    ],
+    memberList: [
+      { name: 'Sammy D.', avatar: 'S', role: 'Event Lead', admin: true, branch: 'B.Tech CS', year: '1st Year', online: true },
+      { name: 'Marcus R.', avatar: 'M', role: 'Student', branch: 'B.Tech IT', year: '3rd Year', online: true },
+      { name: 'Sarah J.', avatar: 'S', role: 'Researcher', branch: 'M.Tech CSE', year: '2nd Year', online: true },
+      { name: 'Chris B.', avatar: 'C', role: 'Student', branch: 'B.Tech ME', year: '4th Year', online: false },
+    ],
+    posts: [
+      { id: 'c_iitd_1', authorId: 'u8', time: '3 hours ago', text: 'Struggling with the GPU cluster setup for ML training. Anyone else getting CUDA out of memory errors?', likes: 23, comments: 7 },
+      { id: 'c_iitd_2', authorId: 'u2', time: 'Yesterday', text: 'Tryst 2026 project submissions are now open. Get your teams registered!', likes: 54, comments: 11 },
+      { id: 'c_iitd_3', authorId: 'u4', time: '2 days ago', text: 'Who is up for a late-night night-out to SDA market for paranthas? 🫓☕', likes: 72, comments: 20 },
+    ]
+  },
+  gla_coding: {
+    id: 'gla_coding',
+    name: 'GLA Coding Club',
+    avatar: '💻',
+    color: 'linear-gradient(135deg, #2563eb, #3b82f6)',
+    desc: 'The official programming club of GLA University. Code, compile, conquer!',
+    members: 1200,
+    online: 43,
+    created: 'Sept 2023',
+    categories: ['technology'],
+    tagColor: '#2563eb',
+    collegeId: 'gla',
+    memberList: [
+      { name: 'Rahul S.', avatar: 'R', role: 'Lead Developer' },
+      { name: 'Neha G.', avatar: 'N', role: 'Member' }
+    ],
+    posts: [
+      { id: 'gla_coding_1', authorId: 'u1', time: '3 hours ago', text: 'Starting our Weekly LeetCode challenge tonight at 8 PM! Don\'t miss out.', likes: 15, comments: 2 }
+    ]
+  },
+  gla_sports: {
+    id: 'gla_sports',
+    name: 'GLA Sports Club',
+    avatar: '⚽',
+    color: 'linear-gradient(135deg, #dc2626, #ef4444)',
+    desc: 'Where athletes meet. Join for football, cricket, badminton updates.',
+    members: 850,
+    online: 19,
+    created: 'Oct 2023',
+    categories: ['sports'],
+    tagColor: '#dc2626',
+    collegeId: 'gla',
+    memberList: [
+      { name: 'Amit V.', avatar: 'A', role: 'Captain' },
+      { name: 'Sneha T.', avatar: 'S', role: 'Member' }
+    ],
+    posts: [
+      { id: 'gla_sports_1', authorId: 'u3', time: '1 day ago', text: 'Inter-college cricket match tomorrow. Support our team at the main ground!', likes: 28, comments: 5 }
+    ]
+  },
+  iitd_robotics: {
+    id: 'iitd_robotics',
+    name: 'IITD Robotics Club',
+    avatar: '🤖',
+    color: 'linear-gradient(135deg, #059669, #10b981)',
+    desc: 'Building autonomous agents, drones, and bots at IIT Delhi.',
+    members: 950,
+    online: 35,
+    created: 'Aug 2022',
+    categories: ['technology', 'science'],
+    tagColor: '#059669',
+    collegeId: 'iitdelhi',
+    memberList: [
+      { name: 'Marcus R.', avatar: 'M', role: 'Robotics Lead' },
+      { name: 'Sarah J.', avatar: 'S', role: 'Member' }
+    ],
+    posts: [
+      { id: 'iitd_robotics_1', authorId: 'u2', time: '2 hours ago', text: 'Testing our new line-follower algorithm on the arena. Come watch in room 402!', likes: 42, comments: 8 }
+    ]
+  },
+  iitd_devs: {
+    id: 'iitd_devs',
+    name: 'IITD Developer Guild',
+    avatar: '⚡',
+    color: 'linear-gradient(135deg, #7c3aed, #8b5cf6)',
+    desc: 'Open-source contributors and web developers at IIT Delhi.',
+    members: 1100,
+    online: 52,
+    created: 'Sept 2022',
+    categories: ['technology'],
+    tagColor: '#7c3aed',
+    collegeId: 'iitdelhi',
+    memberList: [
+      { name: 'Sammy D.', avatar: 'S', role: 'Founder' },
+      { name: 'Chris B.', avatar: 'C', role: 'Contributor' }
+    ],
+    posts: [
+      { id: 'iitd_devs_1', authorId: 'u4', time: '1 day ago', text: 'We are planning an open source hackathon next month. Submit your theme ideas!', likes: 37, comments: 14 }
+    ]
   }
 };
 

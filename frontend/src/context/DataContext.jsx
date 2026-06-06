@@ -1,11 +1,12 @@
 import { createContext, useContext, useState, useCallback } from 'react';
 import { initialUsers, initialPosts } from '../data/mockData';
-import { communities } from '../data/communities';
+import { communities as initialCommunities } from '../data/communities';
+import { initialMessages } from '../data/messages';
 import { useAuth } from './AuthContext';
 
 const DataContext = createContext(null);
 
-const allCommPosts = Object.values(communities).flatMap(comm => 
+const allCommPosts = Object.values(initialCommunities).flatMap(comm => 
   comm.posts.map((p, i) => ({
     id: p.id || `c_post_${comm.id}_${i}`,
     authorId: p.authorId || 'u1',
@@ -22,6 +23,8 @@ const allCommPosts = Object.values(communities).flatMap(comm =>
 export function DataProvider({ children }) {
   const [users, setUsers] = useState(initialUsers);
   const [posts, setPosts] = useState([...initialPosts, ...allCommPosts]);
+  const [communitiesState, setCommunitiesState] = useState(initialCommunities);
+  const [conversations, setConversations] = useState(initialMessages);
   const { currentUser } = useAuth();
 
   const getUserByUsername = useCallback((uName) => {
@@ -44,8 +47,6 @@ export function DataProvider({ children }) {
     await new Promise(resolve => setTimeout(resolve, 600));
     setPosts(prev => prev.map(p => {
       if (p.id === postId) {
-        // In a real app, we'd track WHO liked it to toggle correctly.
-        // Here we just increment for simplicity, but simulating toggle:
         const isLiked = p.isLikedByMe;
         return { 
           ...p, 
@@ -57,20 +58,25 @@ export function DataProvider({ children }) {
     }));
   }, []);
 
-  const addPost = useCallback(async (text, poll) => {
+  const addPost = useCallback(async (text, poll, communityId = null) => {
     await new Promise(resolve => setTimeout(resolve, 600));
+
     const newPost = {
       id: `post_${Date.now()}`,
       authorId: currentUser.id,
       time: 'Just now',
       text,
-      poll,
+      poll: poll ? {
+        ...poll,
+        votes: poll.options.map(() => 0),
+        selectedUsers: {}
+      } : undefined,
       likes: 0,
       comments: 0,
-      replies: []
+      replies: [],
+      communityId: communityId || undefined
     };
     
-    // If it's a new user not in our mockDB, add them so the post works
     if (!users[currentUser.username]) {
       setUsers(prev => ({ ...prev, [currentUser.username]: currentUser }));
     }
@@ -93,7 +99,6 @@ export function DataProvider({ children }) {
       };
 
       if (!parentCommentId) {
-        // Top level comment
         return {
           ...p,
           comments: p.comments + 1,
@@ -101,7 +106,6 @@ export function DataProvider({ children }) {
         };
       }
 
-      // Recursive function to find parent and add reply
       const addReplyToNode = (nodes) => {
         return nodes.map(node => {
           if (node.id === parentCommentId) {
@@ -126,7 +130,6 @@ export function DataProvider({ children }) {
       };
     }));
 
-    // Ensure the user exists in our DB
     if (!users[currentUser.username]) {
       setUsers(prev => ({ ...prev, [currentUser.username]: currentUser }));
     }
@@ -163,11 +166,168 @@ export function DataProvider({ children }) {
     }));
   }, []);
 
+  const voteInPoll = useCallback(async (postId, optionIndices) => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    setPosts(prev => prev.map(p => {
+      if (p.id !== postId || !p.poll) return p;
+      
+      const currentSelected = p.poll.selectedUsers?.[currentUser.id] || [];
+      if (currentSelected.length > 0) return p;
+
+      const nextVotes = [...(p.poll.votes || p.poll.options.map(() => 0))];
+      optionIndices.forEach(idx => {
+        nextVotes[idx] += 1;
+      });
+
+      return {
+        ...p,
+        poll: {
+          ...p.poll,
+          votes: nextVotes,
+          selectedUsers: {
+            ...(p.poll.selectedUsers || {}),
+            [currentUser.id]: optionIndices
+          }
+        }
+      };
+    }));
+  }, [currentUser]);
+
+  const toggleJoinCommunity = useCallback(async (communityId) => {
+    await new Promise(resolve => setTimeout(resolve, 400));
+
+    setCommunitiesState(prevComm => {
+      const commToUpdate = prevComm[communityId];
+      if (!commToUpdate) return prevComm;
+
+      const userCommunities = users[currentUser.username]?.communities || currentUser.communities || [];
+      const commName = commToUpdate.name;
+      const isJoined = userCommunities.includes(commName);
+
+      setUsers(prevUsers => {
+        const user = prevUsers[currentUser.username] || currentUser;
+        const nextCommunities = isJoined
+          ? (user.communities || []).filter(c => c !== commName)
+          : [...(user.communities || []), commName];
+        return {
+          ...prevUsers,
+          [currentUser.username]: {
+            ...user,
+            communities: nextCommunities
+          }
+        };
+      });
+
+      return {
+        ...prevComm,
+        [communityId]: {
+          ...commToUpdate,
+          members: isJoined ? commToUpdate.members - 1 : commToUpdate.members + 1
+        }
+      };
+    });
+  }, [currentUser, users]);
+
+  const sendDirectMessage = useCallback(async (convId, text, replyTo = null) => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    const now = new Date();
+    const timeStr = now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
+
+    setConversations((prev) =>
+      prev.map((c) =>
+        c.id === convId
+          ? {
+              ...c,
+              messages: [
+                ...c.messages,
+                { from: 'me', text, time: timeStr, replyTo: replyTo ? { text: replyTo.text, from: replyTo.from } : null }
+              ],
+              lastMsg: text,
+              time: 'now',
+            }
+          : c
+      )
+    );
+  }, []);
+
+  const reactToMessage = useCallback(async (convId, messageIndex, reaction) => {
+    setConversations((prev) =>
+      prev.map((c) => {
+        if (c.id !== convId) return c;
+        const updatedMessages = c.messages.map((m, idx) => {
+          if (idx !== messageIndex) return m;
+          const currentReactions = m.reactions || [];
+          const exists = currentReactions.includes(reaction);
+          const newReactions = exists
+            ? currentReactions.filter((r) => r !== reaction)
+            : [...currentReactions, reaction];
+          return { ...m, reactions: newReactions };
+        });
+        return { ...c, messages: updatedMessages };
+      })
+    );
+  }, []);
+
+  const clearChat = useCallback(async (convId) => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    setConversations((prev) =>
+      prev.map((c) =>
+        c.id === convId
+          ? { ...c, messages: [], lastMsg: 'Chat cleared', time: 'now' }
+          : c
+      )
+    );
+  }, []);
+
+  const toggleBlockUser = useCallback(async (convId) => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    setConversations((prev) =>
+      prev.map((c) =>
+        c.id === convId
+          ? { ...c, blocked: !c.blocked }
+          : c
+      )
+    );
+  }, []);
+
+  const startConversation = useCallback(async (targetUser) => {
+    const targetName = targetUser.displayName || targetUser.name;
+    const targetAvatar = targetUser.avatar || (targetName ? targetName.charAt(0).toUpperCase() : '?');
+
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    const existingConv = conversations.find(c => c.name === targetName);
+    if (existingConv) return existingConv.id;
+
+    const newId = Date.now();
+    const newConv = {
+      id: newId,
+      name: targetName,
+      avatar: targetAvatar,
+      color: 'var(--color-primary)',
+      online: true,
+      lastMsg: 'Say hi!',
+      time: 'Just now',
+      unread: 0,
+      messages: []
+    };
+    
+    setConversations(prev => [newConv, ...prev]);
+    return newId;
+  }, [conversations]);
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const liveCurrentUser = users[currentUser?.username] || currentUser;
+
   return (
     <DataContext.Provider value={{
       users,
       posts,
-      currentUser,
+      communities: communitiesState,
+      conversations,
+      currentUser: liveCurrentUser,
+      searchQuery,
+      setSearchQuery,
       getUserByUsername,
       getUserById,
       getPostById,
@@ -175,7 +335,14 @@ export function DataProvider({ children }) {
       likePost,
       addPost,
       addComment,
-      likeComment
+      likeComment,
+      voteInPoll,
+      toggleJoinCommunity,
+      sendDirectMessage,
+      reactToMessage,
+      clearChat,
+      toggleBlockUser,
+      startConversation
     }}>
       {children}
     </DataContext.Provider>

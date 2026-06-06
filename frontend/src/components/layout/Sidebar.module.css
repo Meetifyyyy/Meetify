@@ -73,6 +73,10 @@
 .sidebarLink {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
   gap: 0.75rem;
   padding: 0.65rem 0.85rem;
   border-radius: 10px;
@@ -118,6 +122,10 @@
 .communityItem {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
   gap: 0.65rem;
   padding: 0.45rem 0.85rem;
   border-radius: 10px;
@@ -158,4 +166,17 @@
   font-family: var(--font-family-sans);
   font-size: 0.7rem;
   color: var(--color-text-muted);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none !important;
+  }
+}
+
+.sidebarAvatarImg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
 }

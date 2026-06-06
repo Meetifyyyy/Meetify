@@ -1,19 +1,42 @@
-import { useState } from 'react';
-import { initialMessages } from '../../data/messages';
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useData } from '../../context/DataContext';
 import ConversationList from './ConversationList';
 import ChatArea from './ChatArea';
 import styles from './MessagesLayout.module.css';
 
 export default function MessagesLayout() {
-  const [conversations, setConversations] = useState(initialMessages);
-  const [activeChatId, setActiveChatId] = useState(initialMessages[0]?.id || null);
-  const [showChatOnMobile, setShowChatOnMobile] = useState(false);
+  const { conversationId } = useParams();
+  const navigate = useNavigate();
+  const { 
+    conversations, 
+    sendDirectMessage, 
+    reactToMessage, 
+    clearChat, 
+    toggleBlockUser 
+  } = useData();
+
+  const initialChatId = conversationId 
+    ? (isNaN(conversationId) ? conversationId : Number(conversationId))
+    : (conversations[0]?.id || null);
+
+  const [activeChatId, setActiveChatId] = useState(initialChatId);
+  const [showChatOnMobile, setShowChatOnMobile] = useState(!!conversationId);
+
+  useEffect(() => {
+    if (conversationId) {
+      const id = isNaN(conversationId) ? conversationId : Number(conversationId);
+      setActiveChatId(id);
+      setShowChatOnMobile(true);
+    }
+  }, [conversationId]);
 
   const activeConv = conversations.find((c) => c.id === activeChatId) || null;
 
   const handleSelectChat = (id) => {
     setActiveChatId(id);
     setShowChatOnMobile(true);
+    navigate(`/messages/${id}`);
   };
 
   const handleBack = () => {
@@ -21,62 +44,19 @@ export default function MessagesLayout() {
   };
 
   const handleSend = (convId, text, replyTo = null) => {
-    const now = new Date();
-    const timeStr = now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
-
-    setConversations((prev) =>
-      prev.map((c) =>
-        c.id === convId
-          ? {
-              ...c,
-              messages: [
-                ...c.messages,
-                { from: 'me', text, time: timeStr, replyTo: replyTo ? { text: replyTo.text, from: replyTo.from } : null }
-              ],
-              lastMsg: text,
-              time: 'now',
-            }
-          : c
-      )
-    );
+    sendDirectMessage(convId, text, replyTo);
   };
 
   const handleReact = (convId, messageIndex, reaction) => {
-    setConversations((prev) =>
-      prev.map((c) => {
-        if (c.id !== convId) return c;
-        const updatedMessages = c.messages.map((m, idx) => {
-          if (idx !== messageIndex) return m;
-          const currentReactions = m.reactions || [];
-          const exists = currentReactions.includes(reaction);
-          const newReactions = exists
-            ? currentReactions.filter((r) => r !== reaction)
-            : [...currentReactions, reaction];
-          return { ...m, reactions: newReactions };
-        });
-        return { ...c, messages: updatedMessages };
-      })
-    );
+    reactToMessage(convId, messageIndex, reaction);
   };
 
   const handleClearChat = (convId) => {
-    setConversations((prev) =>
-      prev.map((c) =>
-        c.id === convId
-          ? { ...c, messages: [], lastMsg: 'Chat cleared', time: 'now' }
-          : c
-      )
-    );
+    clearChat(convId);
   };
 
   const handleBlockUser = (convId) => {
-    setConversations((prev) =>
-      prev.map((c) =>
-        c.id === convId
-          ? { ...c, blocked: !c.blocked }
-          : c
-      )
-    );
+    toggleBlockUser(convId);
   };
 
   return (

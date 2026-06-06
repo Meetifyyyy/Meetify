@@ -46,7 +46,13 @@ export default function PostView({ post, onBack }) {
 
       {/* Reply Composer (Top Level) */}
       <div className={styles.postViewComposer}>
-        <div className={styles.composerAvatar}>{currentUser.avatar}</div>
+        <div className={styles.composerAvatar}>
+          {currentUser.avatar && currentUser.avatar.length > 1 ? (
+            <img src={currentUser.avatar} alt={currentUser.displayName} className={styles.composerAvatarImg} />
+          ) : (
+            currentUser.avatar
+          )}
+        </div>
         <form onSubmit={handleMainReplySubmit} className={styles.replyForm}>
           <textarea 
             id="reply-composer"

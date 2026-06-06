@@ -128,7 +128,7 @@
 }
 
 .eventDate {
-  text-align: center;
+  text-align: left;
   font-size: 0.72rem;
   font-weight: 600;
   color: var(--color-primary);
@@ -158,8 +158,48 @@
   color: var(--color-text-muted);
 }
 
+.eventDesc {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+  line-height: 1.3;
+}
+
+.memberBranch {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.viewAllBtn {
+  width: 100%;
+  display: block;
+  text-align: left;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  font-family: var(--font-family-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: rgba(109, 93, 252, 0.05);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.viewAllBtn:hover {
+  background: rgba(109, 93, 252, 0.1);
+}
+
 @media (max-width: 1024px) {
   .rightPanel {
     display: none !important;
   }
+}
+
+.friendAvatarImg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
 }

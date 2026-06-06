@@ -129,9 +129,9 @@ main {
 .hero h1 {
   font-family: 'Outfit', sans-serif;
   font-weight: 600;
-  font-size: clamp(3rem, 10vw, 7rem);
-  line-height: 1.05;
-  letter-spacing: -0.03em;
+  font-size: clamp(2.2rem, 8vw, 7rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
   text-transform: uppercase;
   color: #18181B;
   text-shadow: none;
@@ -192,11 +192,12 @@ main {
   flex-shrink: 0;
   z-index: 1;
   transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.55s ease;
+  width: 100%;
+  max-width: 460px;
 }
 
 .hero-image img {
   width: 100%;
-  max-width: 460px;
   height: auto;
   display: block;
 }
@@ -357,18 +358,19 @@ main {
   padding: 3.5rem 3rem;
   width: 100%;
   max-width: 500px;
+  box-sizing: border-box;
 }
 
 .auth-card h1 {
   font-family: 'Outfit', sans-serif;
   font-weight: 600;
   font-size: 2.15rem;
-  text-align: center;
+  text-align: left;
   margin-bottom: 0.5rem;
 }
 
 .auth-card .subtitle {
-  text-align: center;
+  text-align: left;
   font-size: 1.05rem;
   color: #18181B;
   opacity: 0.55;
@@ -435,7 +437,7 @@ main {
 }
 
 .auth-footer {
-  text-align: center;
+  text-align: left;
   margin-top: 1.75rem;
   font-size: 1rem;
   color: #18181B;
@@ -555,13 +557,13 @@ main {
 @media (max-width: 900px) {
   main {
     flex-direction: column;
-    text-align: center;
+    text-align: left;
     padding: 2rem;
     gap: 2rem;
   }
 
   .hero {
-    text-align: center;
+    text-align: left;
   }
 
   .hero .line2::after {
@@ -607,13 +609,14 @@ main {
   .footer-bottom {
     flex-direction: column;
     gap: 1rem;
-    text-align: center;
+    text-align: left;
   }
 }
 
 @media (max-width: 640px) {
   .auth-card {
     padding: 2rem 1.5rem;
+    max-width: 90vw;
   }
 
   .community-stats-row {
@@ -626,6 +629,16 @@ main {
 }
 
 @media (max-width: 480px) {
+  main {
+    padding: 1rem;
+    min-height: calc(100vh - 70px);
+  }
+
+  .hero h1 {
+    font-size: 2.2rem;
+    letter-spacing: -0.01em;
+  }
+
   .name-row {
     flex-direction: column;
     gap: 0;
@@ -684,7 +697,7 @@ main {
   font-weight: 700;
   font-size: clamp(1.8rem, 4vw, 2.6rem);
   color: #18181B;
-  text-align: center;
+  text-align: left;
   margin-bottom: 0.6rem;
 }
 
@@ -700,7 +713,7 @@ main {
   font-size: 1.05rem;
   font-weight: 400;
   color: #71717A;
-  text-align: center;
+  text-align: left;
   margin-bottom: 3rem;
   max-width: 520px;
   margin-left: auto;
@@ -776,7 +789,7 @@ main {
   flex: 1;
   max-width: 300px;
   position: relative;
-  text-align: center;
+  text-align: left;
   padding: 2rem 1.5rem;
   background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(16px);
@@ -873,7 +886,7 @@ main {
 }
 
 .community-stat {
-  text-align: center;
+  text-align: left;
 }
 
 .community-stat-num {
@@ -972,7 +985,7 @@ main {
 }
 
 .cta-inner {
-  text-align: center;
+  text-align: left;
   background: linear-gradient(135deg, rgba(109, 93, 252, 0.08), rgba(168, 85, 247, 0.06));
   border: 1px solid rgba(109, 93, 252, 0.15);
   border-radius: 24px;

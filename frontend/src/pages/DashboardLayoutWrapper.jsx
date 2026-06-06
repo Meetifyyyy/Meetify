@@ -12,6 +12,7 @@ export default function DashboardLayoutWrapper() {
   // Determine if wide layout is needed based on path
   const isWide = 
     location.pathname.startsWith('/communities') || 
+    location.pathname.startsWith('/colleges') || 
     location.pathname.startsWith('/messages') ||
     location.pathname.startsWith('/profile');
 

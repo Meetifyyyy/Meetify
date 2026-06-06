@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { communities, categoriesList } from '../../data/communities';
+import { categoriesList } from '../../data/communities';
+import { useData } from '../../context/DataContext';
 import CommunityCard from './CommunityCard';
 import CommunityGrid from './CommunityGrid';
 import styles from './CommunitiesBrowse.module.css';
@@ -95,11 +96,16 @@ const getHeroContent = (category) => {
 };
 
 export default function CommunitiesBrowse({ onOpenCommunity }) {
+  const { communities, searchQuery } = useData();
   const [activeCategory, setActiveCategory] = useState(null);
 
   const filtered = Object.values(communities).filter((c) => {
-    if (!activeCategory) return true;
-    return c.categories?.includes(activeCategory);
+    if (c.isUniversity) return false;
+    const matchesCategory = !activeCategory || c.categories?.includes(activeCategory);
+    const matchesSearch = !searchQuery || 
+      c.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.desc?.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
   });
 
   const heroContent = getHeroContent(activeCategory);

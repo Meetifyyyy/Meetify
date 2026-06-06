@@ -13,6 +13,7 @@
     "@emoji-mart/react": "^1.1.1",
     "emoji-mart": "^5.6.0",
     "framer-motion": "^12.40.0",
+    "fuse.js": "^7.4.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.28.0"

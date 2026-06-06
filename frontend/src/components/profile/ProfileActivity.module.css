@@ -112,3 +112,13 @@
 .actionItem:hover {
   color: var(--color-primary);
 }
+
+@media (max-width: 768px) {
+  .profileSection {
+    padding: 1.1rem 1rem;
+  }
+  .sectionTitle {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+}

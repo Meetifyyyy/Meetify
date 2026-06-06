@@ -10,7 +10,10 @@ export const initialUsers = {
     email: 'alicechen@meetify.app',
     followers: 8401,
     following: 161,
-    communities: ['Startup Hub', 'Hackathon Heroes']
+    communities: ['Startup Hub', 'Hackathon Heroes', 'GLA University'],
+    course: 'B.Tech CS',
+    year: '4th Year',
+    collegeId: 'gla'
   },
   marcusrivera: {
     id: 'u2',
@@ -23,7 +26,10 @@ export const initialUsers = {
     email: 'marcus@meetify.app',
     followers: 5230,
     following: 340,
-    communities: ['Design Thinkers']
+    communities: ['Design Thinkers', 'IIT Delhi'],
+    course: 'B.Tech IT',
+    year: '3rd Year',
+    collegeId: 'iitdelhi'
   },
   priyasharma: {
     id: 'u3',
@@ -36,20 +42,26 @@ export const initialUsers = {
     email: 'priya@meetify.app',
     followers: 12500,
     following: 50,
-    communities: ['AI Innovators']
+    communities: ['AI Innovators', 'GLA University'],
+    course: 'BCA',
+    year: '2nd Year',
+    collegeId: 'gla'
   },
   sammydoe: {
     id: 'u4',
     username: 'sammydoe',
     displayName: 'Sammy Doe',
-    avatar: 'S',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=150&h=150',
     bio: 'Frontend enthusiast. Glassmorphism is the future.',
     location: 'London, UK',
     role: 'Frontend Dev',
     email: 'sammy@meetify.app',
     followers: 1200,
     following: 400,
-    communities: ['Frontend Masters']
+    communities: ['Frontend Masters', 'IIT Delhi'],
+    course: 'MCA',
+    year: '1st Year',
+    collegeId: 'iitdelhi'
   },
   alexq: {
     id: 'u5',
@@ -62,7 +74,10 @@ export const initialUsers = {
     email: 'alexq@meetify.app',
     followers: 890,
     following: 120,
-    communities: []
+    communities: ['GLA University'],
+    course: 'B.Tech ME',
+    year: '4th Year',
+    collegeId: 'gla'
   },
   chrisb: {
     id: 'u6',
@@ -75,7 +90,10 @@ export const initialUsers = {
     email: 'chrisb@meetify.app',
     followers: 3400,
     following: 200,
-    communities: ['Design Thinkers']
+    communities: ['Design Thinkers', 'IIT Delhi'],
+    course: 'BBA',
+    year: '3rd Year',
+    collegeId: 'iitdelhi'
   },
   johnsonw: {
     id: 'u7',
@@ -88,7 +106,10 @@ export const initialUsers = {
     email: 'johnson@meetify.app',
     followers: 1450,
     following: 210,
-    communities: ['Hackathon Heroes', 'Gaming']
+    communities: ['Hackathon Heroes', 'Gaming', 'GLA University'],
+    course: 'B.Sc Gaming',
+    year: '2nd Year',
+    collegeId: 'gla'
   },
   sarahj: {
     id: 'u8',
@@ -101,7 +122,10 @@ export const initialUsers = {
     email: 'sarahj@meetify.app',
     followers: 4300,
     following: 120,
-    communities: ['Startup Hub']
+    communities: ['Startup Hub', 'IIT Delhi'],
+    course: 'M.Tech CSE',
+    year: '2nd Year',
+    collegeId: 'iitdelhi'
   }
 };
 

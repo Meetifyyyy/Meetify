@@ -11,7 +11,7 @@ const EMOJI_GROUPS = [
 ];
 
 export default function PostComposer({ onSubmit }) {
-  const { initial } = useAuth();
+  const { initial, currentUser } = useAuth();
   const [value, setValue] = useState('');
   const [showEmoji, setShowEmoji] = useState(false);
   const [showPoll, setShowPoll] = useState(false);
@@ -99,7 +99,13 @@ export default function PostComposer({ onSubmit }) {
 
       <div className={`${styles.postComposer}${showPoll ? ` ${styles.hasPoll}` : ''}`}>
         <div className={styles.composerTopRow}>
-          <div className={styles.composerAvatar}>{initial}</div>
+          <div className={styles.composerAvatar}>
+            {currentUser?.avatar && currentUser.avatar.length > 1 ? (
+              <img src={currentUser.avatar} alt={currentUser.displayName} className={styles.composerAvatarImg} />
+            ) : (
+              initial
+            )}
+          </div>
           <input
             ref={inputRef}
             type="text"

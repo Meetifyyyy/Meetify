@@ -1,9 +1,11 @@
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useData } from '../../context/DataContext';
 import styles from './BottomNav.module.css';
 
 export default function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { searchQuery, setSearchQuery } = useData();
 
   const handleTabClick = (path) => {
     navigate(path);
@@ -39,6 +41,20 @@ export default function BottomNav() {
         </svg>
         <span>Communities</span>
       </button>
+
+      <div className={styles.bottomNavSearch}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <input 
+          type="text" 
+          className={styles.bottomSearchBar} 
+          placeholder="Search..." 
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
 
       <button 
         className={`${styles.bottomNavItem}${isMessagesActive ? ` ${styles.active}` : ''}`}

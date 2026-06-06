@@ -40,7 +40,9 @@
 
 @media (max-width: 768px) {
   .profileMainContent {
-    flex-direction: column;
+    flex-direction: column !important;
+    padding: 0.75rem 0 0 !important;
+    gap: 0.75rem;
   }
   .profileSidebarFixed {
     width: 100%;
@@ -49,6 +51,7 @@
   .profileContentScrollable {
     max-width: 100%;
     margin-left: 0;
+    padding-bottom: 0.75rem;
   }
 }
 

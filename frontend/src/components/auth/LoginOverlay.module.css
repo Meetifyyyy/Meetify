@@ -3,11 +3,13 @@
   inset: 0;
   z-index: 100;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
+  padding: 2rem 1rem;
 }
 
 .overlay.visible {
@@ -36,18 +38,19 @@
   padding: 3.5rem 3rem;
   width: 100%;
   max-width: 500px;
+  margin: auto;
 }
 
 .authCard h1 {
   font-family: var(--font-family-display);
   font-weight: 600;
   font-size: 2.15rem;
-  text-align: center;
+  text-align: left;
   margin-bottom: 0.5rem;
 }
 
 .subtitle {
-  text-align: center;
+  text-align: left;
   font-size: 1.05rem;
   color: var(--color-text-main);
   opacity: 0.55;
@@ -114,7 +117,7 @@
 }
 
 .authFooter {
-  text-align: center;
+  text-align: left;
   margin-top: 1.75rem;
   font-size: 1rem;
   color: var(--color-text-main);

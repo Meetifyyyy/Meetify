@@ -21,7 +21,7 @@ export default function ProfileActivity({ profileUsername }) {
     <div className={styles.profileSection}>
       <h2 className={styles.sectionTitle}>Recent Activity</h2>
       {posts.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-muted)' }}>
+        <div style={{ textAlign: 'left', padding: '2rem', color: 'var(--color-text-muted)' }}>
           No recent activity.
         </div>
       ) : (
