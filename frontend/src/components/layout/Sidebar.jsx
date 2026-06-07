@@ -9,7 +9,10 @@ export default function Sidebar({ onCommunityClick }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const communityItems = Object.values(communities).slice(0, 4).map(c => ({
+  const communityItems = Object.values(communities)
+    .filter(c => !c.isUniversity && !c.collegeId)
+    .slice(0, 4)
+    .map(c => ({
     id: c.id,
     name: c.name,
     letter: c.avatar,

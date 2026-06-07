@@ -12,6 +12,8 @@ import CollegesRoute from './pages/CollegesRoute';
 import CollegeDetailRoute from './pages/CollegeDetailRoute';
 import ErrorBoundary from './components/common/ErrorBoundary';
 
+import SearchResultsRoute from './pages/SearchResultsRoute';
+
 function ProtectedRoute({ children }) {
   const { isLoggedIn } = useAuth();
   const location = useLocation();
@@ -51,6 +53,7 @@ const router = createBrowserRouter([
         ),
         children: [
           { path: "/home", element: <FeedRoute /> },
+          { path: "/search", element: <SearchResultsRoute /> },
           { path: "/communities", element: <CommunitiesRoute /> },
           { path: "/communities/:id", element: <CommunityDetailRoute /> },
           { path: "/colleges", element: <CollegesRoute /> },

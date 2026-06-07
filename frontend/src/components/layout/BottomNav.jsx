@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
+import GlobalSearch from '../search/GlobalSearch';
 import styles from './BottomNav.module.css';
 
 export default function BottomNav() {
@@ -14,7 +15,8 @@ export default function BottomNav() {
   const isHomeActive = location.pathname === '/home';
   const isCommunitiesActive = location.pathname.startsWith('/communities');
   const isMessagesActive = location.pathname.startsWith('/messages');
-  const isProfileActive = location.pathname.startsWith('/profile');
+  const isCollegesActive = location.pathname.startsWith('/colleges');
+  const isSearchActive = location.pathname.startsWith('/search');
 
   return (
     <div className={styles.bottomNav}>
@@ -42,19 +44,21 @@ export default function BottomNav() {
         <span>Communities</span>
       </button>
 
-      <div className={styles.bottomNavSearch}>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <button 
+        className={`${styles.bottomNavItem}${isSearchActive ? ` ${styles.active}` : ''}`}
+        onClick={() => {
+           if (location.pathname !== '/search') {
+             navigate('/search');
+           }
+        }}
+        title="Search"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <circle cx="11" cy="11" r="8" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
-        <input 
-          type="text" 
-          className={styles.bottomSearchBar} 
-          placeholder="Search..." 
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </div>
+        <span>Search</span>
+      </button>
 
       <button 
         className={`${styles.bottomNavItem}${isMessagesActive ? ` ${styles.active}` : ''}`}
@@ -68,14 +72,14 @@ export default function BottomNav() {
       </button>
 
       <button 
-        className={`${styles.bottomNavItem}${isProfileActive ? ` ${styles.active}` : ''}`}
-        onClick={() => navigate('/profile')}
+        className={`${styles.bottomNavItem}${isCollegesActive ? ` ${styles.active}` : ''}`}
+        onClick={() => navigate('/colleges')}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-          <circle cx="12" cy="7" r="4" />
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+          <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
         </svg>
-        <span>Profile</span>
+        <span>Colleges</span>
       </button>
     </div>
   );

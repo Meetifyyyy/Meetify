@@ -55,7 +55,4 @@ Desktop.ini
 *.tar.gz
 
 # Project documentation (internal only — not for repo)
-DOCUMENTATION.md
-REMINDERS.md
-TECH_STACK.md
-FRONTEND_GUIDELINES.md
+docs/

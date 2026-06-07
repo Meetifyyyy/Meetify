@@ -1,8 +1,7 @@
 .header {
-  padding: 0.85rem 3rem;
+  padding: 0.85rem 2rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   flex-shrink: 0;
 }
 
@@ -15,6 +14,7 @@
   align-items: center;
   gap: 0.75rem;
   cursor: pointer;
+  flex: 0 0 240px;
 }
 
 .logo {
@@ -34,7 +34,9 @@
 .nav {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 1.5rem;
+  flex: 0 0 300px;
 }
 
 .nav a {
@@ -113,7 +115,7 @@
 
 .headerSearch {
   flex: 1;
-  max-width: 480px;
+  max-width: none;
   margin: 0 2rem;
   position: relative;
   display: flex;
@@ -306,6 +308,10 @@
     gap: 0.6rem;
   }
 
+  .navLeft, .nav {
+    flex: 1;
+  }
+
   .logo {
     height: 30px;
   }
@@ -324,6 +330,8 @@
     padding: 0;
     border-radius: 50%;
     justify-content: center;
+    background: transparent;
+    border: 2px solid #154726;
   }
 
   .collegeBtn span {

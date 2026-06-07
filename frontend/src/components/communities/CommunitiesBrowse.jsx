@@ -100,7 +100,7 @@ export default function CommunitiesBrowse({ onOpenCommunity }) {
   const [activeCategory, setActiveCategory] = useState(null);
 
   const filtered = Object.values(communities).filter((c) => {
-    if (c.isUniversity) return false;
+    if (c.isUniversity || c.collegeId) return false;
     const matchesCategory = !activeCategory || c.categories?.includes(activeCategory);
     const matchesSearch = !searchQuery || 
       c.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||

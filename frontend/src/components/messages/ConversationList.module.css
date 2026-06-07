@@ -130,7 +130,6 @@
   color: var(--color-bg-white);
   flex-shrink: 0;
   position: relative;
-  overflow: hidden;
 }
 
 .convAvatarImg {

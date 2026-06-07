@@ -24,10 +24,10 @@
   border-radius: 22px;
   cursor: pointer;
   transition: gap 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              padding 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.4s ease-out,
-              background-position 0.5s ease-out,
-              transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    padding 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.4s ease-out,
+    background-position 0.5s ease-out,
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
   overflow: hidden;
   padding: 0;
@@ -61,8 +61,8 @@
   max-width: 0;
   overflow: hidden;
   transition: max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.35s ease-out,
-              transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity 0.35s ease-out,
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   opacity: 0;
   transform: translateX(-4px);
 }
@@ -72,7 +72,7 @@
   gap: 10px;
   background-position: 100% 50%;
   box-shadow: 0 0 0 3px rgba(109, 93, 252, 0.2),
-              0 4px 20px rgba(109, 93, 252, 0.3);
+    0 4px 20px rgba(109, 93, 252, 0.3);
   transform: scale(1.04);
 }
 
@@ -95,7 +95,7 @@
   box-shadow: 0 0 0 3px rgba(109, 93, 252, 0.25);
 }
 
-.nav-hidden > a {
+.nav-hidden>a {
   opacity: 0;
   pointer-events: none;
 }
@@ -347,6 +347,7 @@ main {
     transform: scale(0.92);
     filter: blur(6px);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -467,9 +468,9 @@ main {
   opacity: 0;
   filter: blur(8px);
   transform: scale(0.96);
-  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), 
-              filter 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
   z-index: 100;
 }
@@ -505,8 +506,15 @@ main {
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
 }
 
 .name-row {

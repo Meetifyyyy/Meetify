@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import Fuse from 'fuse.js';
 import { useData } from '../context/DataContext';
 
-export function useGlobalSearch(initialQuery = '') {
+export function useGlobalSearch(initialQuery = '', limit = 5) {
   const { users, posts, communities } = useData();
   const [query, setQuery] = useState(initialQuery);
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
@@ -23,6 +23,11 @@ export function useGlobalSearch(initialQuery = '') {
     return () => clearTimeout(handler);
   }, [query]);
 
+  // Sync query state if initialQuery prop changes (like when URL changes)
+  useEffect(() => {
+    setQuery(initialQuery);
+  }, [initialQuery]);
+
   // Prepare searchable data
   const { searchablePosts, searchableUsers, searchableCommunities, searchableColleges } = useMemo(() => {
     const usersList = Object.values(users || {});
@@ -40,7 +45,7 @@ export function useGlobalSearch(initialQuery = '') {
     });
 
     const commList = Object.values(communities || {});
-    const communitiesList = commList.filter(c => !c.isUniversity);
+    const communitiesList = commList.filter(c => !c.isUniversity && !c.collegeId);
     const collegesList = commList.filter(c => c.isUniversity);
 
     return {
@@ -111,7 +116,7 @@ export function useGlobalSearch(initialQuery = '') {
 
     // Helper to rank and limit results. 
     // We can add engagement weighting here if needed (e.g. subtracting from score because Fuse score: lower is better).
-    const formatResults = (list, limit = 5) => {
+    const formatResults = (list, maxLimit) => {
       // For engagement weighting, we can adjust the score slightly based on popularity
       const weighted = list.map(item => {
         let weightFactor = 0;
@@ -127,17 +132,17 @@ export function useGlobalSearch(initialQuery = '') {
 
       // Sort by modified score
       weighted.sort((a, b) => a.score - b.score);
-      return weighted.slice(0, limit);
+      return weighted.slice(0, maxLimit);
     };
 
     setResults({
-      posts: formatResults(searchPosts),
-      communities: formatResults(searchCommunities),
-      users: formatResults(searchUsers),
-      colleges: formatResults(searchColleges)
+      posts: formatResults(searchPosts, limit),
+      communities: formatResults(searchCommunities, limit),
+      users: formatResults(searchUsers, limit),
+      colleges: formatResults(searchColleges, limit)
     });
     setIsSearching(false);
-  }, [debouncedQuery, fuseInstances]);
+  }, [debouncedQuery, fuseInstances, limit]);
 
   return { query, setQuery, results, isSearching };
 }
