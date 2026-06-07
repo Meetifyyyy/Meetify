@@ -11,7 +11,7 @@
   border: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  margin: 0 1.5rem 1.5rem;
+  margin: 0 1rem 1rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
 }
 
@@ -171,9 +171,9 @@
 .collegeMainLayout {
   display: grid;
   grid-template-columns: 1fr 320px;
-  gap: 1.5rem;
+  gap: 1rem;
   align-items: start;
-  margin: 0 1.5rem 1.5rem;
+  margin: 0 1rem 1rem;
 }
 
 .collegeLeftColumn {
@@ -329,9 +329,7 @@
   font-family: var(--font-family-sans);
   font-size: 0.78rem;
   color: var(--color-text-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
 }
 
 .subCommMembers {
@@ -375,7 +373,7 @@
 
 @media (max-width: 768px) {
   .collegeHeader {
-    margin: 0 0.5rem 1rem;
+    margin: 0 0.25rem 1rem;
   }
   .collegeHeaderContent {
     flex-direction: column;
@@ -407,7 +405,7 @@
     width: 100%;
   }
   .collegeMainLayout {
-    margin: 0 0.5rem 1rem;
+    margin: 0 0.25rem 1rem;
     display: flex;
     flex-direction: column;
   }
@@ -419,20 +417,35 @@
     overflow-x: auto;
     padding-bottom: 4px;
   }
+  .subCommCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
+  .subCommAvatar {
+    width: 40px;
+    height: 40px;
+  }
+  .subCommInfo {
+    width: 100%;
+  }
+  .subCommJoinBtn {
+    width: 100%;
+  }
 }
 
 @media (max-width: 480px) {
   .collegeHeader {
-    margin: 0 0.5rem 1rem;
+    margin: 0 0.25rem 1rem;
   }
   .collegeMainLayout {
-    margin: 0 0.5rem;
+    margin: 0 0.25rem;
   }
   .tabsContainer {
-    padding: 0 0.75rem;
+    padding: 0 0.25rem;
   }
   .feedTab, .communitiesTab, .eventsTab, .membersTab {
-    padding: 0 0.5rem;
+    padding: 0 0.25rem;
   }
 }
 

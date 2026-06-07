@@ -41,6 +41,10 @@
   padding: 1.75rem 0.9rem 0.9rem;
 }
 
+.commGridBody {
+  min-width: 0;
+}
+
 .commGridNameRow {
   display: flex;
   align-items: center;
@@ -70,10 +74,7 @@
   line-height: 1.5;
   color: var(--color-text-muted);
   margin-bottom: 0.75rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  overflow-wrap: anywhere;
 }
 
 .commGridFooter {
@@ -84,6 +85,7 @@
   color: var(--color-text-muted);
   padding-top: 0.6rem;
   border-top: 1px solid rgba(24, 24, 27, 0.05);
+  flex-wrap: wrap;
 }
 
 .commGridFooter svg {
@@ -96,4 +98,22 @@
   color: #22C55E;
   font-weight: 600;
   font-size: 0.72rem;
+}
+
+@media (max-width: 768px) {
+  .commGridCard {
+    border-radius: 14px;
+  }
+
+  .commGridBody {
+    padding: 1.6rem 0.85rem 0.85rem;
+  }
+
+  .commGridFooter {
+    gap: 0.35rem 0.5rem;
+  }
+
+  .commGridOnlineCount {
+    margin-left: 0;
+  }
 }

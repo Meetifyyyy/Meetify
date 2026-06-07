@@ -3,3 +3,9 @@
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 1rem;
 }
+
+@media (max-width: 768px) {
+  .commGrid {
+    grid-template-columns: 1fr;
+  }
+}

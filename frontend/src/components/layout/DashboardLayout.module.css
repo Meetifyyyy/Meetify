@@ -1,8 +1,8 @@
 .dashboard {
   display: grid;
-  grid-template-columns: 240px 1fr 300px;
-  gap: 0;
-  padding: 0 2rem 0;
+  grid-template-columns: 240px 1fr 260px;
+  gap: 1rem;
+  padding: 0 1.5rem 0;
   flex: 1;
   min-height: 0;
   animation: dashboardFadeIn 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -12,6 +12,10 @@
   grid-template-columns: 240px 1fr;
   padding-right: 0;
   gap: 1rem;
+}
+
+.dashboardCompact {
+  padding: 0 0.75rem 0;
 }
 
 @keyframes dashboardFadeIn {
@@ -35,5 +39,9 @@
   .dashboard, .dashboardWide {
     grid-template-columns: 1fr;
     padding: 0 1rem;
+  }
+
+  .dashboardCompact {
+    padding: 0 0.5rem;
   }
 }

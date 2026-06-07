@@ -15,6 +15,7 @@ export default function DashboardLayoutWrapper() {
     location.pathname.startsWith('/colleges') || 
     location.pathname.startsWith('/messages') ||
     location.pathname.startsWith('/profile');
+  const isColleges = location.pathname.startsWith('/colleges');
 
   const handleCommunityClick = (id) => {
     navigate(`/communities/${id}`);
@@ -24,7 +25,7 @@ export default function DashboardLayoutWrapper() {
     <>
       <Background />
       <Header variant="dashboard" />
-      <DashboardLayout wide={isWide}>
+      <DashboardLayout wide={isWide} compactGutters={isColleges}>
         <Sidebar onCommunityClick={handleCommunityClick} />
         <Outlet />
       </DashboardLayout>
