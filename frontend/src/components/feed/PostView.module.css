@@ -5,7 +5,7 @@
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   border: 1px solid rgba(255, 255, 255, 0.7);
   flex-shrink: 0;
   overflow: hidden;
@@ -16,7 +16,7 @@
   display: flex;
   align-items: center;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid rgba(24, 24, 27, 0.05);
+  border-bottom: 1px solid var(--color-border-light);
   gap: 1rem;
   background: transparent;
   position: sticky;
@@ -52,7 +52,7 @@
 
 .postViewMain {
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid rgba(24, 24, 27, 0.05);
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 .postViewMain > div {
@@ -66,7 +66,7 @@
 
 .postViewComposer {
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid rgba(24, 24, 27, 0.05);
+  border-bottom: 1px solid var(--color-border-light);
   display: flex;
   gap: 1rem;
 }
@@ -133,7 +133,7 @@
 }
 
 .replyBtnDisabled {
-  background: rgba(109, 93, 252, 0.5);
+  background: rgba(37, 99, 235, 0.5);
   cursor: not-allowed;
 }
 

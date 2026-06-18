@@ -6,8 +6,6 @@ export default function FeedRoute() {
   const navigate = useNavigate();
 
   const handlePostClick = (post, sourceContext, communityId) => {
-    // If the post has an id, navigate to /post/:id
-    // Wait, the post object structure from Feed:
     const postId = post.id;
     if (postId) {
       navigate(`/post/${postId}`, { state: { post, sourceContext, communityId } });
@@ -16,16 +14,19 @@ export default function FeedRoute() {
 
   const quickActions = [
     {
-      label: 'New Meeting',
-      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>,
+      label: 'Find Crew',
+      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" /></svg>,
+      onClick: () => navigate('/crew'),
     },
     {
-      label: 'Add Friend',
-      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>,
+      label: 'Find People',
+      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>,
+      onClick: () => navigate('/search'),
     },
     {
       label: 'Send Message',
       icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>,
+      onClick: () => navigate('/messages'),
     },
   ];
 

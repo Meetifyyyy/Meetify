@@ -35,53 +35,72 @@ export function AuthProvider({ children }) {
   });
 
   const login = useCallback((username) => {
-    // Find the user in mockData, or create a fallback guest if not found
+    // Find the user in mockData first
     let user = Object.values(initialUsers).find(u => u.username === username);
     
-    if (!user) {
-      const isGla = username && username.includes('@gla.ac.in');
-      const isIitd = username && username.includes('@iitd.ac.in');
-      const baseName = username ? username.split('@')[0] : 'guest';
-      
-      let collegeId = undefined;
-      let communitiesList = [];
-      let bioText = 'Just joined Meetify!';
-      let roleText = 'New User';
-      
-      if (isGla) {
-        collegeId = 'gla';
-        communitiesList = ['GLA University'];
-        bioText = 'Student at GLA University';
-        roleText = 'Student';
-      } else if (isIitd) {
-        collegeId = 'iitdelhi';
-        communitiesList = ['IIT Delhi'];
-        bioText = 'Student at IIT Delhi';
-        roleText = 'Student';
+    // Also check if we have a saved user in localStorage that matches
+    const savedUserStr = localStorage.getItem('currentUser');
+    if (savedUserStr) {
+      const savedUser = JSON.parse(savedUserStr);
+      if (savedUser.username === username) {
+        user = savedUser;
       }
+    }
 
-      user = {
-        id: `u_${Date.now()}`,
-        username: username || 'guest',
-        displayName: baseName.charAt(0).toUpperCase() + baseName.slice(1),
-        avatar: baseName.charAt(0).toUpperCase(),
-        bio: bioText,
-        location: 'Earth',
-        role: roleText,
-        email: username && username.includes('@') ? username : `${username || 'guest'}@meetify.app`,
-        followers: 0,
-        following: 0,
-        communities: communitiesList,
-        collegeId,
-        course: collegeId ? 'B.Tech CS' : undefined,
-        year: collegeId ? '1st Year' : undefined
-      };
+    if (!user) {
+      return false; // User not found, fail login
     }
 
     localStorage.setItem('loggedIn', 'true');
     localStorage.setItem('currentUser', JSON.stringify(user));
     setCurrentUser(user);
     setIsLoggedIn(true);
+    return true;
+  }, []);
+
+  const signup = useCallback((userData) => {
+    const newUser = {
+      id: `u_${Date.now()}`,
+      ...userData,
+      displayName: userData.firstName ? `${userData.firstName} ${userData.lastName || ''}`.trim() : userData.username,
+      avatar: userData.firstName ? userData.firstName.charAt(0).toUpperCase() : (userData.username || '?').charAt(0).toUpperCase(),
+      bio: 'Just joined Meetify!',
+      role: 'New User',
+      followers: 0,
+      following: 0,
+      communities: [],
+      isNewUser: true
+    };
+    
+    localStorage.setItem('loggedIn', 'true');
+    localStorage.setItem('currentUser', JSON.stringify(newUser));
+    setCurrentUser(newUser);
+    setIsLoggedIn(true);
+  }, []);
+
+  const completeOnboarding = useCallback((updatedData) => {
+    setCurrentUser(prev => {
+      const updated = { ...prev, ...updatedData, isNewUser: false };
+      localStorage.setItem('currentUser', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
+  const updateProfile = useCallback((updatedData) => {
+    setCurrentUser(prev => {
+      const updated = { ...prev, ...updatedData };
+      localStorage.setItem('currentUser', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
+  const updateCurrentUser = useCallback((user) => {
+    setCurrentUser(user);
+    if (user) {
+      localStorage.setItem('currentUser', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('currentUser');
+    }
   }, []);
 
   const logout = useCallback(() => {
@@ -97,7 +116,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn, currentUser, username, displayName, initial, login, logout }}
+      value={{ isLoggedIn, currentUser, username, displayName, initial, login, signup, completeOnboarding, updateProfile, updateCurrentUser, logout }}
     >
       {children}
     </AuthContext.Provider>

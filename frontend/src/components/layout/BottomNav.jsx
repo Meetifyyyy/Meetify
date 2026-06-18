@@ -15,8 +15,8 @@ export default function BottomNav() {
   const isHomeActive = location.pathname === '/home';
   const isCommunitiesActive = location.pathname.startsWith('/communities');
   const isMessagesActive = location.pathname.startsWith('/messages');
-  const isCollegesActive = location.pathname.startsWith('/colleges');
   const isSearchActive = location.pathname.startsWith('/search');
+  const isCrewActive = location.pathname.startsWith('/crew');
 
   return (
     <div className={styles.bottomNav}>
@@ -42,6 +42,17 @@ export default function BottomNav() {
           <path d="M16 3.13a4 4 0 0 1 0 7.75" />
         </svg>
         <span>Communities</span>
+      </button>
+
+      <button 
+        className={`${styles.bottomNavItem}${isCrewActive ? ` ${styles.active}` : ''}`}
+        onClick={() => handleTabClick('/crew')}
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+        </svg>
+        <span>Crew</span>
       </button>
 
       <button 
@@ -71,16 +82,6 @@ export default function BottomNav() {
         <span>Messages</span>
       </button>
 
-      <button 
-        className={`${styles.bottomNavItem}${isCollegesActive ? ` ${styles.active}` : ''}`}
-        onClick={() => navigate('/colleges')}
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-          <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
-        </svg>
-        <span>Colleges</span>
-      </button>
     </div>
   );
 }

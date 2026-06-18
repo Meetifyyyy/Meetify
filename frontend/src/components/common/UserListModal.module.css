@@ -61,22 +61,33 @@
 }
 
 .empty {
-  text-align: left;
+  text-align: center;
   color: var(--color-text-muted);
-  padding: 2rem 0;
+  padding: 3rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .userItem {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  cursor: pointer;
+  padding: 0.35rem 0;
+  border-radius: var(--radius-md);
+  transition: background 0.15s;
+}
+
+.userItem:hover {
+  background: rgba(37, 99, 235, 0.04);
 }
 
 .userAvatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(109, 93, 252, 0.2), rgba(168, 85, 247, 0.2));
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(59, 130, 246, 0.2));
   color: var(--color-primary);
   display: flex;
   align-items: center;
@@ -84,6 +95,13 @@
   font-weight: 700;
   font-size: 1rem;
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .userInfo {
@@ -100,4 +118,8 @@
 .userUsername {
   color: var(--color-text-muted);
   font-size: 0.8rem;
+}
+
+.followBtnWrap {
+  flex-shrink: 0;
 }

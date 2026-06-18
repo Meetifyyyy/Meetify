@@ -1,4 +1,9 @@
+import { useNavigate } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
+import { useFollow } from '../../context/FollowContext';
+import { showToast } from '../../utils/toast';
+import { isImageUrl } from '../../utils/avatar';
+import DefaultAvatar from '../common/DefaultAvatar';
 import styles from './RightPanel.module.css';
 
 export default function RightPanel({ children, className = '' }) {
@@ -25,33 +30,41 @@ export function OnlineFriends() {
   const friends = Object.values(users)
     .filter(u => u.id !== currentUser.id)
     .slice(0, 4)
-    .map((u, i) => ({
+    .map((u) => ({
       id: u.id,
       name: u.displayName,
       username: u.username,
-      letter: u.avatar,
-      status: i < 2 ? 'Online' : (i === 2 ? 'Away' : 'Offline'),
-      online: i < 2
+      avatar: u.avatar,
+      avatarUrl: u.avatarUrl,
+      status: u.recentlyActive ? 'Online' : 'Offline',
+      online: !!u.recentlyActive
     }));
 
   return (
     <div className={styles.panelCard}>
       <h3 className={styles.panelTitle}>Online Friends</h3>
-      {friends.map((f, i) => (
-        <div key={i} className={styles.friendItem}>
-          <div className={styles.friendAvatar}>
-            {f.letter && f.letter.length > 1 ? (
-              <img src={f.letter} alt={f.name} className={styles.friendAvatarImg} />
-            ) : (
-              f.letter
-            )}
-          </div>
-          <div className={styles.friendInfo}>
-            <div className={styles.friendName}>{f.name}</div>
-            <div className={`${styles.friendStatus}${f.online ? ` ${styles.online}` : ''}`}>{f.status}</div>
-          </div>
+      {friends.length === 0 ? (
+        <div style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', textAlign: 'center', padding: '1rem 0' }}>
+          No friends online yet. <br/>
+          <span style={{ color: 'var(--color-primary)', cursor: 'pointer', fontWeight: 500 }} onClick={() => window.location.href='/search'}>Find people to connect with!</span>
         </div>
-      ))}
+      ) : (
+        friends.map((f, i) => (
+          <div key={i} className={styles.friendItem}>
+            <div className={styles.friendAvatar}>
+              {isImageUrl(f.avatarUrl || f.avatar) ? (
+                <img src={f.avatarUrl || f.avatar} alt={f.name} className={styles.friendAvatarImg} />
+              ) : (
+                <DefaultAvatar />
+              )}
+            </div>
+            <div className={styles.friendInfo}>
+              <div className={styles.friendName}>{f.name}</div>
+              <div className={`${styles.friendStatus}${f.online ? ` ${styles.online}` : ''}`}>{f.status}</div>
+            </div>
+          </div>
+        ))
+      )}
     </div>
   );
 }
@@ -78,7 +91,7 @@ export function UpcomingEvents() {
   );
 }
 
-export function UniversityEvents({ events, title = 'Ongoing Events' }) {
+export function UniversityEvents({ events, title = 'Ongoing Events', onViewAll }) {
   if (!events || events.length === 0) return null;
 
   return (
@@ -96,59 +109,61 @@ export function UniversityEvents({ events, title = 'Ongoing Events' }) {
               <div className={styles.eventName}>{e.title}</div>
               <div className={styles.eventMeta}>{e.time} • {e.location}</div>
               {e.desc && <div className={styles.eventDesc}>{e.desc}</div>}
-              <button 
-                className={styles.actionBtn} 
-                style={{ marginTop: '0.4rem', padding: '0.3rem 0.5rem', justifyContent: 'center', background: 'rgba(109, 93, 252, 0.05)', color: 'var(--color-primary)' }}
-                onClick={() => {}}
-              >
-                Register
-              </button>
             </div>
           </div>
         );
       })}
-      <button className={styles.viewAllBtn}>View All Events</button>
+      <button className={styles.viewAllBtn} onClick={onViewAll}>View All Events</button>
     </div>
   );
 }
 
-export function UniversityMembers({ members, title = 'Members' }) {
+export function UniversityMembers({ members, title = 'Members', onViewAll }) {
+  const { currentUser, startConversation } = useData();
+  const { isFollowing, toggleFollow } = useFollow();
+  const navigate = useNavigate();
   if (!members || members.length === 0) return null;
 
-  // Show max 5 members
   const displayMembers = members.slice(0, 5);
 
   return (
     <div className={styles.panelCard}>
       <h3 className={styles.panelTitle}>{title}</h3>
-      {displayMembers.map((m, i) => (
-        <div key={i} className={styles.friendItem}>
-          <div className={styles.friendAvatar} style={{ background: m.avatar && m.avatar.length > 1 ? 'none' : (m.admin ? 'linear-gradient(135deg, #1D4ED8, #3B82F6)' : undefined) }}>
-            {m.avatar && m.avatar.length > 1 ? (
-              <img src={m.avatar} alt={m.name} className={styles.friendAvatarImg} />
-            ) : (
-              m.avatar
+      {displayMembers.map((m, i) => {
+        const targetUsername = m.username || m.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const isFollowingUser = isFollowing(targetUsername);
+        const isSelf = targetUsername === currentUser?.username;
+        return (
+          <div key={i} className={styles.friendItem}>
+            <div className={styles.friendAvatar} style={{ cursor: 'pointer', background: isImageUrl(m.avatar) ? 'none' : (m.admin ? 'linear-gradient(135deg, #1D4ED8, #3B82F6)' : undefined) }} onClick={() => navigate(`/profile/${targetUsername}`)}>
+              {isImageUrl(m.avatar) ? (
+                <img src={m.avatar} alt={m.name} className={styles.friendAvatarImg} />
+              ) : (
+                <DefaultAvatar />
+              )}
+            </div>
+            <div className={styles.friendInfo} style={{ cursor: 'pointer' }} onClick={() => navigate(`/profile/${targetUsername}`)}>
+              <div className={styles.friendName}>{m.name} {m.admin && '👑'}</div>
+              <div className={styles.memberBranch}>{m.branch} • {m.year}</div>
+              <div className={`${styles.friendStatus}${m.online ? ` ${styles.online}` : ''}`}>
+                {m.online ? 'Online' : 'Offline'}
+              </div>
+            </div>
+            {!isSelf && (
+              <button 
+                className={`${styles.actionBtn}${isFollowingUser ? ` ${styles.followingBtn}` : ''}`} 
+                style={{ width: 'auto', padding: '0.3rem 0.5rem', marginBottom: 0 }}
+                title={isFollowingUser ? 'Following' : 'Follow'}
+                onClick={() => toggleFollow(targetUsername)}
+              >
+                {isFollowingUser ? 'Following' : 'Follow'}
+              </button>
             )}
           </div>
-          <div className={styles.friendInfo}>
-            <div className={styles.friendName}>{m.name} {m.admin && '👑'}</div>
-            <div className={styles.memberBranch}>{m.branch} • {m.year}</div>
-            <div className={`${styles.friendStatus}${m.online ? ` ${styles.online}` : ''}`}>
-              {m.online ? 'Online' : 'Offline'}
-            </div>
-          </div>
-          <button 
-            className={styles.actionBtn} 
-            style={{ width: 'auto', padding: '0.3rem', marginBottom: 0 }}
-            title="Follow / Connect"
-            onClick={() => {}}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
-          </button>
-        </div>
-      ))}
+        );
+      })}
       {members.length > 5 && (
-        <button className={styles.viewAllBtn}>View All Members</button>
+        <button className={styles.viewAllBtn} onClick={onViewAll}>View All Members</button>
       )}
     </div>
   );

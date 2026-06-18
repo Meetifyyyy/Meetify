@@ -13,26 +13,25 @@
 }
 
 .panelCard {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: var(--bg-glass);
+  backdrop-filter: var(--blur-glass);
+  border: var(--border-glass);
   border-radius: var(--radius-lg);
-  padding: 1.25rem;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 1.15rem;
+  box-shadow: var(--shadow-md);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .panelCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(109, 93, 252, 0.08);
+  box-shadow: var(--shadow-sm);
 }
 
 .panelTitle {
   font-family: var(--font-family-display);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: var(--color-text-main);
-  margin-bottom: 1rem;
+  margin-bottom: 0.85rem;
 }
 
 .actionBtn {
@@ -40,27 +39,26 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  padding: 0.6rem 0.85rem;
-  margin-bottom: 0.35rem;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.25rem;
   font-family: var(--font-family-sans);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 500;
-  color: var(--color-text-main);
+  color: var(--color-text-muted);
   background: none;
   border: none;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background 0.15s, color 0.15s, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.15s;
 }
 
 .actionBtn:hover {
-  background: rgba(109, 93, 252, 0.08);
-  color: var(--color-primary);
-  transform: scale(1.03);
+  background: var(--color-border-light);
+  color: var(--color-text-main);
 }
 
 .actionBtn svg {
-  color: var(--color-text-muted);
+  color: var(--color-text-light);
   transition: color 0.15s;
 }
 
@@ -68,11 +66,17 @@
   color: var(--color-primary);
 }
 
+.followingBtn {
+  background: rgba(37, 99, 235, 0.08) !important;
+  color: var(--color-primary) !important;
+  font-weight: 600;
+}
+
 .friendItem {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
-  padding: 0.5rem 0;
+  gap: 0.65rem;
+  padding: 0.45rem 0;
   border-bottom: 1px solid var(--color-border-light);
 }
 
@@ -81,16 +85,15 @@
 }
 
 .friendAvatar {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-family-display);
   font-weight: 600;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   color: var(--color-bg-white);
   flex-shrink: 0;
 }
@@ -101,14 +104,14 @@
 }
 
 .friendName {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--color-text-main);
 }
 
 .friendStatus {
-  font-size: 0.72rem;
-  color: var(--color-text-muted);
+  font-size: 0.68rem;
+  color: var(--color-text-light);
 }
 
 .friendStatus.online {
@@ -118,8 +121,8 @@
 
 .eventItem {
   display: flex;
-  gap: 0.85rem;
-  padding: 0.55rem 0;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
   border-bottom: 1px solid var(--color-border-light);
 }
 
@@ -129,15 +132,15 @@
 
 .eventDate {
   text-align: left;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 600;
   color: var(--color-primary);
   line-height: 1.3;
-  min-width: 40px;
+  min-width: 36px;
 }
 
 .eventDate span {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 700;
 }
 
@@ -147,51 +150,51 @@
 }
 
 .eventName {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--color-text-main);
-  margin-bottom: 0.15rem;
+  margin-bottom: 0.1rem;
 }
 
 .eventMeta {
-  font-size: 0.72rem;
-  color: var(--color-text-muted);
+  font-size: 0.7rem;
+  color: var(--color-text-light);
 }
 
 .eventDesc {
-  font-size: 0.72rem;
-  color: var(--color-text-muted);
-  margin-top: 0.25rem;
+  font-size: 0.7rem;
+  color: var(--color-text-light);
+  margin-top: 0.2rem;
   line-height: 1.3;
 }
 
 .memberBranch {
-  font-size: 0.72rem;
-  color: var(--color-text-muted);
+  font-size: 0.7rem;
+  color: var(--color-text-light);
 }
 
 .viewAllBtn {
   width: 100%;
   display: block;
   text-align: left;
-  padding: 0.5rem;
-  margin-top: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  margin-top: 0.35rem;
   font-family: var(--font-family-sans);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--color-primary);
-  background: rgba(109, 93, 252, 0.05);
+  background: none;
   border: none;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: all 0.15s;
 }
 
 .viewAllBtn:hover {
-  background: rgba(109, 93, 252, 0.1);
+  background: var(--color-border-light);
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1100px) {
   .rightPanel {
     display: none !important;
   }

@@ -1,54 +1,40 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { showToast } from '../utils/toast';
 import Background from '../components/common/Background';
 import Toast from '../components/common/Toast';
-import LoginOverlay from '../components/auth/LoginOverlay';
-import SignupOverlay from '../components/auth/SignupOverlay';
-import WelcomeGreeting from '../components/auth/WelcomeGreeting';
 import logo from '../assets/images/logo.webp';
 import heroImg from '../assets/images/hero-illustration.webp';
 import '../styles/landing.css';
+
 
 export default function LandingPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [view, setView] = useState('hero'); // 'hero' | 'login' | 'signup' | 'greeting'
-  const [fading, setFading] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
-  const [greetingUser, setGreetingUser] = useState('');
 
-  const handleProfileClick = () => {
-    if (view === 'hero') {
-      setFading(true);
-      setTimeout(() => {
-        setView('login');
-      }, 350);
-    } else if (view === 'login') {
-      setView('signup');
-    } else if (view === 'signup') {
-      setView('login');
-    }
-  };
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
-  const handleLogin = useCallback((user) => {
-    setGreetingUser(user);
-    setView('greeting');
+    const elements = document.querySelectorAll('.reveal');
+    elements.forEach(el => observer.observe(el));
+
+    return () => observer.disconnect();
   }, []);
 
-  const handleGreetingComplete = useCallback(() => {
-    login(greetingUser);
-    navigate('/home');
-  }, [greetingUser, login, navigate]);
-
-  const setToast = useCallback((msg) => {
+  const showToast = useCallback((msg) => {
     setToastMsg(msg);
     setToastVisible(true);
   }, []);
-
-  const profileBtnLabel = view === 'login' ? 'Sign up' : view === 'signup' ? 'Log in' : 'Log in';
 
   const features = [
     {
@@ -87,13 +73,13 @@ export default function LandingPage() {
   ];
 
   const testimonials = [
-    { name: 'Maya R.', handle: '@mayabuilds', text: 'Found my entire startup team through Meetify. This place just gets it.', gradient: 'linear-gradient(135deg, #6D5DFC, #A855F7)' },
+    { name: 'Maya R.', handle: '@mayabuilds', text: 'Found my entire startup team through Meetify. This place just gets it.', gradient: 'linear-gradient(135deg, #2563EB, #3B82F6)' },
     { name: 'James K.', handle: '@jamesk_dev', text: 'The communities here feel alive. No empty feeds, no bots — just real people.', gradient: 'linear-gradient(135deg, #F59E0B, #F97316)' },
     { name: 'Priya S.', handle: '@priya_designs', text: 'I\'ve been on every social platform. Meetify is the first one that felt like home.', gradient: 'linear-gradient(135deg, #EC4899, #8B5CF6)' },
   ];
 
   const communityTags = [
-    { name: 'Startups', color: '#6D5DFC' },
+    { name: 'Startups', color: '#2563EB' },
     { name: 'Design', color: '#EC4899' },
     { name: 'Music', color: '#F59E0B' },
     { name: 'Dev', color: '#10B981' },
@@ -111,235 +97,234 @@ export default function LandingPage() {
     <>
       <Background />
 
-      <header>
-        <div className="nav-left" style={{ cursor: 'pointer' }}>
+      <header className="landing-header">
+        <div className="nav-left" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
           <img className="logo" src={logo} alt="Meetify" />
           <span className="brand">Meetify</span>
         </div>
-        <nav>
-          <div className="profile-link" style={{ textDecoration: 'none', cursor: 'pointer' }} onClick={handleProfileClick}>
-            <div className="profile-btn" title="Profile">
-              <div className="profile-icon">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v1.2c0 .66.54 1.2 1.2 1.2h16.8c.66 0 1.2-.54 1.2-1.2v-1.2c0-3.2-6.4-4.8-9.6-4.8z" />
-                </svg>
-              </div>
-              <span className="login-text">{profileBtnLabel}</span>
-            </div>
-          </div>
+        <nav className="nav-links">
+          <a href="#why" className="nav-link-item">Why Meetify</a>
+          <a href="#how" className="nav-link-item">How It Works</a>
+          <a href="#explore" className="nav-link-item">Explore</a>
+          <a href="#testimonials" className="nav-link-item">Voices</a>
         </nav>
+        <div className="nav-actions">
+          <button className="btn-login" onClick={() => navigate('/login')}>Log in</button>
+          <button className="btn-signup" onClick={() => navigate('/signup')}>Join Meetify</button>
+        </div>
       </header>
 
       {/* Scrollable landing content */}
-      <div className={`landing-scroll ${view !== 'hero' ? 'landing-scroll--hidden' : ''} ${fading ? 'landing-scroll--fading' : ''}`}>
+      <div className="landing-scroll">
 
-        <main id="mainContent" style={view !== 'hero' ? { display: 'none' } : {}}>
-          <section className="hero">
-            <h1>
-              <span className="line1">MEET</span>
-              <span className="line2">THE OTHER</span>
-              <span className="accent">YOU</span>
+        <main id="mainContent" className="hero-section">
+          <div className="hero-text-col">
+
+             <h1 className="hero-title">
+              MEET THE OTHER <span className="text-gradient">YOU</span>
             </h1>
-            <p>your vibe. your tribe. your spotlight.</p>
-          </section>
-
-          <div className="hero-image">
-            <img src={heroImg} alt="Meetify visual" loading="lazy" />
+            <p className="hero-subtitle">
+              Find your tribe and your spotlight.
+            </p>
+            <div className="hero-actions">
+              <button className="hero-btn-primary" onClick={() => navigate('/signup')}>
+                Get Started
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+                </svg>
+              </button>
+            </div>
           </div>
 
-          <span className="fragment fragment--1">Anyone building a startup?</span>
-          <span className="fragment fragment--2">Looking for a hackathon team</span>
-          <span className="fragment fragment--3">Need a UI designer ✨</span>
-          <span className="fragment fragment--4">Let's collaborate 🚀</span>
+          <div className="hero-graphic-col">
+            <div className="hero-image-container">
+              <img src={heroImg} alt="Meetify community illustration" className="hero-img" loading="lazy" />
+              <div className="fragment fragment--1" style={{ animation: 'float 6s ease-in-out infinite' }}>
+                <span className="live-dot" style={{ display: 'inline-block', width: 8, height: 8, background: '#10B981', borderRadius: '50%', marginRight: 8, animation: 'pulse 2s infinite' }}></span>
+                Sarah just joined Design Thinkers
+              </div>
+              <div className="fragment fragment--2" style={{ animation: 'float 6s ease-in-out infinite 1.5s' }}>
+                <span className="live-dot" style={{ display: 'inline-block', width: 8, height: 8, background: '#3B82F6', borderRadius: '50%', marginRight: 8, animation: 'pulse 2s infinite' }}></span>
+                Alex posted in Startup Builders
+              </div>
+              <div className="fragment fragment--3" style={{ animation: 'float 6s ease-in-out infinite 3s' }}>
+                <span className="live-dot" style={{ display: 'inline-block', width: 8, height: 8, background: '#F59E0B', borderRadius: '50%', marginRight: 8, animation: 'pulse 2s infinite' }}></span>
+                New discussion in Engineering
+              </div>
+              <div className="fragment fragment--4" style={{ animation: 'float 6s ease-in-out infinite 4.5s' }}>
+                <span className="live-dot" style={{ display: 'inline-block', width: 8, height: 8, background: '#EC4899', borderRadius: '50%', marginRight: 8, animation: 'pulse 2s infinite' }}></span>
+                Maya followed James
+              </div>
+            </div>
+          </div>
         </main>
 
         {/* ---------- Features ---------- */}
-        {view === 'hero' && (
-          <>
-            <section className="landing-section features-section">
-              <div className="section-inner">
-                <h2 className="landing-heading">
-                  Why <span className="text-gradient">Meetify</span>?
-                </h2>
-                <p className="landing-subheading">A space where connections are real and communities thrive.</p>
-                <div className="features-grid">
-                  {features.map((f, i) => (
-                    <div className="feature-card" key={i}>
-                      <div className="feature-icon">{f.icon}</div>
-                      <h3>{f.title}</h3>
-                      <p>{f.desc}</p>
-                    </div>
-                  ))}
+        <section className="landing-section features-section" id="why">
+          <div className="section-inner reveal">
+            <h2 className="landing-heading">
+              Why <span className="text-gradient">Meetify</span>?
+            </h2>
+            <p className="landing-subheading">A space where connections are real and communities thrive.</p>
+            <div className="features-grid">
+              {features.map((f, i) => (
+                <div className="feature-card" key={i}>
+                  <div className="feature-icon">{f.icon}</div>
+                  <h3>{f.title}</h3>
+                  <p>{f.desc}</p>
                 </div>
-              </div>
-            </section>
+              ))}
+            </div>
+          </div>
+        </section>
 
-            {/* ---------- How It Works ---------- */}
-            <section className="landing-section steps-section">
-              <div className="section-inner">
-                <h2 className="landing-heading">
-                  How It <span className="text-gradient">Works</span>
-                </h2>
-                <p className="landing-subheading">Three steps. Zero friction.</p>
-                <div className="steps-row">
-                  {steps.map((s, i) => (
-                    <div className="step-card" key={i}>
-                      <span className="step-num">{s.num}</span>
-                      <h3>{s.title}</h3>
-                      <p>{s.desc}</p>
-                      {i < steps.length - 1 && (
-                        <div className="step-connector">
-                          <svg width="40" height="12" viewBox="0 0 40 12" fill="none">
-                            <path d="M0 6h32m0 0l-5-5m5 5l-5 5" stroke="#6D5DFC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.4" />
-                          </svg>
-                        </div>
-                      )}
+        {/* ---------- How It Works ---------- */}
+        <section className="landing-section steps-section" id="how">
+          <div className="section-inner reveal">
+            <h2 className="landing-heading">
+              How It <span className="text-gradient">Works</span>
+            </h2>
+            <p className="landing-subheading">Three steps. Zero friction.</p>
+            <div className="steps-row">
+              {steps.map((s, i) => (
+                <div className="step-card" key={i}>
+                  <span className="step-num">{s.num}</span>
+                  <h3>{s.title}</h3>
+                  <p>{s.desc}</p>
+                  {i < steps.length - 1 && (
+                    <div className="step-connector">
+                      <svg width="40" height="12" viewBox="0 0 40 12" fill="none">
+                        <path d="M0 6h32m0 0l-5-5m5 5l-5 5" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.4" />
+                      </svg>
                     </div>
-                  ))}
+                  )}
                 </div>
-              </div>
-            </section>
+              ))}
+            </div>
+          </div>
+        </section>
 
-            {/* ---------- Communities ---------- */}
-            <section className="landing-section communities-section">
-              <div className="section-inner">
-                <h2 className="landing-heading">
-                  Explore <span className="text-gradient">Communities</span>
-                </h2>
-                <p className="landing-subheading">Thousands of people are already here. Find where you belong.</p>
-                <div className="community-tags">
-                  {communityTags.map((tag, i) => (
-                    <span className="community-tag" key={i} style={{ '--tag-color': tag.color }}>
-                      <span className="tag-dot" style={{ background: tag.color }} />
-                      {tag.name}
-                    </span>
-                  ))}
-                </div>
-                <div className="community-stats-row">
-                  <div className="community-stat">
-                    <span className="community-stat-num">12k+</span>
-                    <span className="community-stat-label">Members</span>
-                  </div>
-                  <div className="community-stat">
-                    <span className="community-stat-num">340+</span>
-                    <span className="community-stat-label">Communities</span>
-                  </div>
-                  <div className="community-stat">
-                    <span className="community-stat-num">89k+</span>
-                    <span className="community-stat-label">Conversations</span>
-                  </div>
-                </div>
+        {/* ---------- Communities ---------- */}
+        <section className="landing-section communities-section" id="explore">
+          <div className="section-inner reveal">
+            <h2 className="landing-heading">
+              Explore <span className="text-gradient">Communities</span>
+            </h2>
+            <p className="landing-subheading">Thousands of people are already here. Find where you belong.</p>
+            <div className="community-tags">
+              {communityTags.map((tag, i) => (
+                <span className="community-tag" key={i} style={{ '--tag-color': tag.color, cursor: 'pointer' }} onClick={() => navigate('/login')}>
+                  <span className="tag-dot" style={{ background: tag.color }} />
+                  {tag.name}
+                </span>
+              ))}
+            </div>
+            <div className="community-stats-row">
+              <div className="community-stat">
+                <span className="community-stat-num">12k+</span>
+                <span className="community-stat-label">Members & growing</span>
               </div>
-            </section>
+              <div className="community-stat">
+                <span className="community-stat-num">340+</span>
+                <span className="community-stat-label">Communities</span>
+              </div>
+              <div className="community-stat">
+                <span className="community-stat-num">89k+</span>
+                <span className="community-stat-label">Conversations</span>
+              </div>
+            </div>
+          </div>
+        </section>
 
-            {/* ---------- Testimonials ---------- */}
-            <section className="landing-section testimonials-section">
-              <div className="section-inner">
-                <h2 className="landing-heading">
-                  Voices from the <span className="text-gradient">Community</span>
-                </h2>
-                <div className="testimonials-grid">
-                  {testimonials.map((t, i) => (
-                    <div className="testimonial-card" key={i}>
-                      <p className="testimonial-text">"{t.text}"</p>
-                      <div className="testimonial-author">
-                        <div className="testimonial-avatar" style={{ background: t.gradient }}>
-                          {t.name.charAt(0)}
-                        </div>
-                        <div>
-                          <div className="testimonial-name">{t.name}</div>
-                          <div className="testimonial-handle">{t.handle}</div>
-                        </div>
-                      </div>
+        {/* ---------- Testimonials ---------- */}
+        <section className="landing-section testimonials-section" id="testimonials">
+          <div className="section-inner reveal">
+            <h2 className="landing-heading">
+              Voices from the <span className="text-gradient">Community</span>
+            </h2>
+            <div className="testimonials-grid">
+              {testimonials.map((t, i) => (
+                <div className="testimonial-card" key={i}>
+                  <p className="testimonial-text">"{t.text}"</p>
+                  <div className="testimonial-author">
+                    <div className="testimonial-avatar" style={{ background: t.gradient }}>
+                      {t.name.charAt(0)}
                     </div>
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            {/* ---------- CTA ---------- */}
-            <section className="landing-section cta-section">
-              <div className="section-inner cta-inner">
-                <h2 className="cta-heading">Ready to find your people?</h2>
-                <p className="cta-sub">Join thousands who already did.</p>
-                <button className="cta-btn" onClick={handleProfileClick}>
-                  Get Started
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
-                  </svg>
-                </button>
-              </div>
-            </section>
-
-            {/* ---------- Footer ---------- */}
-            <footer className="landing-footer">
-              <div className="footer-inner">
-                <div className="footer-top">
-                  <div className="footer-brand">
-                    <img className="logo" src={logo} alt="Meetify" />
-                    <span className="brand">Meetify</span>
-                  </div>
-
-                  <div className="footer-links">
-                    <div className="footer-col">
-                      <h4>Product</h4>
-                      <a href="#">Communities</a>
-                      <a href="#">Messaging</a>
-                      <a href="#">Events</a>
-                    </div>
-                    <div className="footer-col">
-                      <h4>Company</h4>
-                      <a href="#">About</a>
-                      <a href="#">Blog</a>
-                      <a href="#">Careers</a>
-                    </div>
-                    <div className="footer-col">
-                      <h4>Support</h4>
-                      <a href="#">Help Center</a>
-                      <a href="#">Privacy</a>
-                      <a href="#">Terms</a>
+                    <div className="testimonial-meta">
+                      <div className="testimonial-name">{t.name}</div>
+                      <div className="testimonial-handle">{t.handle}</div>
                     </div>
                   </div>
                 </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
-                <div className="footer-bottom">
-                  <span className="footer-copy">&copy; 2026 Meetify. All rights reserved.</span>
-                  <div className="footer-socials">
-                    <a href="#" aria-label="Twitter">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
-                    </a>
-                    <a href="#" aria-label="GitHub">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" /></svg>
-                    </a>
-                    <a href="#" aria-label="Instagram">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></svg>
-                    </a>
-                  </div>
+        {/* ---------- CTA ---------- */}
+        <section className="landing-section cta-section">
+          <div className="section-inner cta-inner reveal">
+            <div className="cta-content-wrapper">
+              <h2 className="cta-heading">Ready to find your people?</h2>
+              <p className="cta-sub">Join thousands of creators, builders, and dreamers already sharing their spotlight.</p>
+              <button className="cta-btn" onClick={() => navigate('/signup')}>
+                Get Started
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* ---------- Footer ---------- */}
+        <footer className="landing-footer">
+          <div className="footer-inner">
+            <div className="footer-top">
+              <div className="footer-brand">
+                <img className="logo" src={logo} alt="Meetify" />
+                <span className="brand">Meetify</span>
+              </div>
+
+              <div className="footer-links">
+                <div className="footer-col">
+                  <h4>Product</h4>
+                  <a href="#explore" className="footer-link-item">Communities</a>
+                  <a href="#why" className="footer-link-item">Features</a>
+                  <span className="footer-link-item disabled-link">Messaging <span className="soon-badge">soon</span></span>
+                </div>
+                <div className="footer-col">
+                  <h4>Company</h4>
+                  <span className="footer-link-item disabled-link">About <span className="soon-badge">soon</span></span>
+                  <span className="footer-link-item disabled-link">Blog <span className="soon-badge">soon</span></span>
+                  <span className="footer-link-item disabled-link">Careers <span className="soon-badge">soon</span></span>
+                </div>
+                <div className="footer-col">
+                  <h4>Support</h4>
+                  <span className="footer-link-item disabled-link">Help Center <span className="soon-badge">soon</span></span>
+                  <span className="footer-link-item disabled-link">Privacy <span className="soon-badge">soon</span></span>
+                  <span className="footer-link-item disabled-link">Terms <span className="soon-badge">soon</span></span>
                 </div>
               </div>
-            </footer>
-          </>
-        )}
+            </div>
+
+            <div className="footer-bottom">
+              <span className="footer-copy">&copy; 2026 Meetify. All rights reserved.</span>
+              <div className="footer-socials">
+                <a href="#" aria-label="Twitter">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+                </a>
+                <a href="#" aria-label="GitHub">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" /></svg>
+                </a>
+                <a href="#" aria-label="Instagram">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </footer>
       </div>
-
-      <LoginOverlay
-        visible={view === 'login'}
-        onLogin={handleLogin}
-        onSwitchToSignup={() => setView('signup')}
-        toastMsg={toastMsg}
-        setToastMsg={setToast}
-      />
-
-      <SignupOverlay
-        visible={view === 'signup'}
-        onSwitchToLogin={() => setView('login')}
-      />
-
-      <WelcomeGreeting
-        visible={view === 'greeting'}
-        username={greetingUser}
-        onComplete={handleGreetingComplete}
-      />
 
       <Toast
         message={toastMsg}

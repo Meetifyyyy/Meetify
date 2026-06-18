@@ -2,6 +2,9 @@ import { useData } from '../../context/DataContext';
 import { useFollow } from '../../context/FollowContext';
 import FollowButton from '../common/FollowButton';
 import { useNavigate } from 'react-router-dom';
+import { showToast } from '../../utils/toast';
+import { isImageUrl } from '../../utils/avatar';
+import DefaultAvatar from '../common/DefaultAvatar';
 import styles from './ProfileHeader.module.css';
 
 export default function ProfileHeader({ profileUsername, onViewFollowers, onViewFollowing, onBack }) {
@@ -26,16 +29,15 @@ export default function ProfileHeader({ profileUsername, onViewFollowers, onView
     navigate(`/messages/${convId}`);
   };
 
-  // Mock stats - in real app would come directly from backend
-  let followersCount = profileUser.followers;
-  if (!isCurrentUser && isFollowing) followersCount += 1;
-  const followingCount = profileUser.following;
+  // Stats come directly from state
+  const followersCount = profileUser.followers || 0;
+  const followingCount = profileUser.following || 0;
 
   // We can use UI faces or just initials for the mock
   // For the mockup we will use an image if available or initials
-  const avatarContent = profileUser.avatar && profileUser.avatar.length === 1 
-    ? profileUser.avatar 
-    : <img src={profileUser.avatar} alt="avatar" className={styles.avatarImg} />;
+  const avatarContent = isImageUrl(profileUser.avatar) 
+    ? <img src={profileUser.avatar} alt="avatar" className={styles.avatarImg} />
+    : <DefaultAvatar />;
     
   // Override for the specific "David Chen" mockup look if needed, but we'll stick to dynamic
   // Let's assume we want to show dynamic image if it's not a single char. 
@@ -43,20 +45,13 @@ export default function ProfileHeader({ profileUsername, onViewFollowers, onView
   
   return (
     <div className={styles.profileCard}>
-      <div className={styles.profileCover}>
-        {onBack && (
-          <button className={styles.profileBackBtn} onClick={onBack}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
-        )}
-        {isCurrentUser && (
-          <button className={styles.coverEditBtn} aria-label="Change Cover Photo">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
-          </button>
-        )}
-      </div>
+      {onBack && (
+        <button className={styles.profileBackBtn} onClick={onBack}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+      )}
 
       <div className={styles.profileAvatarContainer}>
         {college && college.avatar ? (
@@ -78,7 +73,7 @@ export default function ProfileHeader({ profileUsername, onViewFollowers, onView
       </div>
 
       <div className={styles.profileInfo}>
-        <h1 className={styles.profileName}>{displayName}</h1>
+        <h2 className={styles.profileName}>{displayName}</h2>
         <p className={styles.profileUsername}>@{profileUser.username}</p>
         
         <p className={styles.profileTagline}>
@@ -99,13 +94,13 @@ export default function ProfileHeader({ profileUsername, onViewFollowers, onView
         <div className={styles.profileActions}>
           <div className={styles.followBtnWrapper}>
             {isCurrentUser ? (
-              <button className={styles.editProfileBtn}>Edit Profile</button>
+              <button className={styles.editProfileBtn} onClick={() => navigate('/settings')}>Edit Profile</button>
             ) : (
               <FollowButton targetUsername={profileUser.username} />
             )}
           </div>
           {isCurrentUser ? (
-            <button className={styles.messageBtn} aria-label="Settings">
+            <button className={styles.messageBtn} aria-label="Settings" onClick={() => navigate('/settings')}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="3"></circle>
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>

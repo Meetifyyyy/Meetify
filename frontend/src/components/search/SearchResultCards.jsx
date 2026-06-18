@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { isImageUrl } from '../../utils/avatar';
+import DefaultAvatar from '../common/DefaultAvatar';
 import styles from './SearchResultCards.module.css';
 
 // Helper component to render highlighted text from Fuse.js matches
@@ -80,10 +82,10 @@ export function CommunityResult({ result, isSelected, onClick }) {
         className={styles.avatar} 
         style={item.color ? { background: item.color } : {}}
       >
-        {item.avatar && item.avatar.includes('/') ? (
+        {isImageUrl(item.avatar) ? (
            <img src={item.avatar} alt={item.name} className={styles.avatar} />
         ) : (
-          item.avatar || item.name.charAt(0)
+          <DefaultAvatar />
         )}
       </div>
       <div className={styles.content}>
@@ -108,10 +110,10 @@ export function UserResult({ result, isSelected, onClick }) {
       onClick={() => onClick(`/profile/${item.username}`)}
     >
       <div className={styles.avatar}>
-        {item.avatar && item.avatar.length > 2 ? (
+        {isImageUrl(item.avatar) ? (
           <img src={item.avatar} alt={item.displayName} className={styles.avatar} />
         ) : (
-          item.avatar || item.displayName?.charAt(0) || 'U'
+          <DefaultAvatar />
         )}
       </div>
       <div className={styles.content}>
@@ -145,10 +147,10 @@ export function CollegeResult({ result, isSelected, onClick }) {
         className={`${styles.avatar} ${styles.collegeAvatar}`} 
         style={item.color ? { background: item.color } : {}}
       >
-        {item.avatar && item.avatar.includes('/') ? (
+        {isImageUrl(item.avatar) ? (
            <img src={item.avatar} alt={item.name} className={`${styles.avatar} ${styles.collegeAvatar}`} />
         ) : (
-          item.avatar || item.name.charAt(0)
+          <DefaultAvatar />
         )}
       </div>
       <div className={styles.content}>

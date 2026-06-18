@@ -3,6 +3,8 @@ import { useData } from '../context/DataContext';
 import PostView from '../components/feed/PostView';
 import RightPanel from '../components/layout/RightPanel';
 import rightPanelStyles from '../components/layout/RightPanel.module.css';
+import { isImageUrl } from '../utils/avatar';
+import DefaultAvatar from '../components/common/DefaultAvatar';
 
 export default function PostDetailRoute() {
   const navigate = useNavigate();
@@ -14,29 +16,46 @@ export default function PostDetailRoute() {
     navigate(-1);
   };
 
-  let post = location.state?.post;
-  let sourceContext = location.state?.sourceContext;
-  let communityId = location.state?.communityId;
-
-  if (!post) {
-    post = getPostById(id);
-    if (post) {
-      if (post.communityId) {
-        sourceContext = 'community';
-        communityId = post.communityId;
-      } else {
-        sourceContext = 'feed';
-      }
-    }
-  }
+  // Always prefer live state from DataContext; use location.state only for context hints
+  const post = getPostById(id) || location.state?.post;
+  const sourceContext = location.state?.sourceContext || (post?.communityId ? 'community' : 'feed');
+  const communityId = location.state?.communityId || post?.communityId;
 
   if (!post) {
     return (
       <main className="centre">
-        <div style={{ padding: '2rem', textAlign: 'left' }}>
-          <h3>Post not found</h3>
-          <button onClick={() => navigate('/home')} style={{ marginTop: '1rem', padding: '0.5rem 1rem', background: 'var(--color-primary)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-            Go Home
+        <div style={{
+          padding: '3rem 2rem',
+          textAlign: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '1rem',
+          marginTop: '4rem'
+        }}>
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-light)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-text-main)', margin: 0 }}>Post not found</h2>
+          <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', margin: 0 }}>This post may have been removed or the link is incorrect.</p>
+          <button
+            onClick={() => navigate('/home')}
+            style={{
+              marginTop: '0.5rem',
+              padding: '0.6rem 1.5rem',
+              background: 'var(--color-primary)',
+              color: 'white',
+              border: 'none',
+              borderRadius: 'var(--radius-full)',
+              cursor: 'pointer',
+              fontFamily: 'var(--font-family-sans)',
+              fontWeight: 600,
+              fontSize: '0.9rem'
+            }}
+          >
+            Back to home
           </button>
         </div>
       </main>
@@ -47,20 +66,23 @@ export default function PostDetailRoute() {
     if (sourceContext === 'community' && communityId) {
       const comm = communities[communityId];
       if (!comm) return null;
-      
+
       return (
         <RightPanel>
           <div className={rightPanelStyles.panelCard}>
             <h3 className={rightPanelStyles.panelTitle}>About Community</h3>
             <p style={{ fontSize: '0.9rem', color: 'var(--color-text-main)', marginBottom: '1.5rem', lineHeight: '1.5' }}>{comm.desc}</p>
-            
+
             <div style={{ display: 'flex', gap: '2rem', marginBottom: '1.5rem' }}>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <div style={{ fontFamily: 'var(--font-family-display)', fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text-main)' }}>{comm.members.toLocaleString()}</div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Members</div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <div style={{ fontFamily: 'var(--font-family-display)', fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text-main)' }}><span style={{ display: 'inline-block', marginRight: '6px', width: '8px', height: '8px', borderRadius: '50%', background: '#22C55E' }}></span>{Math.floor(comm.members * 0.12).toLocaleString()}</div>
+                <div style={{ fontFamily: 'var(--font-family-display)', fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text-main)' }}>
+                  <span style={{ display: 'inline-block', marginRight: '6px', width: '8px', height: '8px', borderRadius: '50%', background: 'var(--color-success)' }}></span>
+                  {Math.floor(comm.members * 0.12).toLocaleString()}
+                </div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Online</div>
               </div>
             </div>
@@ -84,71 +106,86 @@ export default function PostDetailRoute() {
 
       return (
         <RightPanel>
-            <div className={rightPanelStyles.panelCard} style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              {/* Banner */}
-              <div style={{ height: '140px', background: 'linear-gradient(135deg, rgba(109, 93, 252, 0.15), rgba(168, 85, 247, 0.15))', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'url("data:image/svg+xml,%3Csvg width=\\\'20\\\' height=\\\'20\\\' viewBox=\\\'0 0 20 20\\\' xmlns=\\\'http://www.w3.org/2000/svg\\\'%3E%3Cg fill=\\\'%236d5dfc\\\' fill-opacity=\\\'0.05\\\' fill-rule=\\\'evenodd\\\'%3E%3Ccircle cx=\\\'3\\\' cy=\\\'3\\\' r=\\\'3\\\'/%3E%3Ccircle cx=\\\'13\\\' cy=\\\'13\\\' r=\\\'3\\\'/%3E%3C/g%3E%3C/svg%3E")' }}></div>
+          <div className={rightPanelStyles.panelCard} style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+            {/* Profile Info */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              {/* Avatar */}
+              <div 
+                style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', background: 'var(--color-bg-main)', cursor: 'pointer' }}
+                onClick={() => navigate(`/profile/${author.username || author.displayName?.toLowerCase().replace(/\s+/g, '')}`)}
+              >
+                {isImageUrl(author.avatarUrl || author.avatar) ? (
+                  <img src={author.avatarUrl || author.avatar} alt={author.displayName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <DefaultAvatar size={80} />
+                )}
+              </div>
+              
+              <div 
+                style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', cursor: 'pointer' }}
+                onClick={() => navigate(`/profile/${author.username || author.displayName?.toLowerCase().replace(/\s+/g, '')}`)}
+              >
+                <h2 style={{ margin: 0, fontSize: '1.25rem', color: 'var(--color-text-main)', fontFamily: 'var(--font-family-display)' }}>{author.displayName}</h2>
+                <div style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>@{author.username || author.displayName?.toLowerCase().replace(/\s+/g, '')}</div>
               </div>
 
-              {/* Content */}
-              <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                {/* Header & Options */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <h3 style={{ margin: 0, fontSize: '1.25rem', color: '#18181B', fontFamily: "'Outfit', sans-serif" }}>{author.displayName}</h3>
-                  <button style={{ background: 'rgba(24, 24, 27, 0.05)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', transition: 'background 0.2s' }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#71717A" strokeWidth="2.5"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-                  </button>
-                </div>
-                
-                {/* Action Buttons */}
-                <div style={{ display: 'flex', gap: '0.75rem' }}>
-                  <button style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.65rem', borderRadius: '100px', border: 'none', background: '#6D5DFC', color: '#fff', fontWeight: 600, cursor: 'pointer', fontFamily: "'Manrope', sans-serif", transition: 'opacity 0.2s' }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                      Follow
-                  </button>
-                  <button style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.65rem', borderRadius: '100px', border: 'none', background: 'rgba(24, 24, 27, 0.06)', color: '#18181B', fontWeight: 600, cursor: 'pointer', fontFamily: "'Manrope', sans-serif", transition: 'background 0.2s' }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                      Message
-                  </button>
-                </div>
+              {/* Description */}
+              <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--color-text-main)', lineHeight: '1.5' }}>
+                {author.bio || author.desc || 'Passionate about coding, design, and building communities. Always learning something new.'}
+              </p>
 
-                {/* Stats */}
-                <div style={{ display: 'flex', gap: '2.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(24, 24, 27, 0.05)' }}>
-                    <div>
-                      <div style={{ fontWeight: 800, color: '#18181B', fontSize: '1.15rem' }}>{author.followers.toLocaleString()}</div>
-                      <div style={{ color: '#71717A', fontSize: '0.85rem', fontWeight: 500 }}>Followers</div>
-                    </div>
-                    <div>
-                      <div style={{ fontWeight: 800, color: '#18181B', fontSize: '1.15rem' }}>{author.following.toLocaleString()}</div>
-                      <div style={{ color: '#71717A', fontSize: '0.85rem', fontWeight: 500 }}>Following</div>
-                    </div>
-                </div>
-                
-                {/* Communities */}
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <button style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.65rem', borderRadius: 'var(--radius-full)', border: 'none', background: 'var(--color-primary)', color: '#fff', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-family-sans)', transition: 'opacity 0.2s' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Follow
+                </button>
+              </div>
+
+              {/* Stats */}
+              <div style={{ display: 'flex', gap: '2.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid var(--color-border-light)' }}>
                 <div>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#71717A', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1.25rem' }}>Member of these communities</div>
-                    
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                      {author.communities && author.communities.length > 0 ? author.communities.map((commName, i) => (
-                        <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                              <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg, #22C55E, #10B981)', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#fff', fontSize: '0.9rem', fontWeight: 700 }}>
-                                {commName.charAt(0)}
-                              </div>
-                              <div>
-                                <div style={{ fontWeight: 700, color: '#18181B', fontSize: '0.95rem' }}>{commName}</div>
-                                <div style={{ color: '#71717A', fontSize: '0.8rem' }}>Member</div>
-                              </div>
-                          </div>
-                          <button style={{ background: 'rgba(24, 24, 27, 0.05)', color: '#71717A', border: 'none', borderRadius: '100px', padding: '0.4rem 1rem', fontSize: '0.85rem', fontWeight: 600, cursor: 'default' }}>Joined</button>
+                  <div style={{ fontWeight: 800, color: 'var(--color-text-main)', fontSize: '1.15rem' }}>{author.followers?.toLocaleString?.() ?? 0}</div>
+                  <div style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', fontWeight: 500 }}>Followers</div>
+                </div>
+                <div>
+                  <div style={{ fontWeight: 800, color: 'var(--color-text-main)', fontSize: '1.15rem' }}>{author.following?.toLocaleString?.() ?? 0}</div>
+                  <div style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', fontWeight: 500 }}>Following</div>
+                </div>
+              </div>
+
+              {/* Communities */}
+              <div>
+                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>Member of</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {author.communities && author.communities.length > 0 ? author.communities.map((commName, i) => {
+                    const commEntry = Object.entries(communities).find(([_, c]) => c.name === commName);
+                    const commId = commEntry ? commEntry[0] : null;
+                    return (
+                    <div 
+                      key={i} 
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: commId ? 'pointer' : 'default' }}
+                      onClick={() => commId && navigate(`/communities/${commId}`)}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                        <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'linear-gradient(135deg, #22C55E, #10B981)', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#fff', fontSize: '0.8rem', fontWeight: 700 }}>
+                          {commName.charAt(0)}
                         </div>
-                      )) : (
-                        <div style={{ color: '#71717A', fontSize: '0.85rem' }}>No communities yet.</div>
-                      )}
+                        <div>
+                          <div style={{ fontWeight: 700, color: 'var(--color-text-main)', fontSize: '0.85rem' }}>{commName}</div>
+                          <div style={{ color: 'var(--color-text-muted)', fontSize: '0.75rem' }}>Member</div>
+                        </div>
+                      </div>
+                      <button style={{ background: 'var(--color-border-light)', color: 'var(--color-text-muted)', border: 'none', borderRadius: 'var(--radius-full)', padding: '0.25rem 0.6rem', fontSize: '0.75rem', fontWeight: 600, cursor: 'default' }}>Joined</button>
                     </div>
+                    );
+                  }) : (
+                    <div style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>No communities yet.</div>
+                  )}
                 </div>
               </div>
             </div>
+          </div>
         </RightPanel>
       );
     }

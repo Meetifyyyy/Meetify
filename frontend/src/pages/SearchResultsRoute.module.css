@@ -266,7 +266,7 @@
   border: 1px solid transparent;
   border-radius: var(--radius-full, 9999px);
   padding: 8px 16px;
-  font-family: var(--font-family-sans, 'Manrope', sans-serif);
+  font-family: var(--font-family-sans, 'Inter', sans-serif);
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--color-text-muted);
@@ -281,14 +281,14 @@
 }
 
 .activeSectionTab {
-  color: #fff;
+  color: var(--color-text-inverse);
   background: var(--color-primary);
   font-weight: 600;
   box-shadow: 0 4px 12px rgba(109, 93, 252, 0.25);
 }
 
 .activeSectionTab:hover {
-  color: #fff;
+  color: var(--color-text-inverse);
   background: var(--color-primary-hover);
 }
 

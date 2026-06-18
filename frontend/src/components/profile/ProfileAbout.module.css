@@ -43,7 +43,14 @@
   background: rgba(255, 255, 255, 0.5);
   padding: 0.5rem;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(24, 24, 27, 0.05);
+  border: 1px solid var(--color-border-light);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.collegeItem:hover {
+  background: rgba(37, 99, 235, 0.06);
+  border-color: rgba(37, 99, 235, 0.2);
 }
 
 .collegeIcon {
@@ -78,10 +85,10 @@
 
 .communityTag {
   padding: 0.3rem 0.6rem;
-  background: rgba(109, 93, 252, 0.08);
+  background: rgba(37, 99, 235, 0.08);
   color: var(--color-primary);
-  border: 1px solid rgba(109, 93, 252, 0.2);
-  border-radius: 20px;
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  border-radius: var(--radius-xl);
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
@@ -94,7 +101,7 @@
   background: var(--color-primary);
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(109, 93, 252, 0.2);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
 }
 
 .socialLinks {
@@ -109,7 +116,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: rgba(24, 24, 27, 0.04);
+  background: var(--color-border-light);
   color: var(--color-text-main);
   transition: all 0.2s;
 }

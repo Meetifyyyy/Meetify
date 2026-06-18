@@ -1,33 +1,19 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext } from 'react';
+import { useData } from './DataContext';
 
 const FollowContext = createContext(null);
 
 export function FollowProvider({ children }) {
-  const [following, setFollowing] = useState(() => {
-    try {
-      const stored = localStorage.getItem('following');
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
-  });
+  const { currentUser, toggleFollow: dataToggleFollow } = useData();
 
-  useEffect(() => {
-    localStorage.setItem('following', JSON.stringify(following));
-  }, [following]);
+  const following = currentUser?.followingList || [];
 
-  const isFollowing = (username) => {
-    return following.includes(username);
+  const isFollowing = (uName) => {
+    return following.includes(uName);
   };
 
-  const toggleFollow = (username) => {
-    setFollowing((prev) => {
-      if (prev.includes(username)) {
-        return prev.filter((u) => u !== username);
-      } else {
-        return [...prev, username];
-      }
-    });
+  const toggleFollow = (uName) => {
+    dataToggleFollow(uName);
   };
 
   return (

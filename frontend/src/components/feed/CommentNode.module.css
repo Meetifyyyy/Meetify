@@ -241,7 +241,7 @@
 .repliesContainer {
   margin: 0.75rem 0 0 1.25rem;
   padding-left: 1.25rem;
-  border-left: 2px solid rgba(24, 24, 27, 0.08);
+  border-left: 2px solid var(--color-border);
 }
 
 .replyAvatarImg {

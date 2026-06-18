@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import data from '@emoji-mart/data';
+import { isImageUrl } from '../../utils/avatar';
+import DefaultAvatar from '../common/DefaultAvatar';
 import styles from './ChatArea.module.css';
 
 const Picker = lazy(() => import('@emoji-mart/react'));
@@ -69,81 +71,81 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
 
   return (
     <div className={`${styles.msgChatArea}${!showChatOnMobile ? ` ${styles.hideOnMobile}` : ''}`} onClick={() => setShowMoreMenu(false)}>
-      {/* Voice Call UI Overlay */}
+      {/* Voice Call Overlay */}
       {isCalling && (
-        <div className={styles.voiceCallOverlay}>
-          <div className={styles.voiceCallCard}>
-            <div className={styles.voiceCallAvatarContainer}>
-              <div className={`${styles.voiceCallAvatarPulse} ${styles.pulse1}`} />
-              <div className={`${styles.voiceCallAvatarPulse} ${styles.pulse2}`} />
-              <div className={styles.voiceCallAvatar} style={{ background: conversation.avatar && conversation.avatar.length > 1 ? 'none' : conversation.color }}>
-                {conversation.avatar && conversation.avatar.length > 1 ? (
-                  <img src={conversation.avatar} alt={conversation.name} className={styles.voiceCallAvatarImg} />
+        <div className={styles.callOverlay}>
+          <div className={styles.callCard}>
+            <div className={styles.callAvatarContainer}>
+              <div className={`${styles.callAvatarPulse} ${styles.pulse1}`} />
+              <div className={`${styles.callAvatarPulse} ${styles.pulse2}`} />
+              <div className={styles.callAvatar} style={{ background: isImageUrl(conversation.avatar) ? 'none' : conversation.color }}>
+                {isImageUrl(conversation.avatar) ? (
+                  <img src={conversation.avatar} alt={conversation.name} className={styles.callAvatarImg} />
                 ) : (
-                  conversation.avatar
+                  <DefaultAvatar />
                 )}
               </div>
             </div>
-            <div className={styles.voiceCallName}>{conversation.name}</div>
-            <div className={styles.voiceCallStatus}>
-              {callDuration === 0 ? 'Connecting...' : `Active • ${formatDuration(callDuration)}`}
+            <div className={styles.callName}>{conversation.name}</div>
+            <div className={styles.callStatus}>
+              {callDuration === 0 ? 'Connecting...' : formatDuration(callDuration)}
             </div>
-            
+
             {callDuration > 0 && (
-              <div className={styles.voiceCallWaveform}>
-                <span className={`${styles.waveBar} ${styles.bar1}`}></span>
-                <span className={`${styles.waveBar} ${styles.bar2}`}></span>
-                <span className={`${styles.waveBar} ${styles.bar3}`}></span>
-                <span className={`${styles.waveBar} ${styles.bar4}`}></span>
-                <span className={`${styles.waveBar} ${styles.bar5}`}></span>
-                <span className={`${styles.waveBar} ${styles.bar6}`}></span>
-                <span className={`${styles.waveBar} ${styles.bar7}`}></span>
+              <div className={styles.callWaveform}>
+                <span className={`${styles.waveBar} ${styles.bar1}`} />
+                <span className={`${styles.waveBar} ${styles.bar2}`} />
+                <span className={`${styles.waveBar} ${styles.bar3}`} />
+                <span className={`${styles.waveBar} ${styles.bar4}`} />
+                <span className={`${styles.waveBar} ${styles.bar5}`} />
+                <span className={`${styles.waveBar} ${styles.bar6}`} />
+                <span className={`${styles.waveBar} ${styles.bar7}`} />
               </div>
             )}
 
-            <div className={styles.voiceCallControls}>
-              <button 
-                className={`${styles.voiceCallBtn} ${isMuted ? styles.active : ''}`} 
+            <div className={styles.callControls}>
+              <button
+                className={`${styles.callBtn} ${isMuted ? styles.active : ''}`}
                 onClick={() => setIsMuted(!isMuted)}
-                title={isMuted ? "Unmute Mic" : "Mute Mic"}
+                title={isMuted ? 'Unmute Mic' : 'Mute Mic'}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   {isMuted ? (
                     <>
-                      <line x1="1" y1="1" x2="23" y2="23"></line>
-                      <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path>
-                      <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"></path>
-                      <line x1="12" y1="19" x2="12" y2="23"></line>
-                      <line x1="8" y1="23" x2="16" y2="23"></line>
+                      <line x1="1" y1="1" x2="23" y2="23" />
+                      <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6" />
+                      <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23" />
+                      <line x1="12" y1="19" x2="12" y2="23" />
+                      <line x1="8" y1="23" x2="16" y2="23" />
                     </>
                   ) : (
                     <>
-                      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-                      <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                      <line x1="12" y1="19" x2="12" y2="23"></line>
-                      <line x1="8" y1="23" x2="16" y2="23"></line>
+                      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                      <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                      <line x1="12" y1="19" x2="12" y2="23" />
+                      <line x1="8" y1="23" x2="16" y2="23" />
                     </>
                   )}
                 </svg>
               </button>
-              
-              <button 
-                className={`${styles.voiceCallBtn} ${styles.endCall}`} 
+
+              <button
+                className={`${styles.callBtn} ${styles.callEndBtn}`}
                 onClick={() => setIsCalling(false)}
                 title="End Call"
               >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91" />
                   <line x1="3" y1="21" x2="21" y2="3" strokeWidth="2.5" />
                 </svg>
               </button>
 
-              <button 
-                className={`${styles.voiceCallBtn} ${isSpeakerOn ? styles.active : ''}`} 
+              <button
+                className={`${styles.callBtn} ${isSpeakerOn ? styles.active : ''}`}
                 onClick={() => setIsSpeakerOn(!isSpeakerOn)}
-                title={isSpeakerOn ? "Speaker Off" : "Speaker On"}
+                title={isSpeakerOn ? 'Speaker Off' : 'Speaker On'}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
                   <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
                 </svg>
@@ -162,11 +164,11 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
               </svg>
             </button>
           )}
-          <div className={styles.msgChatAvatar} style={{ background: conversation.avatar && conversation.avatar.length > 1 ? 'none' : conversation.color }}>
-            {conversation.avatar && conversation.avatar.length > 1 ? (
+          <div className={styles.msgChatAvatar} style={{ background: isImageUrl(conversation.avatar) ? 'none' : conversation.color }}>
+            {isImageUrl(conversation.avatar) ? (
               <img src={conversation.avatar} alt={conversation.name} className={styles.msgChatAvatarImg} />
             ) : (
-              conversation.avatar
+              <DefaultAvatar />
             )}
           </div>
           <div>

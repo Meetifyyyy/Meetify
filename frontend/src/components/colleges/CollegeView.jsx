@@ -4,6 +4,8 @@ import { useData } from '../../context/DataContext';
 import Post from '../feed/Post';
 import PostComposer from '../feed/PostComposer';
 import { UniversityEvents, UniversityMembers } from '../layout/RightPanel';
+import { isImageUrl } from '../../utils/avatar';
+import DefaultAvatar from '../common/DefaultAvatar';
 import styles from './CollegeView.module.css';
 
 export default function CollegeView({ collegeId, onBack, onPostClick }) {
@@ -53,7 +55,7 @@ export default function CollegeView({ collegeId, onBack, onPostClick }) {
       </div>
 
       {/* Main Two-Column Layout */}
-      <div className={styles.collegeMainLayout}>
+      <div className={`${styles.collegeMainLayout}${activeTab === 'events' || activeTab === 'members' ? ` ${styles.fullWidth}` : ''}`}>
         {/* Left Column: Feed or Communities */}
         <div className={styles.collegeLeftColumn}>
           {/* Tabs Navigation */}
@@ -212,41 +214,17 @@ export default function CollegeView({ collegeId, onBack, onPostClick }) {
                     const username = m.username || m.name.toLowerCase().replace(/[^a-z0-9]/g, '');
                     return (
                       <div key={i} className={styles.memberGridCard} onClick={() => navigate(`/profile/${username}`)}>
-                        <div className={styles.memberGridAvatar} style={{ background: m.avatar && m.avatar.length > 1 ? 'none' : (m.admin ? 'linear-gradient(135deg, #1D4ED8, #3B82F6)' : 'var(--color-primary)') }}>
-                          {m.avatar && m.avatar.length > 1 ? (
-                            <img src={m.avatar} alt={m.name} className={styles.memberGridAvatarImg} />
-                          ) : (
-                            m.avatar
-                          )}
-                          {m.online && <span className={styles.memberGridOnlineDot} title="Online"></span>}
+                        <div className={styles.memberAvatarWrapper}>
+                          <div className={styles.memberAvatar} style={{ background: isImageUrl(m.avatar) ? 'none' : (m.admin ? 'linear-gradient(135deg, #1D4ED8, #3B82F6)' : 'var(--color-primary)') }}>
+                            {isImageUrl(m.avatar) ? (
+                              <img src={m.avatar} alt={m.name} />
+                            ) : (
+                              <DefaultAvatar />
+                            )}
+                          </div>
+                          {m.online && <span className={styles.memberOnlineDot} />}
                         </div>
-                        <div className={styles.memberGridInfo}>
-                          <div className={styles.memberGridName}>{m.name} {m.admin && '👑'}</div>
-                          <div className={styles.memberGridBranch}>{m.branch} • {m.year}</div>
-                        </div>
-                        <div className={styles.memberGridActions}>
-                          <button 
-                            className={styles.memberGridFollowBtn} 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              // Toggle follow logic would go here
-                            }}
-                          >
-                            Follow
-                          </button>
-                          <button 
-                            className={styles.memberGridMsgBtn} 
-                            title="Message"
-                            onClick={async (e) => {
-                              e.stopPropagation();
-                              if (m.name === currentUser.displayName || m.name === currentUser.name) return; // Don't message self
-                              const convId = await startConversation(m);
-                              navigate(`/messages/${convId}`);
-                            }}
-                          >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                          </button>
-                        </div>
+                        <div className={styles.memberName}>{m.name}</div>
                       </div>
                     );
                   })}
@@ -257,12 +235,14 @@ export default function CollegeView({ collegeId, onBack, onPostClick }) {
         </div>
 
         {/* Right Column: Sidebar (Events & Members) */}
-        <div className={styles.collegeRightColumn}>
-          <div className={styles.sidebarWidgets}>
-            <UniversityEvents events={comm.events} title={`${comm.name} Events`} />
-            <UniversityMembers members={comm.memberList} title={`${comm.name} Members`} />
+        {activeTab !== 'events' && activeTab !== 'members' && (
+          <div className={styles.collegeRightColumn}>
+            <div className={styles.sidebarWidgets}>
+              <UniversityEvents events={comm.events} title={`${comm.name} Events`} onViewAll={() => setActiveTab('events')} />
+              <UniversityMembers members={comm.memberList} title={`${comm.name} Members`} onViewAll={() => setActiveTab('members')} />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

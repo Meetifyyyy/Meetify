@@ -3,9 +3,8 @@
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
-  object-fit: cover;
+  height: 100dvh;
+  background: var(--color-bg-main);
   z-index: -1;
   pointer-events: none;
-  user-select: none;
 }

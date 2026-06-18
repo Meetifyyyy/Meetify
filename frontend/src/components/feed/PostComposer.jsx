@@ -1,5 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, memo } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { isImageUrl } from '../../utils/avatar';
+import DefaultAvatar from '../common/DefaultAvatar';
 import styles from './PostComposer.module.css';
 
 const EMOJI_GROUPS = [
@@ -10,7 +12,7 @@ const EMOJI_GROUPS = [
   { label: 'Nature', emojis: ['🌸','🌿','🌊','☀️','🌙','⚡','🦋','🐾','🌈','🍀','🌺','🍂'] },
 ];
 
-export default function PostComposer({ onSubmit }) {
+function PostComposer({ onSubmit }) {
   const { initial, currentUser } = useAuth();
   const [value, setValue] = useState('');
   const [showEmoji, setShowEmoji] = useState(false);
@@ -100,10 +102,10 @@ export default function PostComposer({ onSubmit }) {
       <div className={`${styles.postComposer}${showPoll ? ` ${styles.hasPoll}` : ''}`}>
         <div className={styles.composerTopRow}>
           <div className={styles.composerAvatar}>
-            {currentUser?.avatar && currentUser.avatar.length > 1 ? (
+            {isImageUrl(currentUser?.avatar) ? (
               <img src={currentUser.avatar} alt={currentUser.displayName} className={styles.composerAvatarImg} />
             ) : (
-              initial
+              <DefaultAvatar />
             )}
           </div>
           <input
@@ -231,3 +233,6 @@ export default function PostComposer({ onSubmit }) {
     </div>
   );
 }
+
+export default memo(PostComposer);
+

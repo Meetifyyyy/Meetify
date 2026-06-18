@@ -1,4 +1,5 @@
-import { useLocation, Outlet, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Outlet, useNavigate, useMatches } from 'react-router-dom';
 import Background from '../components/common/Background';
 import Header from '../components/layout/Header';
 import Sidebar from '../components/layout/Sidebar';
@@ -6,15 +7,23 @@ import DashboardLayout from '../components/layout/DashboardLayout';
 import BottomNav from '../components/layout/BottomNav';
 
 export default function DashboardLayoutWrapper() {
-  const location = useLocation();
+  const matches = useMatches();
   const navigate = useNavigate();
   
-  // Determine if wide layout is needed based on path
-  const isWide = 
-    location.pathname.startsWith('/communities') || 
-    location.pathname.startsWith('/colleges') || 
-    location.pathname.startsWith('/messages') ||
-    location.pathname.startsWith('/profile');
+  // Determine if wide layout is needed based on route handle
+  const isWide = matches.some(match => match.handle?.wide);
+  
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        navigate('/search');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigate]);
+
   const handleCommunityClick = (id) => {
     navigate(`/communities/${id}`);
   };

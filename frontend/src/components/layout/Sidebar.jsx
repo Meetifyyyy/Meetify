@@ -1,37 +1,30 @@
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { isImageUrl } from '../../utils/avatar';
+import DefaultAvatar from '../common/DefaultAvatar';
 import styles from './Sidebar.module.css';
 
 export default function Sidebar({ onCommunityClick }) {
-  const { username, initial, currentUser } = useAuth();
-  const { communities } = useData();
+  const { initial, currentUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const communityItems = Object.values(communities)
-    .filter(c => !c.isUniversity && !c.collegeId)
-    .slice(0, 4)
-    .map(c => ({
-    id: c.id,
-    name: c.name,
-    letter: c.avatar,
-    members: c.members >= 1000 ? `${(c.members / 1000).toFixed(1)}k` : c.members,
-    gradient: c.color
-  }));
+  const displayName = currentUser?.displayName || currentUser?.username || '';
+  const username = currentUser?.username || '';
 
   return (
     <aside className={styles.sidebar}>
       <div className={styles.sidebarUser}>
         <div className={styles.sidebarAvatar}>
-          {currentUser?.avatar && currentUser.avatar.length > 1 ? (
-            <img src={currentUser.avatar} alt="user avatar" className={styles.sidebarAvatarImg} />
+          {isImageUrl(currentUser?.avatar) ? (
+            <img src={currentUser.avatar} alt={displayName} className={styles.sidebarAvatarImg} />
           ) : (
-            initial
+            <DefaultAvatar />
           )}
         </div>
         <div>
-          <div className={styles.sidebarName}>{username}</div>
+          <div className={styles.sidebarName}>{displayName}</div>
           <div className={styles.sidebarUsername}>@{username}</div>
           <div className={styles.sidebarStatus}>Online</div>
         </div>
@@ -64,17 +57,6 @@ export default function Sidebar({ onCommunityClick }) {
         </a>
         <a
           href="#"
-          className={`${styles.sidebarLink}${location.pathname.startsWith('/colleges') ? ` ${styles.active}` : ''}`}
-          onClick={(e) => { e.preventDefault(); navigate('/colleges'); }}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-            <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
-          </svg>
-          Colleges
-        </a>
-        <a
-          href="#"
           className={`${styles.sidebarLink}${location.pathname.startsWith('/messages') ? ` ${styles.active}` : ''}`}
           onClick={(e) => { e.preventDefault(); navigate('/messages'); }}
         >
@@ -84,20 +66,30 @@ export default function Sidebar({ onCommunityClick }) {
           </svg>
           Messages
         </a>
-      </nav>
+        <a
+          href="#"
+          className={`${styles.sidebarLink}${location.pathname.startsWith('/search') ? ` ${styles.active}` : ''}`}
+          onClick={(e) => { e.preventDefault(); navigate('/search'); }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          Search
+        </a>
+        <a
+          href="#"
+          className={`${styles.sidebarLink}${location.pathname.startsWith('/crew') ? ` ${styles.active}` : ''}`}
+          onClick={(e) => { e.preventDefault(); navigate('/crew'); }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+          </svg>
+          Find your crew
+        </a>
 
-      <div className={styles.sidebarSection}>
-        <div className={styles.sidebarSectionTitle}>Top Communities</div>
-        {communityItems.map((c) => (
-          <div key={c.id} className={styles.communityItem} onClick={() => onCommunityClick(c.id)}>
-            <div className={styles.communityAvatar} style={{ background: c.gradient }}>{c.letter}</div>
-            <div className={styles.communityInfo}>
-              <div className={styles.communityName}>{c.name}</div>
-              <div className={styles.communityMeta}>{c.members} members</div>
-            </div>
-          </div>
-        ))}
-      </div>
+      </nav>
     </aside>
   );
 }

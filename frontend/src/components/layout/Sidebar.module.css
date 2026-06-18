@@ -1,13 +1,11 @@
 .sidebar {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: var(--color-bg-white);
+  border: 1px solid var(--color-border-light);
   border-radius: var(--radius-lg);
-  padding: 1.5rem 1rem;
+  padding: 1.25rem 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
   height: 100%;
   overflow-y: auto;
   scrollbar-width: none;
@@ -22,15 +20,14 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-border);
+  padding: 0 0.5rem 1rem;
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 .sidebarAvatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -44,17 +41,16 @@
 .sidebarName {
   font-family: var(--font-family-display);
   font-weight: 600;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   color: var(--color-text-main);
   line-height: 1.2;
 }
 
 .sidebarUsername {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 400;
-  color: var(--color-primary);
+  color: var(--color-text-light);
   line-height: 1.3;
-  margin-bottom: 1px;
 }
 
 .sidebarStatus {
@@ -66,7 +62,7 @@
 .sidebarNav {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.15rem;
   flex: 1;
 }
 
@@ -76,47 +72,51 @@
   justify-content: flex-start;
   text-align: left;
   width: 100%;
-  box-sizing: border-box;
   gap: 0.75rem;
-  padding: 0.65rem 0.85rem;
-  border-radius: 10px;
+  padding: 0.85rem 0.75rem;
+  border-radius: var(--radius-sm);
   text-decoration: none;
   font-family: var(--font-family-sans);
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 500;
-  color: var(--color-text-main);
-  opacity: 0.6;
-  transition: all 0.2s;
+  color: var(--color-text-muted);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .sidebarLink:hover {
-  opacity: 1;
-  background: rgba(109, 93, 252, 0.06);
+  color: var(--color-text-main);
+  background: var(--color-border-light);
+  transform: translateX(4px);
 }
 
 .sidebarLink.active {
-  opacity: 1;
-  background: rgba(109, 93, 252, 0.1);
   color: var(--color-primary);
+  background: rgba(37, 99, 235, 0.06);
+  font-weight: 600;
 }
 
 .sidebarLink svg {
   flex-shrink: 0;
+  color: var(--color-text-light);
+}
+
+.sidebarLink.active svg {
+  color: var(--color-primary);
 }
 
 .sidebarSection {
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border-light);
   padding-top: 0.75rem;
 }
 
 .sidebarSectionTitle {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 600;
-  color: var(--color-text-muted);
+  color: var(--color-text-light);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  margin-bottom: 0.5rem;
-  padding: 0 0.85rem;
+  margin-bottom: 0.4rem;
+  padding: 0 0.75rem;
 }
 
 .communityItem {
@@ -125,34 +125,29 @@
   justify-content: flex-start;
   text-align: left;
   width: 100%;
-  box-sizing: border-box;
   gap: 0.65rem;
-  padding: 0.45rem 0.85rem;
-  border-radius: 10px;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background 0.15s;
 }
 
 .communityItem:hover {
-  background: rgba(109, 93, 252, 0.06);
+  background: var(--color-border-light);
 }
 
 .communityAvatar {
   width: 28px;
   height: 28px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-family-display);
   font-weight: 700;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--color-bg-white);
   flex-shrink: 0;
-}
-
-.communityInfo {
-  /* empty in css but class exists in jsx */
 }
 
 .communityName {
@@ -162,10 +157,14 @@
   color: var(--color-text-main);
 }
 
+.communityInfo {
+  min-width: 0;
+}
+
 .communityMeta {
   font-family: var(--font-family-sans);
-  font-size: 0.7rem;
-  color: var(--color-text-muted);
+  font-size: 0.68rem;
+  color: var(--color-text-light);
 }
 
 @media (max-width: 768px) {

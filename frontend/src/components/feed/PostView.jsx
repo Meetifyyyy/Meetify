@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useData } from '../../context/DataContext';
+import { isImageUrl } from '../../utils/avatar';
+import DefaultAvatar from '../common/DefaultAvatar';
 import Post from './Post';
 import CommentNode from './CommentNode';
 import styles from './PostView.module.css';
@@ -26,6 +28,13 @@ export default function PostView({ post, onBack }) {
     addComment(livePost.id, text, parentId);
   };
 
+  useEffect(() => {
+    const el = document.getElementById('reply-composer');
+    if (el) {
+      el.focus();
+    }
+  }, [livePost.id]);
+
   const replies = livePost.replies || [];
 
   return (
@@ -47,10 +56,10 @@ export default function PostView({ post, onBack }) {
       {/* Reply Composer (Top Level) */}
       <div className={styles.postViewComposer}>
         <div className={styles.composerAvatar}>
-          {currentUser.avatar && currentUser.avatar.length > 1 ? (
+          {isImageUrl(currentUser.avatar) ? (
             <img src={currentUser.avatar} alt={currentUser.displayName} className={styles.composerAvatarImg} />
           ) : (
-            currentUser.avatar
+            <DefaultAvatar />
           )}
         </div>
         <form onSubmit={handleMainReplySubmit} className={styles.replyForm}>

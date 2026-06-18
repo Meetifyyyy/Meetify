@@ -4,8 +4,9 @@ export const initialUsers = {
     username: 'alicechen',
     displayName: 'Alice Chen',
     avatar: 'A',
+    avatarUrl: null,
     bio: 'Building cool stuff & meeting awesome people. I love experimenting with new technologies, creating unique user experiences, and exploring the unknown.',
-    location: 'Based in New York',
+    location: 'New York, NY',
     role: 'Full-stack Developer',
     email: 'alicechen@meetify.app',
     followers: 8401,
@@ -13,87 +14,300 @@ export const initialUsers = {
     communities: ['Startup Hub', 'Hackathon Heroes', 'GLA University'],
     course: 'B.Tech CS',
     year: '4th Year',
-    collegeId: 'gla'
+    collegeId: 'gla',
+    verified: true,
+    interests: ['AI', 'Startups', 'Product Design', 'Web Development', 'Hackathons', 'Open Source'],
+    skills: ['React', 'Node.js', 'Figma', 'Python', 'Machine Learning', 'TypeScript', 'Next.js'],
+    projects: [
+      {
+        id: 'proj_1',
+        title: 'Meetify',
+        description: 'Social platform connecting college students through shared interests, communities, and events.',
+        technologies: ['React', 'Node.js', 'MongoDB', 'WebSocket'],
+        image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=400&fit=crop',
+        link: '#',
+        type: 'Project'
+      },
+      {
+        id: 'proj_2',
+        title: 'AI Study Buddy',
+        description: 'An AI-powered study assistant built during a 48-hour hackathon using Whisper + GPT-4o.',
+        technologies: ['Python', 'OpenAI', 'React Native', 'FastAPI'],
+        image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&h=400&fit=crop',
+        link: '#',
+        type: 'Hackathon Project'
+      }
+    ],
+    achievements: [
+      { id: 'ach_1', title: 'Best Hackathon Project', description: 'Won first place at HackMIT 2025', icon: '🏆', date: 'Mar 2025' },
+      { id: 'ach_2', title: '100 Days of Code', description: 'Completed 100 consecutive days of coding', icon: '💻', date: 'Jan 2025' },
+      { id: 'ach_3', title: 'Top Contributor', description: 'Most active member in Startup Hub community', icon: '⭐', date: 'Dec 2024' }
+    ],
+    activityLog: [
+      { type: 'post', text: 'Built a project at Hackathon Heroes', icon: '🚀', time: '2 hours ago', link: '#' },
+      { type: 'post', text: 'Posted in AI/ML Enthusiasts', icon: '🤖', time: '5 hours ago', link: '#' },
+      { type: 'join', text: 'Joined Startup Hub', icon: '🎉', time: '3 days ago', link: '/communities/startup' },
+      { type: 'achievement', text: 'Won a design challenge', icon: '🏆', time: '1 week ago', link: '#' },
+      { type: 'milestone', text: 'Reached 8K followers', icon: '🌟', time: '2 weeks ago', link: '#' },
+      { type: 'event', text: 'Attended Tech Fest 2026', icon: '📅', time: '3 weeks ago', link: '#' },
+      { type: 'discussion', text: 'Started discussion in GLA University', icon: '💬', time: '1 month ago', link: '#' }
+    ],
+    socialLinks: {
+      github: 'https://github.com/alicechen',
+      linkedin: 'https://linkedin.com/in/alicechen',
+      twitter: 'https://twitter.com/alicechen',
+      website: 'https://alicechen.dev'
+    },
+    communitiesJoined: 5,
+    eventsAttended: 12,
+    connectionsMade: 48,
+    projectsShared: 7,
+    postsThisMonth: 12,
+    profileVisitsThisWeek: 47,
+    newConnectionsThisWeek: 3,
+    recentlyActive: true,
+    memberSince: 'Aug 2023'
   },
   marcusrivera: {
     id: 'u2',
     username: 'marcusrivera',
     displayName: 'Marcus Rivera',
     avatar: 'M',
+    avatarUrl: null,
     bio: 'Product Designer focused on mental wellness and accessible UX. Always looking for new challenges.',
     location: 'San Francisco, CA',
     role: 'UI/UX Designer',
     email: 'marcus@meetify.app',
     followers: 5230,
     following: 340,
-    communities: ['Design Thinkers', 'IIT Delhi'],
+    communities: ['Design Buddies', 'IIT Delhi', 'Startup Hub'],
     course: 'B.Tech IT',
     year: '3rd Year',
-    collegeId: 'iitdelhi'
+    collegeId: 'iitdelhi',
+    verified: false,
+    interests: ['UI/UX Design', 'Mental Health Tech', 'Accessibility', 'Design Systems', 'Branding'],
+    skills: ['Figma', 'Adobe XD', 'Prototyping', 'User Research', 'CSS/SCSS', 'Design Tokens'],
+    projects: [
+      {
+        id: 'proj_3',
+        title: 'MindWell App',
+        description: 'Mental wellness app focused on accessible UX and inclusive design principles.',
+        technologies: ['Figma', 'React Native', 'TypeScript'],
+        image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&h=400&fit=crop',
+        link: '#',
+        type: 'Project'
+      }
+    ],
+    achievements: [
+      { id: 'ach_4', title: 'Design System Award', description: 'Recognized for building a comprehensive design system', icon: '🎨', date: 'Feb 2025' }
+    ],
+    activityLog: [
+      { type: 'post', text: 'Shared a UX research case study', icon: '📝', time: '1 day ago', link: '#' },
+      { type: 'join', text: 'Joined Design Buddies', icon: '🎉', time: '1 week ago', link: '/communities/design' },
+      { type: 'event', text: 'Attended UX Summit 2026', icon: '📅', time: '2 weeks ago', link: '#' }
+    ],
+    socialLinks: {
+      linkedin: 'https://linkedin.com/in/marcusrivera',
+      website: 'https://marcusrivera.design'
+    },
+    communitiesJoined: 3,
+    eventsAttended: 8,
+    connectionsMade: 24,
+    projectsShared: 3,
+    postsThisMonth: 5,
+    profileVisitsThisWeek: 32,
+    newConnectionsThisWeek: 1,
+    recentlyActive: true,
+    memberSince: 'Oct 2023'
   },
   priyasharma: {
     id: 'u3',
     username: 'priyasharma',
     displayName: 'Priya Sharma',
     avatar: 'P',
+    avatarUrl: null,
     bio: 'Self-taught ML Engineer. Passionate about democratizing AI education.',
     location: 'Remote',
     role: 'ML Engineer',
     email: 'priya@meetify.app',
     followers: 12500,
     following: 50,
-    communities: ['AI Innovators', 'GLA University'],
+    communities: ['AI/ML Enthusiasts', 'GLA University', 'Hackathon Heroes'],
     course: 'BCA',
     year: '2nd Year',
-    collegeId: 'gla'
+    collegeId: 'gla',
+    verified: true,
+    interests: ['Machine Learning', 'AI Education', 'Open Source', 'NLP', 'Deep Learning'],
+    skills: ['Python', 'TensorFlow', 'PyTorch', 'Scikit-learn', 'Hugging Face', 'SQL'],
+    projects: [
+      {
+        id: 'proj_4',
+        title: 'EduAI Platform',
+        description: 'Democratizing AI education through interactive tutorials and hands-on projects.',
+        technologies: ['Python', 'Streamlit', 'Hugging Face', 'Docker'],
+        image: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=600&h=400&fit=crop',
+        link: '#',
+        type: 'Project'
+      }
+    ],
+    achievements: [
+      { id: 'ach_5', title: 'AI Educator Award', description: 'Recognized for contributions to AI education', icon: '🎓', date: 'Jan 2025' },
+      { id: 'ach_6', title: 'Paper Published', description: 'Co-authored a paper on accessible ML education', icon: '📄', date: 'Nov 2024' }
+    ],
+    activityLog: [
+      { type: 'post', text: 'Shared ML learning resources', icon: '🤖', time: '3 hours ago', link: '#' },
+      { type: 'milestone', text: 'Reached 12.5K followers', icon: '🌟', time: '1 week ago', link: '#' },
+      { type: 'discussion', text: 'Started AI study group', icon: '💬', time: '2 weeks ago', link: '#' }
+    ],
+    socialLinks: {
+      github: 'https://github.com/priyasharma',
+      twitter: 'https://twitter.com/priyasharma'
+    },
+    communitiesJoined: 4,
+    eventsAttended: 15,
+    connectionsMade: 89,
+    projectsShared: 5,
+    postsThisMonth: 18,
+    profileVisitsThisWeek: 89,
+    newConnectionsThisWeek: 7,
+    recentlyActive: true,
+    memberSince: 'Jan 2024'
   },
   sammydoe: {
     id: 'u4',
     username: 'sammydoe',
     displayName: 'Sammy Doe',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=150&h=150',
+    avatar: 'S',
+    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=150&h=150',
     bio: 'Frontend enthusiast. Glassmorphism is the future.',
     location: 'London, UK',
     role: 'Frontend Dev',
     email: 'sammy@meetify.app',
     followers: 1200,
     following: 400,
-    communities: ['Frontend Masters', 'IIT Delhi'],
+    communities: ['Design Buddies', 'IIT Delhi', 'Gaming & E-Sports'],
     course: 'MCA',
     year: '1st Year',
-    collegeId: 'iitdelhi'
+    collegeId: 'iitdelhi',
+    verified: false,
+    interests: ['Frontend', 'CSS Art', 'WebGL', 'Three.js', 'UI Animation'],
+    skills: ['React', 'Three.js', 'CSS/SASS', 'JavaScript', 'WebGL', 'GSAP'],
+    projects: [],
+    achievements: [],
+    activityLog: [
+      { type: 'post', text: 'Deployed portfolio with Three.js', icon: '🌍', time: '2 days ago', link: '#' }
+    ],
+    socialLinks: {
+      github: 'https://github.com/sammydoe',
+      website: 'https://sammydoe.dev'
+    },
+    communitiesJoined: 3,
+    eventsAttended: 2,
+    connectionsMade: 15,
+    projectsShared: 1,
+    postsThisMonth: 3,
+    profileVisitsThisWeek: 12,
+    newConnectionsThisWeek: 0,
+    recentlyActive: false,
+    memberSince: 'Mar 2024'
   },
   alexq: {
     id: 'u5',
     username: 'alexq',
     displayName: 'Alex Q.',
     avatar: 'A',
-    bio: 'Hardware engineer turning software.',
+    avatarUrl: null,
+    bio: 'Hardware engineer turning software. Building IoT projects and exploring Rust for embedded systems.',
     location: 'Austin, TX',
     role: 'Software Engineer',
     email: 'alexq@meetify.app',
     followers: 890,
     following: 120,
-    communities: ['GLA University'],
+    communities: ['GLA University', 'AI/ML Enthusiasts'],
     course: 'B.Tech ME',
     year: '4th Year',
-    collegeId: 'gla'
+    collegeId: 'gla',
+    verified: false,
+    interests: ['Embedded Systems', 'IoT', 'Rust', 'AI'],
+    skills: ['C++', 'Rust', 'Python', 'Arduino', 'Embedded Linux'],
+    projects: [
+      {
+        id: 'proj_alex_1',
+        title: 'SmartHome Controller',
+        description: 'A Rust-based embedded controller for home automation, running on Raspberry Pi.',
+        technologies: ['Rust', 'MQTT', 'Raspberry Pi', 'React'],
+        image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop',
+        link: '#',
+        type: 'Project'
+      }
+    ],
+    achievements: [
+      { id: 'ach_alex_1', title: 'Open Source Contributor', description: 'Merged 10 PRs into embedded Rust projects', icon: '🦀', date: 'Apr 2025' }
+    ],
+    activityLog: [
+      { type: 'post', text: 'Posted about Rust & ML integration', icon: '🦀', time: '2 days ago', link: '#' },
+      { type: 'join', text: 'Joined AI/ML Enthusiasts', icon: '🎉', time: '2 months ago', link: '/communities/aiml' }
+    ],
+    socialLinks: {},
+    communitiesJoined: 2,
+    eventsAttended: 4,
+    connectionsMade: 8,
+    projectsShared: 0,
+    postsThisMonth: 1,
+    profileVisitsThisWeek: 5,
+    newConnectionsThisWeek: 0,
+    recentlyActive: false,
+    memberSince: 'Jun 2024'
   },
   chrisb: {
     id: 'u6',
     username: 'chrisb',
     displayName: 'Chris B.',
     avatar: 'C',
-    bio: 'Design system advocate.',
+    avatarUrl: null,
+    bio: 'Design system advocate & PM. Building bridges between design and engineering teams.',
     location: 'Toronto, CA',
     role: 'Product Manager',
     email: 'chrisb@meetify.app',
     followers: 3400,
     following: 200,
-    communities: ['Design Thinkers', 'IIT Delhi'],
+    communities: ['Design Buddies', 'IIT Delhi', 'Startup Hub'],
     course: 'BBA',
     year: '3rd Year',
-    collegeId: 'iitdelhi'
+    collegeId: 'iitdelhi',
+    verified: false,
+    interests: ['Product Management', 'Design Systems', 'Agile', 'User Research'],
+    skills: ['Jira', 'Figma', 'Analytics', 'A/B Testing', 'Roadmapping'],
+    projects: [
+      {
+        id: 'proj_chris_1',
+        title: 'DesignOps Playbook',
+        description: 'An open-source guide for scaling design systems across large product teams.',
+        technologies: ['Figma', 'Notion', 'Storybook'],
+        image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=600&h=400&fit=crop',
+        link: '#',
+        type: 'Resource'
+      }
+    ],
+    achievements: [
+      { id: 'ach_chris_1', title: 'Product Lead', description: 'Led product launch for a 0-to-1 SaaS tool with 500 beta users', icon: '🚀', date: 'May 2025' }
+    ],
+    activityLog: [
+      { type: 'post', text: 'Shared DesignOps playbook', icon: '📋', time: '1 week ago', link: '#' },
+      { type: 'join', text: 'Joined Design Buddies', icon: '🎉', time: '3 months ago', link: '/communities/design' }
+    ],
+    socialLinks: {
+      linkedin: 'https://linkedin.com/in/chrisb'
+    },
+    communitiesJoined: 3,
+    eventsAttended: 6,
+    connectionsMade: 32,
+    projectsShared: 0,
+    postsThisMonth: 2,
+    profileVisitsThisWeek: 18,
+    newConnectionsThisWeek: 1,
+    recentlyActive: false,
+    memberSince: 'Apr 2024'
   },
   johnsonw: {
     id: 'u7',
@@ -106,26 +320,94 @@ export const initialUsers = {
     email: 'johnson@meetify.app',
     followers: 1450,
     following: 210,
-    communities: ['Hackathon Heroes', 'Gaming', 'GLA University'],
+    communities: ['Hackathon Heroes', 'Gaming & E-Sports', 'GLA University'],
     course: 'B.Sc Gaming',
     year: '2nd Year',
-    collegeId: 'gla'
+    collegeId: 'gla',
+    verified: false,
+    interests: ['Game Development', 'Web3', 'Unity', 'Unreal Engine', 'Pixel Art'],
+    skills: ['Unity', 'C#', 'Blender', 'Unreal Engine', 'Solidity'],
+    projects: [
+      {
+        id: 'proj_5',
+        title: 'Pixel Quest',
+        description: 'A 2D platformer built in Unity with procedurally generated levels.',
+        technologies: ['Unity', 'C#', 'Aseprite'],
+        image: 'https://images.unsplash.com/photo-1551103782-8ab07afd45c1?w=600&h=400&fit=crop',
+        link: '#',
+        type: 'Game'
+      }
+    ],
+    achievements: [
+      { id: 'ach_7', title: 'Game Jam Winner', description: 'Won Global Game Jam 2025', icon: '🎮', date: 'Jan 2025' }
+    ],
+    activityLog: [
+      { type: 'post', text: 'Looking for 3D artist for game jam', icon: '🎮', time: '3 days ago', link: '#' }
+    ],
+    socialLinks: {
+      github: 'https://github.com/johnsonw',
+      website: 'https://johnsonw.dev'
+    },
+    communitiesJoined: 3,
+    eventsAttended: 7,
+    connectionsMade: 22,
+    projectsShared: 2,
+    postsThisMonth: 4,
+    profileVisitsThisWeek: 15,
+    newConnectionsThisWeek: 2,
+    recentlyActive: true,
+    memberSince: 'May 2024'
   },
   sarahj: {
     id: 'u8',
     username: 'sarahj',
     displayName: 'Sarah Jones',
     avatar: 'S',
-    bio: 'Backend wizard. Rust ace.',
+    avatarUrl: null,
+    bio: 'Backend wizard. Rust ace. Contributor to open-source distributed systems projects.',
     location: 'Berlin, DE',
     role: 'Backend Engineer',
     email: 'sarahj@meetify.app',
     followers: 4300,
     following: 120,
-    communities: ['Startup Hub', 'IIT Delhi'],
+    communities: ['Startup Hub', 'IIT Delhi', 'Hackathon Heroes'],
     course: 'M.Tech CSE',
     year: '2nd Year',
-    collegeId: 'iitdelhi'
+    collegeId: 'iitdelhi',
+    verified: false,
+    interests: ['Backend', 'Rust', 'Systems Programming', 'Distributed Systems'],
+    skills: ['Rust', 'Go', 'PostgreSQL', 'Redis', 'Docker', 'Kubernetes'],
+    projects: [
+      {
+        id: 'proj_sarah_1',
+        title: 'RustDB',
+        description: 'A lightweight key-value store written in Rust, inspired by Redis.',
+        technologies: ['Rust', 'Tokio', 'RESP Protocol'],
+        image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&h=400&fit=crop',
+        link: '#',
+        type: 'Open Source'
+      }
+    ],
+    achievements: [
+      { id: 'ach_sarah_1', title: 'Distributed Systems Award', description: 'Contributed a critical fix to a major open-source project', icon: '🔧', date: 'Mar 2025' }
+    ],
+    activityLog: [
+      { type: 'post', text: 'Shared Rust library for ML inference', icon: '🦀', time: '4 hours ago', link: '#' },
+      { type: 'milestone', text: 'Hit 4K followers', icon: '🌟', time: '2 weeks ago', link: '#' },
+      { type: 'join', text: 'Joined Hackathon Heroes', icon: '🎉', time: '4 months ago', link: '/communities/hackathon' }
+    ],
+    socialLinks: {
+      github: 'https://github.com/sarahj'
+    },
+    communitiesJoined: 3,
+    eventsAttended: 9,
+    connectionsMade: 40,
+    projectsShared: 1,
+    postsThisMonth: 2,
+    profileVisitsThisWeek: 22,
+    newConnectionsThisWeek: 0,
+    recentlyActive: false,
+    memberSince: 'Sep 2023'
   }
 };
 

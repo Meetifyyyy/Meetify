@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { showToast } from '../../utils/toast';
 import { useData } from '../../context/DataContext';
+import { showToast } from '../../utils/toast';
+import { isImageUrl } from '../../utils/avatar';
+import DefaultAvatar from '../common/DefaultAvatar';
 import styles from './CommentNode.module.css';
 
 export default function CommentNode({ postId, comment, onReplySubmit, level = 0, isLastInThread = false }) {
@@ -11,7 +13,7 @@ export default function CommentNode({ postId, comment, onReplySubmit, level = 0,
   const [isLiking, setIsLiking] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
-  const { getUserById, likeComment, communities } = useData();
+  const { getUserById, likeComment, deleteComment, communities, currentUser } = useData();
 
   const author = getUserById(comment.authorId) || { displayName: 'Unknown', username: 'unknown', avatar: '?' };
   const authorCollege = author.collegeId ? communities[author.collegeId] : null;
@@ -46,7 +48,8 @@ export default function CommentNode({ postId, comment, onReplySubmit, level = 0,
     setIsLiking(false);
   };
 
-  const { likes, isLikedByMe } = comment;
+  const { likes, isLikedByMe: rawIsLiked } = comment;
+  const isLikedByMe = comment.likedBy ? comment.likedBy.includes(currentUser?.id) : !!rawIsLiked;
 
   return (
     <div className={`${styles.nodeContainer} ${level === 0 ? styles.level0 : styles.levelN}`}>
@@ -55,10 +58,10 @@ export default function CommentNode({ postId, comment, onReplySubmit, level = 0,
           className={styles.replyAvatar} 
           onClick={handleProfileClick}
         >
-          {author.avatar && author.avatar.length > 1 ? (
+          {isImageUrl(author.avatar) ? (
             <img src={author.avatar} alt={author.displayName} className={styles.replyAvatarImg} />
           ) : (
-            author.avatar
+            <DefaultAvatar />
           )}
         </div>
         
@@ -98,8 +101,26 @@ export default function CommentNode({ postId, comment, onReplySubmit, level = 0,
               </button>
               {showMenu && (
                 <div className="dropdown open" style={{ right: 0, top: '100%', width: '120px' }}>
+                  {currentUser && comment.authorId === currentUser.id && (
+                    <button 
+                      onClick={async (e) => { 
+                        e.stopPropagation(); 
+                        setShowMenu(false); 
+                        if (deleteComment) await deleteComment(postId, comment.id); 
+                      }} 
+                      style={{ color: 'var(--color-danger)' }}
+                      className={styles.reportBtn}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      </svg>
+                      Delete
+                    </button>
+                  )}
                   <button 
                     onClick={(e) => { e.stopPropagation(); showToast('Reported'); setShowMenu(false); }} 
+                    style={{ color: 'var(--color-text-main)' }}
                     className={styles.reportBtn}
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
