@@ -12,6 +12,7 @@ build/
 # IDE and system files
 .vscode/
 .idea/
+.kiro/
 .DS_Store
 Thumbs.db
 *.suo
