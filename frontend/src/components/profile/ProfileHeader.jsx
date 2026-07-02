@@ -1,5 +1,7 @@
+import { useRef } from 'react';
 import { useData } from '../../context/DataContext';
 import { useFollow } from '../../context/FollowContext';
+import { useAuth } from '../../context/AuthContext';
 import FollowButton from '../common/FollowButton';
 import { useNavigate } from 'react-router-dom';
 import { showToast } from '../../utils/toast';
@@ -8,9 +10,13 @@ import DefaultAvatar from '../common/DefaultAvatar';
 import styles from './ProfileHeader.module.css';
 
 export default function ProfileHeader({ profileUsername, onViewFollowers, onViewFollowing, onBack }) {
-  const { getUserByUsername, currentUser, communities, startConversation } = useData();
+  const { getUserByUsername, currentUser, communities, startConversation, posts } = useData();
+  const { updateProfile } = useAuth();
   const { following } = useFollow();
   const navigate = useNavigate();
+  
+  const avatarInputRef = useRef(null);
+  const coverInputRef = useRef(null);
   
   // Fetch real mock user profile
   const targetUsername = profileUsername || currentUser.username;
@@ -20,8 +26,63 @@ export default function ProfileHeader({ profileUsername, onViewFollowers, onView
   const isCurrentUser = profileUser.username === currentUser.username;
   const isFollowing = following.includes(profileUser.username);
 
-  // Get college info
+  // Get college info (not used for flip card anymore)
   const college = profileUser.collegeId ? communities[profileUser.collegeId] : null;
+
+  const handleImageChange = (e, type) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        showToast('Please select an image file');
+        e.target.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = type === 'avatar' ? 400 : 1200;
+          const MAX_HEIGHT = type === 'avatar' ? 400 : 800;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+
+          try {
+            if (type === 'avatar') {
+              updateProfile({ avatar: dataUrl });
+              showToast('Profile picture updated successfully!');
+            } else {
+              updateProfile({ coverImage: dataUrl });
+              showToast('Cover image updated successfully!');
+            }
+          } catch (err) {
+            console.error('Error saving image:', err);
+            showToast('Error: Image might be too large.');
+          }
+          e.target.value = '';
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleMessageClick = async () => {
     if (isCurrentUser) return; // Optional: maybe don't message self, or do
@@ -32,6 +93,7 @@ export default function ProfileHeader({ profileUsername, onViewFollowers, onView
   // Stats come directly from state
   const followersCount = profileUser.followers || 0;
   const followingCount = profileUser.following || 0;
+  const postsCount = profileUser.postsThisMonth || (posts ? posts.filter(p => p.authorId === profileUser.id).length : 250);
 
   // We can use UI faces or just initials for the mock
   // For the mockup we will use an image if available or initials
@@ -53,23 +115,56 @@ export default function ProfileHeader({ profileUsername, onViewFollowers, onView
         </button>
       )}
 
-      <div className={styles.profileAvatarContainer}>
-        {college && college.avatar ? (
-          <div className={styles.avatarFlipCard}>
-            <div className={styles.avatarFlipInner}>
-              <div className={styles.avatarFront}>
-                {avatarContent}
-              </div>
-              <div className={styles.avatarBack} title={college.name}>
-                <img src={college.avatar} alt={college.name} className={styles.collegeBackLogo} />
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className={styles.profileAvatarLarge}>
-            {avatarContent}
-          </div>
+      <div className={styles.profileCover}>
+        <img src={profileUser.coverImage || "https://images.unsplash.com/photo-1497942304796-b8bc2cc898f3?q=80&w=600&auto=format&fit=crop"} alt="Cover" className={styles.profileCoverImg} />
+        {isCurrentUser && (
+          <>
+            <input 
+              type="file" 
+              accept="image/*" 
+              ref={coverInputRef} 
+              style={{ display: 'none' }} 
+              onChange={(e) => handleImageChange(e, 'cover')} 
+            />
+            <button 
+              className={styles.editCoverBtn} 
+              aria-label="Change cover image"
+              onClick={() => coverInputRef.current?.click()}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg>
+            </button>
+          </>
         )}
+      </div>
+
+      <div className={styles.profileAvatarContainer}>
+        <div className={styles.profileAvatarLarge}>
+          {avatarContent}
+          {isCurrentUser && (
+            <>
+              <input 
+                type="file" 
+                accept="image/*" 
+                ref={avatarInputRef} 
+                style={{ display: 'none' }} 
+                onChange={(e) => handleImageChange(e, 'avatar')} 
+              />
+              <div 
+                className={styles.avatarEditOverlay} 
+                aria-label="Change profile picture" 
+                onClick={() => avatarInputRef.current?.click()}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                  <circle cx="12" cy="13" r="4"></circle>
+                </svg>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       <div className={styles.profileInfo}>
@@ -81,6 +176,10 @@ export default function ProfileHeader({ profileUsername, onViewFollowers, onView
         </p>
         
         <div className={styles.profileStats}>
+          <div className={styles.stat} style={{ cursor: 'default' }}>
+            <div className={styles.statValue}>{postsCount}</div>
+            <div className={styles.statLabel}>Post</div>
+          </div>
           <div className={styles.stat} onClick={onViewFollowers} style={{ cursor: 'pointer' }}>
             <div className={styles.statValue}>{followersCount}</div>
             <div className={styles.statLabel}>Followers</div>
@@ -94,7 +193,7 @@ export default function ProfileHeader({ profileUsername, onViewFollowers, onView
         <div className={styles.profileActions}>
           <div className={styles.followBtnWrapper}>
             {isCurrentUser ? (
-              <button className={styles.editProfileBtn} onClick={() => navigate('/settings')}>Edit Profile</button>
+              <button className={styles.editProfileBtn} onClick={() => navigate('/settings', { state: { panel: 'account' } })}>Edit Profile</button>
             ) : (
               <FollowButton targetUsername={profileUser.username} />
             )}

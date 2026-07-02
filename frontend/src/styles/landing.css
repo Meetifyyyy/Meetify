@@ -64,17 +64,17 @@
   font-family: var(--font-family-sans);
   font-weight: 600;
   font-size: 0.95rem;
-  color: var(--color-text-inverse);
+  color: #FFFFFF;
   cursor: pointer;
   padding: 0.65rem 1.25rem;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.15);
   transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
 }
 
 .landing-header .btn-signup:hover {
   background: var(--color-primary-hover);
   border-color: var(--color-primary-hover);
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 6px 16px rgba(var(--color-primary-rgb), 0.15);
   transform: translateY(-1px);
 }
 
@@ -88,7 +88,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   scroll-behavior: smooth;
-  background: var(--color-bg-main);
+  background: transparent;
 }
 
 /* === Hero Section === */
@@ -113,8 +113,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(37, 99, 235, 0.05);
-  border: 1px solid rgba(37, 99, 235, 0.08);
+  background: rgba(var(--color-primary-rgb), 0.15);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.15);
   border-radius: var(--radius-full);
   padding: 0.4rem 1rem;
   margin-bottom: 1.75rem;
@@ -171,16 +171,16 @@
   font-family: var(--font-family-sans);
   font-weight: 600;
   font-size: 1rem;
-  color: var(--color-text-inverse);
+  color: #FFFFFF;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.15);
+  box-shadow: 0 4px 14px rgba(var(--color-primary-rgb), 0.15);
   transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
 }
 
 .hero-btn-primary:hover {
   background: var(--color-primary-hover);
   border-color: var(--color-primary-hover);
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 6px 20px rgba(var(--color-primary-rgb), 0.15);
   transform: translateY(-2px);
 }
 
@@ -274,7 +274,7 @@
 /* === Shared Section Layouts === */
 .landing-section {
   padding: 6rem 4rem;
-  background: var(--color-bg-main);
+  background: transparent;
 }
 
 .section-inner {
@@ -328,7 +328,7 @@
 
 .feature-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(37, 99, 235, 0.15);
+  border-color: rgba(var(--color-primary-rgb), 0.15);
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02);
 }
 
@@ -336,7 +336,7 @@
   width: 52px;
   height: 52px;
   border-radius: var(--radius-md);
-  background: rgba(37, 99, 235, 0.05);
+  background: rgba(var(--color-primary-rgb), 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -387,7 +387,7 @@
 
 .step-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(37, 99, 235, 0.15);
+  border-color: rgba(var(--color-primary-rgb), 0.15);
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02);
 }
 
@@ -522,7 +522,7 @@
 
 .testimonial-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(37, 99, 235, 0.15);
+  border-color: rgba(var(--color-primary-rgb), 0.15);
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02);
 }
 
@@ -623,19 +623,19 @@
   font-family: var(--font-family-sans);
   font-weight: 600;
   font-size: 1.05rem;
-  color: var(--color-text-inverse);
+  color: #FFFFFF;
   background: var(--color-primary);
   border: 1px solid var(--color-primary);
   border-radius: var(--radius-md);
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.15);
+  box-shadow: 0 4px 14px rgba(var(--color-primary-rgb), 0.15);
   transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
 }
 
 .cta-btn:hover {
   background: var(--color-primary-hover);
   border-color: var(--color-primary-hover);
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 6px 20px rgba(var(--color-primary-rgb), 0.15);
   transform: translateY(-2px);
 }
 
@@ -669,11 +669,13 @@
 }
 
 .footer-brand .brand {
-  font-family: var(--font-family-display);
+  font-family: 'Plus Jakarta Sans', var(--font-family-display);
   font-weight: 700;
   font-size: 1.4rem;
   color: var(--color-text-main);
   letter-spacing: -0.02em;
+  padding-bottom: 0.15em;
+  margin-bottom: -0.15em;
 }
 
 .footer-links {
@@ -762,7 +764,7 @@
 
 .footer-socials a:hover {
   color: var(--color-primary);
-  background: rgba(37, 99, 235, 0.05);
+  background: rgba(var(--color-primary-rgb), 0.15);
   transform: translateY(-1px);
 }
 

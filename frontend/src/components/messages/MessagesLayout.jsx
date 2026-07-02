@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useSmartBack } from '../../hooks/useSmartBack';
 import { useData } from '../../context/DataContext';
 import ConversationList from './ConversationList';
 import ChatArea from './ChatArea';
@@ -13,12 +14,14 @@ export default function MessagesLayout() {
     sendDirectMessage, 
     reactToMessage, 
     clearChat, 
-    toggleBlockUser 
+    toggleBlockUser,
+    addGroupMember,
+    currentUser
   } = useData();
 
   const initialChatId = conversationId 
     ? (isNaN(conversationId) ? conversationId : Number(conversationId))
-    : (conversations[0]?.id || null);
+    : null;
 
   const [activeChatId, setActiveChatId] = useState(initialChatId);
   const [showChatOnMobile, setShowChatOnMobile] = useState(!!conversationId);
@@ -28,6 +31,9 @@ export default function MessagesLayout() {
       const id = isNaN(conversationId) ? conversationId : Number(conversationId);
       setActiveChatId(id);
       setShowChatOnMobile(true);
+    } else {
+      setActiveChatId(null);
+      setShowChatOnMobile(false);
     }
   }, [conversationId]);
 
@@ -39,8 +45,10 @@ export default function MessagesLayout() {
     navigate(`/messages/${id}`);
   };
 
+  const goBack = useSmartBack();
+
   const handleBack = () => {
-    setShowChatOnMobile(false);
+    goBack('/messages', { replace: true });
   };
 
   const handleSend = (convId, text, replyTo = null) => {
@@ -59,8 +67,14 @@ export default function MessagesLayout() {
     toggleBlockUser(convId);
   };
 
+  const handleJoinGroup = (groupId) => {
+    addGroupMember(groupId, currentUser?.id);
+    // Optionally navigate to the group
+    handleSelectChat(groupId);
+  };
+
   return (
-    <div className={`feed ${styles.feedMessages}`}>
+    <div className={styles.page}>
       <div className={`${styles.messagesLayout}${showChatOnMobile ? ' show-chat' : ''}`}>
         <ConversationList
           conversations={conversations}
@@ -74,6 +88,7 @@ export default function MessagesLayout() {
           onReactMessage={(msgIndex, reaction) => handleReact(activeChatId, msgIndex, reaction)}
           onClearChat={() => handleClearChat(activeChatId)}
           onBlockUser={() => handleBlockUser(activeChatId)}
+          onJoinGroup={handleJoinGroup}
           onBack={handleBack}
           showChatOnMobile={showChatOnMobile}
         />

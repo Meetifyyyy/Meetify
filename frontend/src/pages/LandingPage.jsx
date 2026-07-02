@@ -1,16 +1,18 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { showToast } from '../utils/toast';
 import Background from '../components/common/Background';
 import Toast from '../components/common/Toast';
-import logo from '../assets/images/logo.webp';
+import logo from '../assets/images/logo.png';
 import heroImg from '../assets/images/hero-illustration.webp';
 import '../styles/landing.css';
 
 
 export default function LandingPage() {
   const { login } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const [toastMsg, setToastMsg] = useState('');
@@ -73,9 +75,9 @@ export default function LandingPage() {
   ];
 
   const testimonials = [
-    { name: 'Maya R.', handle: '@mayabuilds', text: 'Found my entire startup team through Meetify. This place just gets it.', gradient: 'linear-gradient(135deg, #2563EB, #3B82F6)' },
+    { name: 'Maya R.', handle: '@mayabuilds', text: 'Found my entire startup team through Meetifyy. This place just gets it.', gradient: 'linear-gradient(135deg, #2563EB, #3B82F6)' },
     { name: 'James K.', handle: '@jamesk_dev', text: 'The communities here feel alive. No empty feeds, no bots — just real people.', gradient: 'linear-gradient(135deg, #F59E0B, #F97316)' },
-    { name: 'Priya S.', handle: '@priya_designs', text: 'I\'ve been on every social platform. Meetify is the first one that felt like home.', gradient: 'linear-gradient(135deg, #EC4899, #8B5CF6)' },
+    { name: 'Priya S.', handle: '@priya_designs', text: 'I\'ve been on every social platform. Meetifyy is the first one that felt like home.', gradient: 'linear-gradient(135deg, #EC4899, #8B5CF6)' },
   ];
 
   const communityTags = [
@@ -99,18 +101,51 @@ export default function LandingPage() {
 
       <header className="landing-header">
         <div className="nav-left" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-          <img className="logo" src={logo} alt="Meetify" />
-          <span className="brand">Meetify</span>
+          <img className="logo" src={logo} alt="Meetifyy" />
+          <span className="brand">Meetifyy</span>
         </div>
         <nav className="nav-links">
-          <a href="#why" className="nav-link-item">Why Meetify</a>
+          <a href="#why" className="nav-link-item">Why Meetifyy</a>
           <a href="#how" className="nav-link-item">How It Works</a>
           <a href="#explore" className="nav-link-item">Explore</a>
           <a href="#testimonials" className="nav-link-item">Voices</a>
         </nav>
         <div className="nav-actions">
+          <button 
+            className="theme-toggle-btn" 
+            onClick={toggleTheme}
+            aria-label="Toggle Theme"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--color-text-main)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '0.5rem'
+            }}
+          >
+            {theme === 'dark' ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="5" />
+                <line x1="12" y1="1" x2="12" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                <line x1="1" y1="12" x2="3" y2="12" />
+                <line x1="21" y1="12" x2="23" y2="12" />
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            )}
+          </button>
           <button className="btn-login" onClick={() => navigate('/login')}>Log in</button>
-          <button className="btn-signup" onClick={() => navigate('/signup')}>Join Meetify</button>
+          <button className="btn-signup" onClick={() => navigate('/signup')}>Join Meetifyy</button>
         </div>
       </header>
 
@@ -138,7 +173,7 @@ export default function LandingPage() {
 
           <div className="hero-graphic-col">
             <div className="hero-image-container">
-              <img src={heroImg} alt="Meetify community illustration" className="hero-img" loading="lazy" />
+              <img src={heroImg} alt="Meetifyy community illustration" className="hero-img" loading="lazy" />
               <div className="fragment fragment--1" style={{ animation: 'float 6s ease-in-out infinite' }}>
                 <span className="live-dot" style={{ display: 'inline-block', width: 8, height: 8, background: '#10B981', borderRadius: '50%', marginRight: 8, animation: 'pulse 2s infinite' }}></span>
                 Sarah just joined Design Thinkers
@@ -163,7 +198,7 @@ export default function LandingPage() {
         <section className="landing-section features-section" id="why">
           <div className="section-inner reveal">
             <h2 className="landing-heading">
-              Why <span className="text-gradient">Meetify</span>?
+              Why <span className="text-gradient">Meetifyy</span>?
             </h2>
             <p className="landing-subheading">A space where connections are real and communities thrive.</p>
             <div className="features-grid">
@@ -282,8 +317,8 @@ export default function LandingPage() {
           <div className="footer-inner">
             <div className="footer-top">
               <div className="footer-brand">
-                <img className="logo" src={logo} alt="Meetify" />
-                <span className="brand">Meetify</span>
+                <img className="logo" src={logo} alt="Meetifyy" />
+                <span className="brand">Meetifyy</span>
               </div>
 
               <div className="footer-links">
@@ -309,7 +344,7 @@ export default function LandingPage() {
             </div>
 
             <div className="footer-bottom">
-              <span className="footer-copy">&copy; 2026 Meetify. All rights reserved.</span>
+              <span className="footer-copy">&copy; 2026 Meetifyy. All rights reserved.</span>
               <div className="footer-socials">
                 <a href="#" aria-label="Twitter">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>

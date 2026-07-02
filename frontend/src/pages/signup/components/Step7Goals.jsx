@@ -75,7 +75,7 @@ export default function Step7Goals() {
         {subStep === 2 && (
           <motion.div key="dream" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} style={{ width: '100%' }}>
             <h2 className={styles.headline}>Dream Collaboration</h2>
-            <p className={styles.subheadline}>If Meetify could introduce you to one perfect person tomorrow, who would it be?</p>
+            <p className={styles.subheadline}>If Meetifyy could introduce you to one perfect person tomorrow, who would it be?</p>
             <form onSubmit={(e) => { e.preventDefault(); if (dreamCollab.trim().length >= 3) handleNextSubStep('done'); }}>
               <input 
                 type="text" 

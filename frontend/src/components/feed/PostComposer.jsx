@@ -15,6 +15,7 @@ const EMOJI_GROUPS = [
 function PostComposer({ onSubmit }) {
   const { initial, currentUser } = useAuth();
   const [value, setValue] = useState('');
+  const [media, setMedia] = useState(null);
   const [showEmoji, setShowEmoji] = useState(false);
   const [showPoll, setShowPoll] = useState(false);
   const [pollOptions, setPollOptions] = useState(['', '']);
@@ -40,17 +41,31 @@ function PostComposer({ onSubmit }) {
     const text = value.trim();
     if (showPoll) {
       const opts = pollOptions.map((o) => o.trim()).filter(Boolean);
-      if (!text || opts.length < 2) return;
-      onSubmit(null, { question: text, options: opts, multiSelect: pollMulti });
+      if (!text && opts.length < 2 && !media) return;
+      onSubmit(text, { question: text || 'Poll', options: opts, multiSelect: pollMulti }, media);
       setValue('');
+      setMedia(null);
       setPollOptions(['', '']);
       setPollMulti(false);
       setShowPoll(false);
     } else {
-      if (!text) return;
-      onSubmit(text);
+      if (!text && !media) return;
+      onSubmit(text, null, media);
       setValue('');
+      setMedia(null);
     }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const type = file.type.startsWith('video/') ? 'video' : 'image';
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setMedia({ type, url: event.target.result });
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
   };
 
   const togglePoll = () => {
@@ -117,6 +132,27 @@ function PostComposer({ onSubmit }) {
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter' && !showPoll) handlePost(); }}
           />
+          <button
+            ref={emojiBtnRef}
+            className={`${styles.composerEmojiBtn}${showEmoji ? ` ${styles.active}` : ''}`}
+            title="Emoji"
+            onClick={() => {
+              if (showPoll) {
+                setPollOptions(['', '']);
+                setPollMulti(false);
+                setShowPoll(false);
+                setValue('');
+              }
+              setShowEmoji(!showEmoji);
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+              <line x1="9" y1="9" x2="9.01" y2="9" />
+              <line x1="15" y1="9" x2="15.01" y2="9" />
+            </svg>
+          </button>
         </div>
 
         <div className={styles.composerContentArea}>
@@ -171,41 +207,39 @@ function PostComposer({ onSubmit }) {
             </div>
           )}
 
+          {media && (
+            <div style={{ position: 'relative', marginTop: '1rem', borderRadius: 'var(--radius-md)', overflow: 'hidden', background: 'var(--color-bg-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <button 
+                onClick={() => setMedia(null)} 
+                style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(0,0,0,0.6)', color: 'white', border: 'none', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10 }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+              {media.type === 'image' ? (
+                <img src={media.url} alt="Upload preview" style={{ maxWidth: '100%', maxHeight: '300px', objectFit: 'contain' }} />
+              ) : (
+                <video src={media.url} controls style={{ maxWidth: '100%', maxHeight: '300px', objectFit: 'contain' }} />
+              )}
+            </div>
+          )}
+
           <div className={styles.composerActions}>
             <div className={styles.composerActionsLeft}>
-              <input ref={fileRef} type="file" accept="image/*" hidden />
+              <input ref={fileRef} type="file" accept="image/*,video/*" onChange={handleFileChange} hidden />
               <button className={styles.composerIconBtn} title="Image" onClick={() => fileRef.current?.click()}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
                   <circle cx="8.5" cy="8.5" r="1.5" />
                   <polyline points="21 15 16 10 5 21" />
                 </svg>
+                <span>Image</span>
               </button>
-              <button className={styles.composerIconBtn} title="Attach">
+              <button className={styles.composerIconBtn} title="Video" onClick={() => fileRef.current?.click()}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                  <rect x="2" y="7" width="16" height="10" rx="2" ry="2" />
+                  <polygon points="18 10 22 8 22 16 18 14" />
                 </svg>
-              </button>
-              <button
-                ref={emojiBtnRef}
-                className={`${styles.composerIconBtn}${showEmoji ? ` ${styles.active}` : ''}`}
-                title="Emoji"
-                onClick={() => {
-                  if (showPoll) {
-                    setPollOptions(['', '']);
-                    setPollMulti(false);
-                    setShowPoll(false);
-                    setValue('');
-                  }
-                  setShowEmoji(!showEmoji);
-                }}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-                  <line x1="9" y1="9" x2="9.01" y2="9" />
-                  <line x1="15" y1="9" x2="15.01" y2="9" />
-                </svg>
+                <span>Video</span>
               </button>
               <button
                 ref={pollBtnRef}
@@ -219,6 +253,7 @@ function PostComposer({ onSubmit }) {
                   <line x1="12" y1="11" x2="12" y2="16" />
                   <line x1="15" y1="6" x2="15" y2="16" />
                 </svg>
+                <span>Poll</span>
               </button>
             </div>
             <button className={styles.composerSendBtn} onClick={handlePost} title="Post">

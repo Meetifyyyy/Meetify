@@ -4,6 +4,7 @@ import { useData } from '../../context/DataContext';
 import { showToast } from '../../utils/toast';
 import { isImageUrl } from '../../utils/avatar';
 import DefaultAvatar from '../common/DefaultAvatar';
+import { timeAgo } from '../../utils/time';
 import styles from './CommentNode.module.css';
 
 export default function CommentNode({ postId, comment, onReplySubmit, level = 0, isLastInThread = false }) {
@@ -41,11 +42,8 @@ export default function CommentNode({ postId, comment, onReplySubmit, level = 0,
     setReplyText('');
   };
 
-  const handleLike = async () => {
-    if (isLiking) return;
-    setIsLiking(true);
-    await likeComment(postId, comment.id);
-    setIsLiking(false);
+  const handleLike = () => {
+    likeComment(postId, comment.id);
   };
 
   const { likes, isLikedByMe: rawIsLiked } = comment;
@@ -83,9 +81,7 @@ export default function CommentNode({ postId, comment, onReplySubmit, level = 0,
                 )}
               </button>
               <div className={styles.commentMeta}>
-                <span className={styles.handle}>@{author.username}</span>
-                <span className={styles.metaDot}>•</span>
-                <span className={styles.time}>{comment.time}</span>
+                <span className={styles.time}>{comment.createdAt ? timeAgo(comment.createdAt) : comment.time}</span>
               </div>
             </div>
             <div className={styles.menuWrapper}>
@@ -101,23 +97,28 @@ export default function CommentNode({ postId, comment, onReplySubmit, level = 0,
               </button>
               {showMenu && (
                 <div className="dropdown open" style={{ right: 0, top: '100%', width: '120px' }}>
-                  {currentUser && comment.authorId === currentUser.id && (
-                    <button 
-                      onClick={async (e) => { 
-                        e.stopPropagation(); 
-                        setShowMenu(false); 
-                        if (deleteComment) await deleteComment(postId, comment.id); 
-                      }} 
-                      style={{ color: 'var(--color-danger)' }}
-                      className={styles.reportBtn}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="3 6 5 6 21 6" />
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                      </svg>
-                      Delete
-                    </button>
-                  )}
+                  {currentUser && comment.authorId === currentUser.id && (() => {
+                    const commentTimestamp = typeof comment.id === 'string' && comment.id.startsWith('r_') ? parseInt(comment.id.split('_')[1], 10) : 0;
+                    const canDelete = (Date.now() - commentTimestamp) <= 5 * 60 * 1000;
+                    
+                    return canDelete ? (
+                      <button 
+                        onClick={async (e) => { 
+                          e.stopPropagation(); 
+                          setShowMenu(false); 
+                          if (deleteComment) await deleteComment(postId, comment.id); 
+                        }} 
+                        style={{ color: 'var(--color-danger)' }}
+                        className={styles.reportBtn}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="3 6 5 6 21 6" />
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                        Delete
+                      </button>
+                    ) : null;
+                  })()}
                   <button 
                     onClick={(e) => { e.stopPropagation(); showToast('Reported'); setShowMenu(false); }} 
                     style={{ color: 'var(--color-text-main)' }}
@@ -136,11 +137,9 @@ export default function CommentNode({ postId, comment, onReplySubmit, level = 0,
           <div className={styles.replyActionsRow}>
             <button 
               onClick={handleLike}
-              disabled={isLiking}
               className={`${styles.actionBtn} ${isLikedByMe ? styles.actionBtnLiked : ''}`}
-              style={{ opacity: isLiking ? 0.5 : 1 }}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill={isLikedByMe ? 'var(--color-danger)' : 'none'} stroke="currentColor" strokeWidth="2.5"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" /></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill={isLikedByMe ? 'var(--color-primary)' : 'none'} stroke="currentColor" strokeWidth="2.5"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" /></svg>
               {likes}
             </button>
             <button 

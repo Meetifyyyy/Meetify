@@ -23,7 +23,7 @@
   max-height: 80vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow:(--shadow-sm);
   overflow: hidden;
   margin: auto;
 }
@@ -80,14 +80,14 @@
 }
 
 .userItem:hover {
-  background: rgba(37, 99, 235, 0.04);
+  background: rgba(var(--color-primary-rgb), 0.15);
 }
 
 .userAvatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(59, 130, 246, 0.2));
+  background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.15), rgba(59, 130, 246, 0.2));
   color: var(--color-primary);
   display: flex;
   align-items: center;

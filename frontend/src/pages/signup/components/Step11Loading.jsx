@@ -55,7 +55,7 @@ export default function Step11Loading() {
             <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 2, ease: "linear" }} style={{ display: 'inline-block', color: '#6366f1', marginBottom: '2rem' }}>
               <Loader2 size={64} />
             </motion.div>
-            <h2 className={styles.headline}>Building your Meetify profile...</h2>
+            <h2 className={styles.headline}>Building your Meetifyy profile...</h2>
             <motion.p 
               key={msgIndex}
               initial={{ opacity: 0, y: 10 }}
@@ -69,7 +69,7 @@ export default function Step11Loading() {
           </motion.div>
         ) : (
           <motion.div key="welcome" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} style={{ width: '100%', padding: '2rem 0' }}>
-            <h1 className={styles.headline} style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>Welcome to Meetify</h1>
+            <h1 className={styles.headline} style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>Welcome to Meetifyy</h1>
             <p className={styles.subheadline} style={{ fontSize: '1.25rem', color: '#111827', fontWeight: 600 }}>
               Your campus is bigger than your classroom.<br/>
               <span style={{ color: '#6366f1' }}>Let's find your people.</span>

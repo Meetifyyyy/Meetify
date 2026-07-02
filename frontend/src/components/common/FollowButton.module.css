@@ -28,9 +28,9 @@
 .notFollowing {
   border: none;
   background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-  color: var(--color-bg-white);
+  color: #FFFFFF;
 }
 
 .notFollowing:hover {
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 10px rgba(var(--color-primary-rgb), 0.15);
 }

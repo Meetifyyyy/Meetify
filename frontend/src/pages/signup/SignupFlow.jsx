@@ -1,6 +1,7 @@
 import React from 'react';
 import { SignupProvider, useSignup } from './SignupContext';
 import { AnimatePresence } from 'framer-motion';
+import Background from '../../components/common/Background';
 import styles from './SignupFlow.module.css';
 import SignupProgressBar from './components/SignupProgressBar';
 
@@ -37,16 +38,17 @@ const StepRenderer = () => {
   };
 
   return (
-    <div className={styles.flowContainer}>
-      <div className={`${styles.bgBlob} ${styles.blob1}`} />
-      <div className={`${styles.bgBlob} ${styles.blob2}`} />
+    <>
+      <Background />
+      <div className={styles.flowContainer}>
       <SignupProgressBar />
       <div className={styles.contentArea}>
         <AnimatePresence mode="wait">
           {renderStep()}
         </AnimatePresence>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

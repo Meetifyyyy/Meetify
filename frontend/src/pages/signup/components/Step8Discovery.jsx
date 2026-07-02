@@ -28,7 +28,7 @@ export default function Step8Discovery() {
         
         {subStep === 1 && (
           <motion.div key="pref" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} style={{ width: '100%' }}>
-            <h2 className={styles.headline}>Who should Meetify introduce you to?</h2>
+            <h2 className={styles.headline}>Who should Meetifyy introduce you to?</h2>
             <p className={styles.subheadline}>How do you prefer meeting people?</p>
             <div className={styles.optionsGrid}>
               {[
@@ -75,7 +75,7 @@ export default function Step8Discovery() {
 
         {subStep === 3 && (
           <motion.div key="distance" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} style={{ width: '100%' }}>
-            <h2 className={styles.headline}>How far should Meetify search?</h2>
+            <h2 className={styles.headline}>How far should Meetifyy search?</h2>
             <div className={styles.optionsGrid} style={{ marginTop: '2rem' }}>
               {['My College Only', 'My University', 'My City', 'Entire India'].map(opt => (
                 <div 

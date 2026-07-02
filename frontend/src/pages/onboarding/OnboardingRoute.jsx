@@ -102,7 +102,7 @@ export default function OnboardingRoute() {
                     </div>
                     <div className={styles.commText}>
                       <span className={styles.commName}>{comm.name}</span>
-                      <span className={styles.commDesc}>{comm.members.toLocaleString()} members</span>
+                      <span className={styles.commDesc}>{comm.members?.toLocaleString() || '0'} members</span>
                     </div>
                   </div>
                   <button 

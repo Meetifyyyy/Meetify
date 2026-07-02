@@ -1,11 +1,14 @@
 .header {
+  position: relative;
+  z-index: 50;
   padding: 0 2rem;
   height: 60px;
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  background: var(--color-bg-main);
-  border-bottom: 1px solid var(--color-border-light);
+  background: transparent;
+  border-bottom: none;
+  box-shadow: none;
 }
 
 .navLeft {
@@ -24,11 +27,26 @@
 }
 
 .brand {
-  font-family: 'Inter Tight', sans-serif;
-  font-weight: 700;
-  font-size: 1.4rem;
-  color: var(--color-text-main);
-  letter-spacing: -0.02em;
+  font-family: 'Plus Jakarta Sans', 'Inter Tight', sans-serif;
+  font-weight: 800;
+  font-size: 1.45rem;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #1d4ed8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.03em;
+  transition: opacity 0.2s;
+  padding-bottom: 0.15em;
+  margin-bottom: -0.15em;
+}
+
+.brand:hover {
+  opacity: 0.85;
+}
+
+:global([data-theme="dark"]) .brand {
+  background: none;
+  -webkit-text-fill-color: #FFFFFF;
+  color: #FFFFFF;
 }
 
 .nav {
@@ -60,8 +78,8 @@
 }
 
 .collegeBtn {
-  background: #154726;
-  border: none;
+  background: var(--color-bg-white);
+  border: 1px solid var(--color-border);
   border-radius: 100px;
   padding: 4px 14px 4px 6px;
   height: 38px;
@@ -77,20 +95,20 @@
   font-family: 'Inter', sans-serif;
   font-weight: 600;
   font-size: 0.85rem;
-  color: #ffffff;
+  color: var(--color-text-main);
   line-height: 1;
 }
 
 .collegeBtn:hover {
   transform: translateY(-1px);
-  background: #103a1e;
+  background: var(--color-border-light);
 }
 
 .collegeBtn img {
   height: 100%;
   width: auto;
   object-fit: contain;
-  background: #ffffff;
+  background: var(--color-bg-white);
   border-radius: 50%;
   padding: 2px;
 }
@@ -123,15 +141,16 @@
   font-weight: 400;
   color: var(--color-text-main);
   background: var(--color-bg-white);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-primary);
   border-radius: 100px;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: all 0.2s;
 }
 
 .searchBar:focus {
+  background: var(--color-bg-white);
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 37, 99, 235), 0.15);
 }
 
 .searchBar::placeholder {
@@ -150,18 +169,32 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  color: var(--color-text-muted);
+  color: var(--color-icon-base);
   border: 1px solid var(--color-border);
+  background: var(--color-bg-white);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .notifIcon:hover {
-  color: var(--color-text-main);
+  color: var(--color-primary);
   background: var(--color-border-light);
+  border-color: var(--color-primary);
+}
+
+.themeToggleBtn {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1;
 }
 
 .notifBadge {
@@ -173,7 +206,7 @@
   padding: 0 4px;
   border-radius: var(--radius-sm);
   background: var(--color-danger);
-  color: var(--color-bg-white);
+  color: #FFFFFF;
   font-size: 0.62rem;
   font-weight: 700;
   font-family: 'Inter Tight', sans-serif;
@@ -191,8 +224,8 @@
 }
 
 .userAvatar {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -200,7 +233,7 @@
   font-family: var(--font-family-display);
   font-weight: 600;
   font-size: 0.9rem;
-  color: var(--color-bg-white);
+  color: var(--color-text-inverse);
   cursor: pointer;
   transition: box-shadow var(--transition-normal);
   overflow: hidden;
@@ -219,7 +252,7 @@
 
 .dropdown {
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + 12px);
   right: 0;
   z-index: 200;
   background: var(--color-bg-white);
@@ -237,17 +270,23 @@
   transition: all var(--transition-normal);
 }
 
-.dropdown.open {
+.dropdownOpen {
   opacity: 1;
   transform: translateY(0) scale(1);
   pointer-events: auto;
 }
 
+@media (min-width: 769px) {
+  .mobileOnlyMenuItem {
+    display: none !important;
+  }
+}
+
 .dropdown button {
   width: 100%;
-  padding: 0.5rem 0.85rem;
+  padding: 0.65rem 1rem;
   font-family: 'Inter', sans-serif;
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   font-weight: 500;
   color: var(--color-text-main);
   background: none;
@@ -256,6 +295,34 @@
   cursor: pointer;
   text-align: left;
   transition: background var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  position: relative;
+}
+
+.dropdown button svg {
+  color: var(--color-text-muted);
+  transition: color var(--transition-fast);
+}
+
+.dropdown button.active {
+  color: var(--color-primary);
+}
+
+.dropdown button.active svg {
+  color: var(--color-primary);
+}
+
+.dropdown button.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 15%;
+  bottom: 15%;
+  width: 3px;
+  background: var(--color-primary);
+  border-radius: 0 4px 4px 0;
 }
 
 .dropdown button:hover {
@@ -306,7 +373,7 @@
     height: 26px;
   }
 
-  .headerSearch {
+  .headerSearch, .themeToggleBtn {
     display: none;
   }
 
@@ -317,11 +384,15 @@
     border-radius: 50%;
     justify-content: center;
     background: transparent;
-    border: 2px solid #154726;
+    border: 2px solid var(--color-border);
   }
 
   .collegeBtn span {
     display: none;
+  }
+
+  .hideOnMobile {
+    display: none !important;
   }
 }
 

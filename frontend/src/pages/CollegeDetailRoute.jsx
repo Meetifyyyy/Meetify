@@ -1,12 +1,14 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Navigate } from 'react-router-dom';
+import { useSmartBack } from '../hooks/useSmartBack';
 import CollegeView from '../components/colleges/CollegeView';
 
 export default function CollegeDetailRoute() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const goBack = useSmartBack();
 
   const handleBack = () => {
-    navigate('/colleges');
+    goBack('/colleges');
   };
 
   const handlePostClick = (post, sourceContext, communityId) => {

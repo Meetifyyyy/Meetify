@@ -1,20 +1,18 @@
 .profileMainContent {
   display: flex;
-  flex-direction: row !important; /* Override .centre's column */
-  align-items: flex-start !important; /* Prevent children from stretching vertically */
-  justify-content: space-between;
-  gap: 2rem;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1.25rem;
   width: 100%;
-  max-width: 1100px !important;
-  padding: 0 2rem 0 0.5rem !important; /* Move profile card a little to the left */
-  flex-shrink: 0; /* Prevent shrinking which causes cutoff and hides scrollbar */
+
 }
 
 .profileSidebarFixed {
-  width: 380px;
+  width: 320px;
   flex-shrink: 0;
   position: sticky;
-  top: 0;
+  top: 0rem;
   height: fit-content;
   z-index: 10;
 }
@@ -22,37 +20,39 @@
 .profileContentScrollable {
   flex-grow: 1;
   max-width: 850px;
-  /* Remove display: flex to prevent stretching children vertically */
-  margin-left: auto;
+  width: 100%;
 }
 
-.profileContentScrollable > div {
+.profileContentScrollable>div {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
 @media (max-width: 1024px) {
   .profileMainContent {
-    gap: 1.5rem;
+    gap: 1rem;
   }
+
   .profileSidebarFixed {
-    width: 320px;
+    width: 280px;
   }
 }
 
 @media (max-width: 768px) {
   .profileMainContent {
-    flex-direction: column !important;
-    padding: 0.75rem 0 0 !important;
-    gap: 0.75rem;
+    flex-direction: column;
+    padding: 0 0 80px;
+    gap: 1rem;
   }
+
   .profileSidebarFixed {
     width: 100%;
     position: static;
   }
+
   .profileContentScrollable {
     max-width: 100%;
-    margin-left: 0;
-    padding-bottom: 0.75rem;
   }
 }
-

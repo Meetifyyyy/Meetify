@@ -38,7 +38,7 @@ export const SignupProvider = ({ children }) => {
 
   const [signupData, setSignupData] = useState(() => {
     try {
-      const saved = sessionStorage.getItem('meetify_signup_data');
+      const saved = sessionStorage.getItem('meetifyy_signup_data');
       return saved ? JSON.parse(saved) : initialData;
     } catch (e) {
       return initialData;
@@ -52,7 +52,7 @@ export const SignupProvider = ({ children }) => {
   }, [searchParams, setSearchParams]);
 
   useEffect(() => {
-    sessionStorage.setItem('meetify_signup_data', JSON.stringify(signupData));
+    sessionStorage.setItem('meetifyy_signup_data', JSON.stringify(signupData));
   }, [signupData]);
 
   const updateData = (newData) => {

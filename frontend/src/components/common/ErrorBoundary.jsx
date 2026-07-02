@@ -48,7 +48,7 @@ export class RouteErrorBoundary extends Component {
               marginTop: '0.25rem',
               padding: '0.55rem 1.4rem',
               background: 'var(--color-primary)',
-              color: '#fff',
+              color: 'var(--color-bg-white)',
               border: 'none',
               borderRadius: 'var(--radius-full)',
               cursor: 'pointer',

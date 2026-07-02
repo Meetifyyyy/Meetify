@@ -1,24 +1,24 @@
 import styles from './Post.module.css';
+import Skeleton from '../common/Skeleton';
 
 export default function PostSkeleton() {
-  const bar = { backgroundColor: '#E7E3DC', borderRadius: '4px', animation: 'skeletonPulse 1.5s infinite' };
   return (
     <div className={styles.post}>
       <div className={styles.postHeader}>
-        <div className={styles.postAvatar} style={{ animation: 'skeletonPulse 1.5s infinite', backgroundColor: '#E7E3DC', background: 'none' }}></div>
-        <div className={styles.postUser}>
-          <div style={{ height: '14px', width: '120px', ...bar, marginBottom: '6px' }}></div>
-          <div style={{ height: '10px', width: '80px', ...bar }}></div>
+        <Skeleton type="circle" width="42px" height="42px" />
+        <div className={styles.postUser} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <Skeleton type="text" width="120px" height="14px" style={{ marginBottom: 0 }} />
+          <Skeleton type="text" width="80px" height="10px" style={{ marginBottom: 0 }} />
         </div>
       </div>
-      <div className={styles.postBody}>
-        <div style={{ height: '12px', width: '100%', ...bar, marginBottom: '8px' }}></div>
-        <div style={{ height: '12px', width: '85%', ...bar, marginBottom: '8px' }}></div>
-        <div style={{ height: '12px', width: '40%', ...bar }}></div>
+      <div className={styles.postBody} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '1rem' }}>
+        <Skeleton type="text" width="100%" height="12px" style={{ marginBottom: 0 }} />
+        <Skeleton type="text" width="85%" height="12px" style={{ marginBottom: 0 }} />
+        <Skeleton type="text" width="40%" height="12px" style={{ marginBottom: 0 }} />
       </div>
-      <div className={styles.postActions}>
-        <div style={{ height: '32px', width: '70px', ...bar, borderRadius: '16px' }}></div>
-        <div style={{ height: '32px', width: '90px', ...bar, borderRadius: '16px' }}></div>
+      <div className={styles.postActions} style={{ marginTop: '1rem', gap: '1rem' }}>
+        <Skeleton type="rect" width="70px" height="32px" style={{ borderRadius: '16px' }} />
+        <Skeleton type="rect" width="90px" height="32px" style={{ borderRadius: '16px' }} />
       </div>
     </div>
   );

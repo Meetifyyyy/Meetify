@@ -1,95 +1,190 @@
+import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { isImageUrl } from '../../utils/avatar';
 import DefaultAvatar from '../common/DefaultAvatar';
 import styles from './Sidebar.module.css';
+import {
+  HomeIcon as HomeOutline,
+  MagnifyingGlassIcon as SearchOutline,
+  ChatBubbleOvalLeftEllipsisIcon as MessagesOutline,
+  UserGroupIcon as CommunitiesOutline,
+  UserIcon as ProfileOutline,
+  Cog6ToothIcon as SettingsOutline,
+  ChevronDownIcon,
+  ChevronUpIcon,
+} from '@heroicons/react/24/outline';
+import {
+  HomeIcon as HomeSolid,
+  MagnifyingGlassIcon as SearchSolid,
+  ChatBubbleOvalLeftEllipsisIcon as MessagesSolid,
+  UserGroupIcon as CommunitiesSolid,
+  UserIcon as ProfileSolid,
+  Cog6ToothIcon as SettingsSolid,
+} from '@heroicons/react/24/solid';
+
+const CompassOutline = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+  </svg>
+);
+
+const CompassSolid = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+    <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 5.523 4.477 10 10 10s10-4.477 10-10C22 6.477 17.523 2 12 2zM16.24 7.76L14.12 14.12L7.76 16.24L9.88 9.88L16.24 7.76z" />
+  </svg>
+);
 
 export default function Sidebar({ onCommunityClick }) {
   const { initial, currentUser } = useAuth();
+  const { communities } = useData();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isCommunitiesMenuOpen, setIsCommunitiesMenuOpen] = useState(false);
 
-  const displayName = currentUser?.displayName || currentUser?.username || '';
   const username = currentUser?.username || '';
+  
+  const joinedCommunityObjects = (currentUser?.communities || []).map(commName => {
+    return Object.values(communities).find(c => c.name === commName) || { name: commName, id: commName.toLowerCase().replace(/\s+/g, ''), avatar: commName.charAt(0) };
+  });
 
   return (
     <aside className={styles.sidebar}>
-      <div className={styles.sidebarUser}>
-        <div className={styles.sidebarAvatar}>
-          {isImageUrl(currentUser?.avatar) ? (
-            <img src={currentUser.avatar} alt={displayName} className={styles.sidebarAvatarImg} />
-          ) : (
-            <DefaultAvatar />
-          )}
-        </div>
-        <div>
-          <div className={styles.sidebarName}>{displayName}</div>
-          <div className={styles.sidebarUsername}>@{username}</div>
-          <div className={styles.sidebarStatus}>Online</div>
-        </div>
+      
+
+      {/* 2. Navigation Card */}
+      <div className={`${styles.sidebarCard} ${styles.navCard}`}>
+        <nav className={styles.sidebarNav}>
+          <a
+            href="#"
+            className={`${styles.sidebarLink}${location.pathname === '/home' ? ` ${styles.active}` : ''}`}
+            onClick={(e) => { e.preventDefault(); navigate('/home'); }}
+          >
+            {location.pathname === '/home' ? (
+              <HomeSolid />
+            ) : (
+              <HomeOutline />
+            )}
+            <span className={styles.linkText}>Home</span>
+          </a>
+          
+          <a
+            href="#"
+            className={`${styles.sidebarLink}${location.pathname.startsWith('/feed') || location.pathname.startsWith('/search') ? ` ${styles.active}` : ''}`}
+            onClick={(e) => { e.preventDefault(); navigate('/search'); }}
+          >
+            {location.pathname.startsWith('/feed') || location.pathname.startsWith('/search') ? (
+              <SearchSolid />
+            ) : (
+              <SearchOutline />
+            )}
+            <span className={styles.linkText}>Search</span>
+          </a>
+
+          <a
+            href="#"
+            className={`${styles.sidebarLink}${location.pathname.startsWith('/messages') ? ` ${styles.active}` : ''}`}
+            onClick={(e) => { e.preventDefault(); navigate('/messages'); }}
+          >
+            {location.pathname.startsWith('/messages') ? (
+              <MessagesSolid />
+            ) : (
+              <MessagesOutline />
+            )}
+            <span className={styles.linkText}>Messages</span>
+          </a>
+
+          <a
+            href="#"
+            className={`${styles.sidebarLink}${location.pathname.startsWith('/crew') ? ` ${styles.active}` : ''}`}
+            onClick={(e) => { e.preventDefault(); navigate('/crew'); }}
+          >
+            {location.pathname.startsWith('/crew') ? (
+              <CompassSolid />
+            ) : (
+              <CompassOutline />
+            )}
+            <span className={styles.linkText}>Find your crew</span>
+          </a>
+          
+          <a
+            href="#"
+            className={`${styles.sidebarLink}${location.pathname.startsWith('/profile') ? ` ${styles.active}` : ''}`}
+            onClick={(e) => { e.preventDefault(); navigate(`/profile/${username}`); }}
+          >
+            {location.pathname.startsWith('/profile') ? (
+              <ProfileSolid />
+            ) : (
+              <ProfileOutline />
+            )}
+            <span className={styles.linkText}>Profile</span>
+          </a>
+
+          <a
+            href="#"
+            className={`${styles.sidebarLink}${location.pathname.startsWith('/settings') ? ` ${styles.active}` : ''}`}
+            onClick={(e) => { e.preventDefault(); navigate('/settings'); }}
+          >
+            {location.pathname.startsWith('/settings') ? (
+              <SettingsSolid />
+            ) : (
+              <SettingsOutline />
+            )}
+            <span className={styles.linkText}>Settings</span>
+          </a>
+        </nav>
       </div>
 
-      <nav className={styles.sidebarNav}>
-        <a
-          href="#"
-          className={`${styles.sidebarLink}${location.pathname === '/home' ? ` ${styles.active}` : ''}`}
-          onClick={(e) => { e.preventDefault(); navigate('/home'); }}
+      {/* Communities Boxed Menu */}
+      <div className={styles.communitiesBox}>
+        <div 
+          className={styles.communitiesHeader} 
+          onClick={() => setIsCommunitiesMenuOpen(!isCommunitiesMenuOpen)}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-            <polyline points="9 22 9 12 15 12 15 22" />
-          </svg>
-          Home
-        </a>
-        <a
-          href="#"
-          className={`${styles.sidebarLink}${location.pathname.startsWith('/communities') ? ` ${styles.active}` : ''}`}
-          onClick={(e) => { e.preventDefault(); navigate('/communities'); }}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-          </svg>
-          Communities
-        </a>
-        <a
-          href="#"
-          className={`${styles.sidebarLink}${location.pathname.startsWith('/messages') ? ` ${styles.active}` : ''}`}
-          onClick={(e) => { e.preventDefault(); navigate('/messages'); }}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-            <polyline points="22,6 12,13 2,6" />
-          </svg>
-          Messages
-        </a>
-        <a
-          href="#"
-          className={`${styles.sidebarLink}${location.pathname.startsWith('/search') ? ` ${styles.active}` : ''}`}
-          onClick={(e) => { e.preventDefault(); navigate('/search'); }}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          Search
-        </a>
-        <a
-          href="#"
-          className={`${styles.sidebarLink}${location.pathname.startsWith('/crew') ? ` ${styles.active}` : ''}`}
-          onClick={(e) => { e.preventDefault(); navigate('/crew'); }}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
-          </svg>
-          Find your crew
-        </a>
-
-      </nav>
+          <span>COMMUNITIES</span>
+          {isCommunitiesMenuOpen ? (
+            <ChevronUpIcon className={styles.chevronIcon} />
+          ) : (
+            <ChevronDownIcon className={styles.chevronIcon} />
+          )}
+        </div>
+        
+        {isCommunitiesMenuOpen && (
+          <div className={styles.communitiesList}>
+            {joinedCommunityObjects.map(comm => (
+              <a
+                key={comm.id}
+                href="#"
+                className={styles.communityItem}
+                onClick={(e) => { e.preventDefault(); navigate(`/communities/${comm.id}`); }}
+              >
+                <div 
+                  className={styles.communityAvatar}
+                  style={comm.avatar && comm.avatar.startsWith('/') ? { background: 'transparent' } : { background: comm.color || 'var(--color-primary)' }}
+                >
+                  {comm.avatar && comm.avatar.startsWith('/') ? (
+                    <img src={comm.avatar} alt={comm.name} />
+                  ) : (
+                    comm.avatar || comm.name.charAt(0)
+                  )}
+                </div>
+                <span>{comm.name}</span>
+              </a>
+            ))}
+            
+            <a
+              href="#"
+              className={styles.exploreMore}
+              onClick={(e) => { e.preventDefault(); navigate('/communities'); }}
+            >
+              <CommunitiesOutline className={styles.exploreIcon} />
+              <span>Explore more...</span>
+            </a>
+          </div>
+        )}
+      </div>
     </aside>
   );
 }

@@ -1,26 +1,25 @@
 import { isImageUrl } from '../../utils/avatar';
 import DefaultAvatar from '../common/DefaultAvatar';
+import { getRelativeDateLabel } from '../../utils/time';
 import styles from './CrewCard.module.css';
 
 export default function CrewCard({ activity, onClick }) {
   const { 
-    title, coverImage, dateLabel, time, location,
-    hostName, hostAvatar, slotsNeeded, slotsFilled 
+    title, coverImage, date, time, location,
+    hostName, hostAvatar, slotsNeeded, slotsFilled, isOnline 
   } = activity;
 
   const filled = Math.min(slotsFilled, slotsNeeded);
   const spotsLeft = slotsNeeded - filled;
+  const computedDateLabel = getRelativeDateLabel(date) || activity.dateLabel;
 
   return (
     <article className={styles.card} onClick={onClick}>
-      <div className={styles.imageContainer}>
-        <img src={coverImage} alt={title} className={styles.image} />
-        <div className={styles.dateBadge}>
-          {dateLabel}
-        </div>
-      </div>
-
       <div className={styles.content}>
+        <div className={styles.headerRow}>
+          <div className={styles.dateLabel}>{computedDateLabel}</div>
+          {isOnline && <div className={styles.onlineTag}>Online</div>}
+        </div>
         <h3 className={styles.title}>{title}</h3>
         
         <div className={styles.details}>

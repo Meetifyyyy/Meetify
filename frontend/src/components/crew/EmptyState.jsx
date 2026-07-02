@@ -5,11 +5,11 @@ export default function EmptyState({ hasFilters }) {
     <div className={styles.empty}>
       <div className={styles.graphic}>
         <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
-          <circle cx="36" cy="36" r="28" stroke="#E7E3DC" strokeWidth="1.5" />
-          <circle cx="36" cy="36" r="16" stroke="#E7E3DC" strokeWidth="1.5" strokeDasharray="3 3" />
-          <circle cx="36" cy="36" r="4" fill="#E7E3DC" />
-          <path d="M36 8v4M36 60v4M8 36h4M60 36h4" stroke="#E7E3DC" strokeWidth="1.5" strokeLinecap="round" />
-          <path d="M16.69 16.69l2.83 2.83M52.48 52.48l2.83 2.83M16.69 55.31l2.83-2.83M52.48 19.52l2.83-2.83" stroke="#E7E3DC" strokeWidth="1.5" strokeLinecap="round" />
+          <circle cx="36" cy="36" r="28" stroke="var(--color-border)" strokeWidth="1.5" />
+          <circle cx="36" cy="36" r="16" stroke="var(--color-border)" strokeWidth="1.5" strokeDasharray="3 3" />
+          <circle cx="36" cy="36" r="4" fill="var(--color-border)" />
+          <path d="M36 8v4M36 60v4M8 36h4M60 36h4" stroke="var(--color-border)" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M16.69 16.69l2.83 2.83M52.48 52.48l2.83 2.83M16.69 55.31l2.83-2.83M52.48 19.52l2.83-2.83" stroke="var(--color-border)" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       </div>
       <h3 className={styles.title}>No crews found</h3>

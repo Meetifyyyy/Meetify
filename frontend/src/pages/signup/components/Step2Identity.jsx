@@ -121,7 +121,7 @@ export default function Step2Identity() {
       }
       
       if (age < 18) {
-        return "You must be at least 18 years old to join Meetify.";
+        return "You must be at least 18 years old to join Meetifyy.";
       }
       
       return null; // All valid!
@@ -228,7 +228,7 @@ export default function Step2Identity() {
             style={{ width: '100%' }}
           >
             <h2 className={styles.headline}>Choose your username</h2>
-            <p className={styles.subheadline}>This is how people will find you on Meetify.</p>
+            <p className={styles.subheadline}>This is how people will find you on Meetifyy.</p>
             <form onSubmit={handleUsernameSubmit}>
               <div style={{ position: 'relative' }}>
                 <span style={{ position: 'absolute', top: '8px', left: 0, fontSize: '2rem', color: '#6b7280' }}>@</span>

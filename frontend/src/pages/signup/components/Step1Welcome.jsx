@@ -26,7 +26,7 @@ export default function Step1Welcome() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        Let's create your Meetify account.
+        Let's create your Meetifyy account.
       </motion.p>
 
       <motion.button 

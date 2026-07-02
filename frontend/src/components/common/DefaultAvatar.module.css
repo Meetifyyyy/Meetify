@@ -5,8 +5,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1D4ED8, #3B82F6);
-  color: #fff;
+  background: #f0f2f5;
+  color: #a8b3c4;
+  border: 1px solid rgba(0, 0, 0, 0.05);
   flex-shrink: 0;
   overflow: hidden;
   font-size: inherit;

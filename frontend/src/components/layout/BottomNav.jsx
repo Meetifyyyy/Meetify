@@ -1,7 +1,33 @@
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import GlobalSearch from '../search/GlobalSearch';
 import styles from './BottomNav.module.css';
+import {
+  HomeIcon as HomeOutline,
+  MagnifyingGlassIcon as SearchOutline,
+  ChatBubbleOvalLeftEllipsisIcon as MessagesOutline,
+  UserGroupIcon as CommunitiesOutline,
+} from '@heroicons/react/24/outline';
+import {
+  HomeIcon as HomeSolid,
+  MagnifyingGlassIcon as SearchSolid,
+  ChatBubbleOvalLeftEllipsisIcon as MessagesSolid,
+  UserGroupIcon as CommunitiesSolid,
+} from '@heroicons/react/24/solid';
+
+const CompassOutline = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+  </svg>
+);
+
+const CompassSolid = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+    <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 5.523 4.477 10 10 10s10-4.477 10-10C22 6.477 17.523 2 12 2zM16.24 7.76L14.12 14.12L7.76 16.24L9.88 9.88L16.24 7.76z" />
+  </svg>
+);
 
 export default function BottomNav() {
   const navigate = useNavigate();
@@ -12,10 +38,13 @@ export default function BottomNav() {
     navigate(path);
   };
 
+  const { currentUser } = useAuth();
+  const username = currentUser?.username || '';
+  
   const isHomeActive = location.pathname === '/home';
-  const isCommunitiesActive = location.pathname.startsWith('/communities');
-  const isMessagesActive = location.pathname.startsWith('/messages');
   const isSearchActive = location.pathname.startsWith('/search');
+  const isMessagesActive = location.pathname.startsWith('/messages');
+  const isCommunitiesActive = location.pathname.startsWith('/communities');
   const isCrewActive = location.pathname.startsWith('/crew');
 
   return (
@@ -24,50 +53,17 @@ export default function BottomNav() {
         className={`${styles.bottomNavItem}${isHomeActive ? ` ${styles.active}` : ''}`}
         onClick={() => handleTabClick('/home')}
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-          <polyline points="9 22 9 12 15 12 15 22" />
-        </svg>
+        {isHomeActive ? <HomeSolid /> : <HomeOutline />}
         <span>Home</span>
-      </button>
-
-      <button 
-        className={`${styles.bottomNavItem}${isCommunitiesActive ? ` ${styles.active}` : ''}`}
-        onClick={() => handleTabClick('/communities')}
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-        </svg>
-        <span>Communities</span>
-      </button>
-
-      <button 
-        className={`${styles.bottomNavItem}${isCrewActive ? ` ${styles.active}` : ''}`}
-        onClick={() => handleTabClick('/crew')}
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="10" />
-          <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
-        </svg>
-        <span>Crew</span>
       </button>
 
       <button 
         className={`${styles.bottomNavItem}${isSearchActive ? ` ${styles.active}` : ''}`}
         onClick={() => {
-           if (location.pathname !== '/search') {
-             navigate('/search');
-           }
+           if (location.pathname !== '/search') navigate('/search');
         }}
-        title="Search"
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
+        {isSearchActive ? <SearchSolid /> : <SearchOutline />}
         <span>Search</span>
       </button>
 
@@ -75,13 +71,25 @@ export default function BottomNav() {
         className={`${styles.bottomNavItem}${isMessagesActive ? ` ${styles.active}` : ''}`}
         onClick={() => handleTabClick('/messages')}
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-          <polyline points="22,6 12,13 2,6" />
-        </svg>
+        {isMessagesActive ? <MessagesSolid /> : <MessagesOutline />}
         <span>Messages</span>
       </button>
 
+      <button 
+        className={`${styles.bottomNavItem}${isCommunitiesActive ? ` ${styles.active}` : ''}`}
+        onClick={() => handleTabClick('/communities')}
+      >
+        {isCommunitiesActive ? <CommunitiesSolid /> : <CommunitiesOutline />}
+        <span>Groups</span>
+      </button>
+
+      <button 
+        className={`${styles.bottomNavItem}${isCrewActive ? ` ${styles.active}` : ''}`}
+        onClick={() => handleTabClick('/crew')}
+      >
+        {isCrewActive ? <CompassSolid /> : <CompassOutline />}
+        <span>Crew</span>
+      </button>
     </div>
   );
 }

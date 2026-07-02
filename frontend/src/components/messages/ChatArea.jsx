@@ -2,11 +2,12 @@ import { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import data from '@emoji-mart/data';
 import { isImageUrl } from '../../utils/avatar';
 import DefaultAvatar from '../common/DefaultAvatar';
+import GroupSettingsModal from './GroupSettingsModal';
 import styles from './ChatArea.module.css';
 
 const Picker = lazy(() => import('@emoji-mart/react'));
 
-export default function ChatArea({ conversation, onSendMessage, onReactMessage, onClearChat, onBlockUser, onBack, showChatOnMobile }) {
+export default function ChatArea({ conversation, onSendMessage, onReactMessage, onClearChat, onBlockUser, onJoinGroup, onBack, showChatOnMobile }) {
   const [inputValue, setInputValue] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
@@ -21,6 +22,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
   const [isMuted, setIsMuted] = useState(false);
   const [isSpeakerOn, setIsSpeakerOn] = useState(false);
   const [isMutedNotifications, setIsMutedNotifications] = useState(false);
+  const [showGroupSettings, setShowGroupSettings] = useState(false);
 
   const bodyRef = useRef(null);
   const timerRef = useRef(null);
@@ -46,7 +48,21 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
     };
   }, [isCalling]);
 
-  if (!conversation) return <div className={`${styles.msgChatArea}${!showChatOnMobile ? ` ${styles.hideOnMobile}` : ''}`} />;
+  if (!conversation) {
+    return (
+      <div className={`${styles.msgChatArea} ${styles.msgNoChatSelected}${!showChatOnMobile ? ` ${styles.hideOnMobile}` : ''}`}>
+        <div className={styles.msgNoChatContent}>
+          <div className={styles.msgNoChatIcon}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </div>
+          <h3>Your Messages</h3>
+          <p>Select a conversation from the list to start chatting, or start a new one.</p>
+        </div>
+      </div>
+    );
+  }
 
   const formatDuration = (secs) => {
     const m = Math.floor(secs / 60).toString().padStart(2, '0');
@@ -156,11 +172,15 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
       )}
 
       <div className={styles.msgChatHeader}>
-        <div className={styles.msgChatUser}>
+        <div 
+          className={`${styles.msgChatUser} ${conversation.isGroup ? styles.msgChatUserClickable : ''}`}
+          onClick={() => conversation.isGroup && setShowGroupSettings(true)}
+        >
           {onBack && (
-            <button className={styles.msgChatBackBtn} onClick={onBack} title="Back">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <polyline points="15 18 9 12 15 6" />
+            <button className={styles.msgChatBackBtn} onClick={(e) => { e.stopPropagation(); onBack(); }} title="Back">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
               </svg>
             </button>
           )}
@@ -243,6 +263,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                   </svg>
                   {conversation.blocked ? 'Unblock Contact' : 'Block Contact'}
                 </button>
+
               </div>
             )}
           </div>
@@ -275,10 +296,28 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
       )}
 
       <div className={styles.msgChatBody} ref={bodyRef}>
-        {conversation.messages.length === 0 ? (
+        {isLoading && (
+          <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-start' }}>
+               <Skeleton type="rect" width="55%" height="3.5rem" style={{ borderRadius: '16px 16px 16px 0' }} />
+            </div>
+            <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-end' }}>
+               <Skeleton type="rect" width="45%" height="2.5rem" style={{ borderRadius: '16px 16px 0 16px' }} />
+            </div>
+            <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-start' }}>
+               <Skeleton type="rect" width="65%" height="4.5rem" style={{ borderRadius: '16px 16px 16px 0' }} />
+            </div>
+          </div>
+        )}
+
+        {!isLoading && error && (
+          <ErrorState onRetry={retry} />
+        )}
+
+        {!isLoading && !error && loadedMessages && loadedMessages.length === 0 ? (
           <div className={styles.msgEmptyState}>No messages in this chat.</div>
         ) : (
-          conversation.messages.map((msg, i) => {
+          !isLoading && !error && loadedMessages && loadedMessages.map((msg, i) => {
             const hasQuery = searchQuery && msg.text.toLowerCase().includes(searchQuery.toLowerCase());
             const shouldDim = searchQuery && !hasQuery;
             
@@ -289,6 +328,11 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                 style={{ opacity: shouldDim ? 0.45 : 1 }}
               >
                 <div className={styles.msgBubbleWrapper}>
+                  {conversation.isGroup && msg.from !== 'me' && (
+                    <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginBottom: '4px', marginLeft: '4px' }}>
+                      {msg.senderName || 'Member'}
+                    </div>
+                  )}
                   <div className={`${styles.msgBubble} ${msg.from === 'me' ? styles.msgBubbleMe : styles.msgBubbleThem}`}>
                     {/* Replied text reference inside bubble */}
                     {msg.replyTo && (
@@ -315,6 +359,29 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                         })()
                       ) : (
                         msg.text
+                      )}
+                      
+                      {msg.inviteData && (
+                        <div className={styles.msgInviteCard}>
+                          <div className={styles.msgInviteIcon}>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                              <circle cx="9" cy="7" r="4"></circle>
+                              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                          </div>
+                          <div className={styles.msgInviteContent}>
+                            <div className={styles.msgInviteTitle}>Group Invitation</div>
+                            <div className={styles.msgInviteName}>{msg.inviteData.groupName}</div>
+                          </div>
+                          <button 
+                            className={styles.msgInviteBtn}
+                            onClick={() => onJoinGroup && onJoinGroup(msg.inviteData.groupId)}
+                          >
+                            Join Group
+                          </button>
+                        </div>
                       )}
                     </div>
                     <div className={styles.msgTimeLabel}>{msg.time}</div>
@@ -367,7 +434,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
             );
           })
         )}
-        {isTyping && (
+        {isTyping && !isLoading && (
           <div className={`${styles.msgBubbleContainer} ${styles.msgBubbleContainerThem}`}>
             <div className={styles.msgBubbleWrapper}>
               <div className={`${styles.msgBubble} ${styles.msgBubbleThem}`}>
@@ -401,7 +468,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
 
         {showEmojiPicker && (
           <div style={{ position: 'absolute', bottom: '100%', left: '1.25rem', marginBottom: '0.5rem', zIndex: 100 }}>
-            <Suspense fallback={<div style={{ padding: '1rem', background: '#fff', borderRadius: '12px', border: '1px solid #e4e4e7', fontSize: '0.85rem' }}>Loading Emojis...</div>}>
+            <Suspense fallback={<div style={{ padding: '1rem', background: 'var(--color-bg-white)', borderRadius: '12px', border: '1px solid #e4e4e7', fontSize: '0.85rem' }}>Loading Emojis...</div>}>
               <Picker 
                 data={data} 
                 onEmojiSelect={(emoji) => setInputValue((prev) => prev + emoji.native)} 
@@ -438,6 +505,17 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
           </>
         )}
       </div>
+
+      {showGroupSettings && (
+        <GroupSettingsModal
+          conversation={conversation}
+          onClose={() => setShowGroupSettings(false)}
+          onLeaveGroup={() => {
+            setShowGroupSettings(false);
+            onBack();
+          }}
+        />
+      )}
     </div>
   );
 }

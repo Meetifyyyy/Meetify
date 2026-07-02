@@ -1,85 +1,86 @@
-.pageContainer {
-  padding: 0 0 4rem 0;
-  max-width: 100%;
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 0.5rem 0;
 }
 
 .content {
-  padding: 0 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  min-width: 0;
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .loader {
-  padding: 4rem 0;
+  padding: 3rem 0;
   text-align: center;
   color: var(--color-text-muted);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
-.section {
-  margin-bottom: 4rem;
+.gridSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
 }
 
 .sectionTitle {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-family: var(--font-family-display);
+  font-size: 1.15rem;
+  font-weight: 700;
   color: var(--color-text-main);
-  margin: 0 0 0.5rem 0;
-  letter-spacing: -0.01em;
-}
-
-.sectionSubtitle {
-  font-size: 0.95rem;
-  color: var(--color-text-muted);
-  margin: 0 0 2rem 0;
+  margin: 0;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 2rem;
-}
-
-.horizontalScroll {
-  display: flex;
-  gap: 2rem;
-  overflow-x: auto;
-  padding-bottom: 1rem;
-  margin-bottom: -1rem;
-  scroll-snap-type: x mandatory;
-}
-
-.horizontalScroll::-webkit-scrollbar {
-  display: none;
-}
-
-.scrollItem {
-  flex: 0 0 320px;
-  scroll-snap-align: start;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.85rem;
 }
 
 .empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 4rem 1rem;
+  text-align: center;
+  grid-column: 1 / -1;
   color: var(--color-text-muted);
-  padding: 2rem 0;
-  font-size: 0.95rem;
+  font-family: var(--font-family-sans);
+  font-size: 0.9rem;
 }
 
 @media (max-width: 768px) {
+  .page {
+    padding: 0.5rem 0 80px;
+    gap: 1rem;
+  }
+  
   .content {
-    padding: 0 1rem;
+    gap: 1.5rem;
   }
-  
-  .horizontalScroll {
-    gap: 1rem;
+
+  .sectionTitle {
+    font-size: 1rem;
   }
-  
-  .scrollItem {
-    flex: 0 0 280px;
-  }
-  
+
   .grid {
-    gap: 1rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
   }
 }

@@ -13,7 +13,7 @@
 }
 
 .resultCard:hover, .resultCard[data-selected="true"] {
-  background: rgba(37, 99, 235, 0.06);
+  background: rgba(var(--color-primary-rgb), 0.15);
   transform: translateX(4px);
 }
 
@@ -24,7 +24,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-inverse);
+  color: #FFFFFF;
   font-weight: 600;
   font-size: 1.1rem;
   flex-shrink: 0;
@@ -75,7 +75,7 @@
 .highlight {
   color: var(--color-primary);
   font-weight: 700;
-  background: rgba(37, 99, 235, 0.15);
+  background: rgba(var(--color-primary-rgb), 0.15);
   border-radius: 2px;
   padding: 0 2px;
 }

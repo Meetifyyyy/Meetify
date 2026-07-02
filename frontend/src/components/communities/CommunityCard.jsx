@@ -5,7 +5,9 @@ import DefaultAvatar from '../common/DefaultAvatar';
 import styles from './CommunityCard.module.css';
 
 function formatNum(n) {
-  if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+  if (n === undefined || n === null) return '0';
+  if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
+  if (n >= 1000) return `${(n / 1000).toFixed(1)}K`;
   return n.toLocaleString();
 }
 
@@ -82,22 +84,28 @@ export default function CommunityCard({ comm, onClick }) {
         <h3 className={styles.cardTitle}>{comm.name}</h3>
         <p className={styles.cardDesc}>{comm.desc}</p>
 
-        <div className={styles.cardMeta}>
-          <MemberAvatarStack avatars={comm.memberAvatars} max={4} />
-          <span className={styles.memberCount}>{formatNum(comm.members)} members</span>
-        </div>
+
 
 
 
         <div className={styles.cardFooter}>
-          {showOnline ? (
-            <div className={styles.onlineIndicator}>
-              <span className={styles.onlineDot} />
-              <span>{comm.online} active</span>
+          <div className={styles.cardStats}>
+            <div className={styles.memberCountIcon}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              <span>{formatNum(comm.members)} members</span>
             </div>
-          ) : (
-            <div />
-          )}
+            {showOnline && (
+              <div className={styles.onlineIndicator}>
+                <span className={styles.onlineDot} />
+                <span>{formatNum(comm.online)} active</span>
+              </div>
+            )}
+          </div>
           <button
             className={`${styles.joinBtn} ${isJoined ? styles.joined : ''}`}
             onClick={(e) => { e.stopPropagation(); toggleJoinCommunity(comm.id); }}

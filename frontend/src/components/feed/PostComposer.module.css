@@ -3,9 +3,8 @@
 }
 
 .postComposer {
-  background: var(--bg-glass);
-  backdrop-filter: var(--blur-glass);
-  border: var(--border-glass);
+  background: var(--color-bg-white);
+  border: 1px solid var(--color-border-light);
   border-radius: var(--radius-xl);
   padding: 1.25rem 1.5rem;
   display: flex;
@@ -38,7 +37,7 @@
   font-family: var(--font-family-display);
   font-weight: 600;
   font-size: 0.95rem;
-  color: var(--color-bg-white);
+  color: var(--color-text-inverse);
   flex-shrink: 0;
 }
 
@@ -57,6 +56,31 @@
 
 .composerInput::placeholder {
   color: var(--color-text-light);
+}
+
+.composerEmojiBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: none;
+  border: none;
+  color: var(--color-icon-base);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  flex-shrink: 0;
+}
+
+.composerEmojiBtn:hover {
+  color: var(--color-primary);
+  background: var(--color-border-light);
+}
+
+.composerEmojiBtn.active {
+  color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb), 0.15);
 }
 
 .composerContentArea {
@@ -84,12 +108,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
+  gap: 0.4rem;
+  padding: 0 0.75rem;
   height: 34px;
   border-radius: var(--radius-sm);
   background: none;
   border: none;
-  color: var(--color-text-light);
+  color: var(--color-icon-base);
+  font-family: var(--font-family-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-normal);
 }
@@ -101,7 +129,7 @@
 
 .composerIconBtn.active {
   color: var(--color-primary);
-  background: rgba(37, 99, 235, 0.08);
+  background: rgba(var(--color-primary-rgb), 0.15);
 }
 
 .composerSendBtn {
@@ -110,7 +138,7 @@
   border-radius: 10px;
   background: var(--color-primary);
   border: none;
-  color: var(--color-bg-white);
+  color: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -239,7 +267,7 @@
 
 .pollQuestionInput:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.15);
 }
 
 .pollQuestionInput::placeholder {
@@ -284,7 +312,7 @@
 
 .pollOptionInput:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.15);
 }
 
 .pollOptionInput::placeholder {
@@ -340,7 +368,7 @@
 }
 
 .pollOptionAdd:hover {
-  background: rgba(37, 99, 235, 0.12);
+  background: rgba(var(--color-primary-rgb), 0.15);
 }
 
 .inlinePollCreator {
@@ -421,7 +449,7 @@
   top: 2px;
   left: 2px;
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  box-shadow:(--shadow-sm);
 }
 
 .pollToggleTrack.on .pollToggleThumb {

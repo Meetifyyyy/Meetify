@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider, Navigate, Outlet, ScrollRestoration, useLocation } from 'react-router-dom';
+import { SmartBackTracker } from './hooks/useSmartBack';
 import { useAuth } from './context/AuthContext';
 import LandingPage from './pages/LandingPage';
 import DashboardLayoutWrapper from './pages/DashboardLayoutWrapper';
@@ -18,6 +19,7 @@ import OnboardingRoute from './pages/onboarding/OnboardingRoute';
 import SettingsRoute from './pages/settings/SettingsRoute';
 import FindYourCrewPage from './components/crew/FindYourCrewPage';
 import ActivityDetailPage from './components/crew/ActivityDetailPage';
+import NotificationsRoute from './pages/NotificationsRoute';
 
 /** Wraps a route element with a scoped error boundary */
 function withBoundary(element) {
@@ -81,6 +83,7 @@ export default function App() {
       path: '/',
       element: (
         <ErrorBoundary>
+          <SmartBackTracker />
           <ScrollRestoration />
           <Outlet />
         </ErrorBoundary>
@@ -130,7 +133,7 @@ export default function App() {
               element: <DashboardLayoutWrapper />,
               children: [
             { path: '/home',                       element: withBoundary(<FeedRoute />) },
-            { path: '/search',                     element: withBoundary(<SearchResultsRoute />) },
+            { path: '/search',                     element: withBoundary(<SearchResultsRoute />), handle: { wide: true } },
             { path: '/communities',                element: withBoundary(<CommunitiesRoute />), handle: { wide: true } },
             { path: '/communities/:id',            element: withBoundary(<CommunityDetailRoute />), handle: { wide: true } },
             { path: '/colleges/:id',               element: withBoundary(<CollegeDetailRoute />), handle: { wide: true } },
@@ -138,6 +141,7 @@ export default function App() {
             { path: '/post/:id',                   element: withBoundary(<PostDetailRoute />) },
             { path: '/profile/:profileUsername?',  element: withBoundary(<ProfilePage />), handle: { wide: true } },
             { path: '/settings',                   element: withBoundary(<SettingsRoute />), handle: { wide: true } },
+            { path: '/notifications',              element: withBoundary(<NotificationsRoute />), handle: { wide: true } },
             { path: '/crew',                       element: withBoundary(<FindYourCrewPage />), handle: { wide: true } },
             { path: '/crew/:id',                   element: withBoundary(<ActivityDetailPage />), handle: { wide: true } },
             { path: '*',                           element: withBoundary(<NotFound />) },

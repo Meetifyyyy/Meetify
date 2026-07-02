@@ -27,7 +27,7 @@ export default function Step3Student() {
     <AnimatedStep className={styles.stepWrapper}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem', color: 'var(--color-primary, #6366f1)' }}>
         <GraduationCap size={24} />
-        <span style={{ fontWeight: 600 }}>Meetify is built for verified students.</span>
+        <span style={{ fontWeight: 600 }}>Meetifyy is built for verified students.</span>
       </div>
 
       <AnimatePresence mode="wait">

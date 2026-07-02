@@ -1,14 +1,14 @@
 .section {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 0.65rem;
 }
 
 .group {
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: 0.5rem;
 }
 
 .groupHeader {
@@ -19,7 +19,7 @@
 
 .groupHeading {
   font-family: var(--font-family-display);
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   font-weight: 650;
   letter-spacing: -0.01em;
   color: var(--color-text-main);
@@ -34,8 +34,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border: 1px solid var(--color-border-light);
   border-radius: 50%;
   background: var(--color-bg-white);
@@ -50,18 +50,18 @@
 }
 
 .scrollBtn:disabled {
-  opacity: 0.35;
+  opacity: 0.3;
   cursor: default;
 }
 
 .carousel {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.65rem;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding: 0.15rem 0.15rem 0.35rem;
+  padding: 0.1rem 0.1rem 0.3rem;
 }
 
 .carousel::-webkit-scrollbar {
@@ -69,36 +69,38 @@
 }
 
 .recommendCard {
-  min-width: 260px;
-  max-width: 280px;
+  min-width: 220px;
+  max-width: 240px;
   flex-shrink: 0;
   scroll-snap-align: start;
   background: var(--color-bg-white);
   border: 1px solid var(--color-border-light);
   border-radius: var(--radius-md);
-  padding: 1rem 1.1rem;
+  padding: 0.75rem 0.9rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.35rem;
   transition: box-shadow var(--transition-normal), transform var(--transition-normal);
+  cursor: pointer;
 }
 
 .recommendCard:hover {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.06);
+  box-shadow:(--shadow-sm));
   transform: translateY(-1px);
 }
 
 .recTitle {
   font-family: var(--font-family-display);
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.35;
   color: var(--color-text-main);
   letter-spacing: -0.005em;
+  margin: 0;
 }
 
 .recCreator {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--color-text-muted);
   display: flex;
   align-items: center;
@@ -116,7 +118,7 @@
 }
 
 .recMeta {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--color-text-light);
   font-weight: 500;
   display: flex;
@@ -131,18 +133,19 @@
 .recActions {
   display: flex;
   gap: 0.35rem;
-  padding-top: 0.3rem;
+  padding-top: 0.4rem;
+  margin-top: 0.1rem;
   border-top: 1px solid var(--color-border-light);
 }
 
 .recPrimary {
   flex: 1;
-  padding: 0.4rem;
+  padding: 0.35rem 0;
   font-family: var(--font-family-sans);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  color: var(--color-bg-white);
-  background: var(--color-text-main);
+  color: #FFFFFF;
+  background: var(--color-primary);
   border: none;
   border-radius: var(--radius-sm);
   cursor: pointer;
@@ -155,9 +158,9 @@
 
 .recSecondary {
   flex: 1;
-  padding: 0.4rem;
+  padding: 0.35rem 0;
   font-family: var(--font-family-sans);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 500;
   color: var(--color-text-muted);
   background: var(--color-bg-white);

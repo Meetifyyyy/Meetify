@@ -13,6 +13,9 @@ export default function ProfileAbout({ profileUsername }) {
 
   const college = profileUser.collegeId ? communities[profileUser.collegeId] : null;
   const displayCommunities = profileUser.communities ? profileUser.communities.filter(c => college ? c !== college.name : true) : [];
+  
+  const socialLinks = profileUser.socialLinks || {};
+  const hasSocialLinks = socialLinks.instagram || socialLinks.facebook || socialLinks.linkedin || socialLinks.twitter;
 
   return (
     <div className={styles.profileSection}>
@@ -49,15 +52,26 @@ export default function ProfileAbout({ profileUsername }) {
             <h3 className={styles.groupTitle}>Communities</h3>
             <div className={styles.communitiesList}>
               {displayCommunities.map((c, i) => {
-                const commId = Object.values(communities).find(comm => comm.name === c)?.id;
+                const commObj = Object.values(communities).find(comm => comm.name === c);
+                if (!commObj) return null;
                 return (
-                  <button 
+                  <div 
                     key={i} 
-                    className={styles.communityTag}
-                    onClick={() => commId && navigate(`/communities/${commId}`)}
+                    className={styles.communityCard}
+                    onClick={() => navigate(`/communities/${commObj.id}`)}
                   >
-                    {c}
-                  </button>
+                    {commObj.avatar && commObj.avatar.length > 5 ? (
+                      <img src={commObj.avatar} alt={c} className={styles.communityAvatar} />
+                    ) : (
+                      <div className={styles.communityAvatarFallback} style={commObj.color ? { background: commObj.color } : {}}>
+                        {commObj.avatar && commObj.avatar.length <= 5 ? commObj.avatar : c.charAt(0)}
+                      </div>
+                    )}
+                    <div className={styles.communityInfo}>
+                      <span className={styles.communityName}>{c}</span>
+                      <span className={styles.communityMembers}>{commObj.members || 0} members</span>
+                    </div>
+                  </div>
                 );
               })}
             </div>
@@ -93,20 +107,37 @@ export default function ProfileAbout({ profileUsername }) {
           </div>
         )}
 
-        <div className={styles.detailGroup}>
-          <h3 className={styles.groupTitle}>Social Links</h3>
-          <div className={styles.socialLinks}>
-            <a href="#" className={styles.socialIcon} aria-label="Instagram">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-            </a>
-            <a href="#" className={styles.socialIcon} aria-label="LinkedIn">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-            </a>
-            <a href="#" className={styles.socialIcon} aria-label="Website">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-            </a>
+        {hasSocialLinks && (
+          <div className={styles.detailGroup}>
+            <h3 className={styles.groupTitle}>Social Links</h3>
+            <div className={styles.socialLinks}>
+              {socialLinks.instagram && (
+                <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className={`${styles.socialBtn} ${styles.socialInstagram}`} aria-label="Instagram">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                  <span>Instagram</span>
+                </a>
+              )}
+              {socialLinks.facebook && (
+                <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className={`${styles.socialBtn} ${styles.socialFacebook}`} aria-label="Facebook">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                  <span>Facebook</span>
+                </a>
+              )}
+              {socialLinks.linkedin && (
+                <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className={`${styles.socialBtn} ${styles.socialLinkedin}`} aria-label="LinkedIn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                  <span>LinkedIn</span>
+                </a>
+              )}
+              {socialLinks.twitter && (
+                <a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer" className={`${styles.socialBtn} ${styles.socialTwitter}`} aria-label="Twitter">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
+                  <span>Twitter</span>
+                </a>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

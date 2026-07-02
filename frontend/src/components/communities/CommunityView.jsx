@@ -1,12 +1,17 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
+import { useSimulatedFetch } from '../../hooks/useSimulatedFetch';
 import { showToast } from '../../utils/toast';
 import { isImageUrl } from '../../utils/avatar';
 import DefaultAvatar from '../common/DefaultAvatar';
+import Skeleton from '../common/Skeleton';
+import { ErrorState } from '../common/StateViews';
 import Post from '../feed/Post';
 import PostComposer from '../feed/PostComposer';
+import PostSkeleton from '../feed/PostSkeleton';
 import CommunityMembersModal from './CommunityMembersModal';
+import CommunityAdminModal from './CommunityAdminModal';
 import styles from './CommunityView.module.css';
 
 function getActivityPhrase(comm) {
@@ -19,31 +24,86 @@ function getActivityPhrase(comm) {
 }
 
 function formatCount(n) {
+  if (n === undefined || n === null) return '0';
   if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
   if (n >= 1000) return `${(n / 1000).toFixed(1)}K`;
   return n.toLocaleString();
 }
 
-
-
-function HeroSection({ comm, joined, onToggleJoin, onCreatePost, userCommunities, onViewMembers }) {
+function HeroSection({ comm, joined, onToggleJoin, onCreatePost, userCommunities, onViewMembers, isAdmin, onOpenAdmin, onUpdateCommunity }) {
   const navigate = useNavigate();
+  const coverInputRef = useRef(null);
+  const avatarInputRef = useRef(null);
+
+  const handleImageUpload = (e, field) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        await onUpdateCommunity(comm.id, { [field]: ev.target.result });
+        showToast(`${field === 'coverImage' ? 'Cover' : 'Avatar'} updated successfully!`);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <div className={styles.heroSection}>
       <div className={styles.heroCover}>
         <img src={comm.coverImage} alt="" className={styles.heroCoverImg} />
         <div className={styles.heroCoverOverlay} />
+        {isAdmin && (
+          <>
+            <input 
+              type="file" 
+              accept="image/*" 
+              ref={coverInputRef} 
+              style={{ display: 'none' }} 
+              onChange={e => handleImageUpload(e, 'coverImage')} 
+            />
+            <button className={styles.editCoverBtn} onClick={() => coverInputRef.current?.click()} title="Change Cover Image">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg>
+              Edit Cover
+            </button>
+          </>
+        )}
       </div>
       <div className={styles.heroContent}>
         <div className={styles.heroTopRow}>
-          <div className={styles.heroAvatar} style={{ background: comm.color }}>
-            {isImageUrl(comm.avatar) ? (
-              <img src={comm.avatar} alt={comm.name} className={styles.heroAvatarImg} />
-            ) : (
-              <DefaultAvatar />
-            )}
+          <div className={styles.avatarWrapper}>
+            <div 
+              className={`${styles.heroAvatar} ${isAdmin ? styles.heroAvatarEditable : ''}`} 
+              style={{ background: comm.color }}
+              onClick={isAdmin ? () => avatarInputRef.current?.click() : undefined}
+            >
+              {isImageUrl(comm.avatar) ? (
+                <img src={comm.avatar} alt={comm.name} className={styles.heroAvatarImg} />
+              ) : (
+                <DefaultAvatar />
+              )}
+              {isAdmin && (
+                <>
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    ref={avatarInputRef} 
+                    style={{ display: 'none' }} 
+                    onChange={e => handleImageUpload(e, 'avatar')} 
+                  />
+                  <div className={styles.avatarEditOverlay} title="Change Avatar">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 20h9"></path>
+                      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                    </svg>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
+          
           <div className={styles.heroMeta}>
             <div className={styles.heroNameRow}>
               <h2 className={styles.heroName}>{comm.name}</h2>
@@ -58,19 +118,23 @@ function HeroSection({ comm, joined, onToggleJoin, onCreatePost, userCommunities
               )}
             </div>
             <div className={styles.heroCategories}>
-              {comm.categories?.map((cat) => (
-                <span key={cat} className={styles.heroCategory} style={{ background: `${comm.tagColor}18`, color: comm.tagColor }}>
-                  {cat}
+              {(comm.interests || comm.categories || []).slice(0, 2).map((item, index) => (
+                <span key={`${item}-${index}`} className={styles.heroCategory} style={{ background: `${comm.tagColor}18`, color: comm.tagColor }}>
+                  {item}
                 </span>
               ))}
-              {comm.categoryLabel && (
-                <span className={styles.heroCategory} style={{ background: `${comm.tagColor}18`, color: comm.tagColor }}>
-                  {comm.categoryLabel}
-                </span>
-              )}
             </div>
           </div>
           <div className={styles.heroActions}>
+            {isAdmin && (
+              <button className={styles.heroCreateBtn} onClick={onOpenAdmin} style={{ background: 'var(--color-bg-main)', color: 'var(--color-text-main)', border: '1px solid var(--color-border)' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                </svg>
+                Settings
+              </button>
+            )}
             <button className={styles.heroCreateBtn} onClick={onCreatePost}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19" />
@@ -99,10 +163,9 @@ function HeroSection({ comm, joined, onToggleJoin, onCreatePost, userCommunities
           <div 
             className={styles.memberStackClickable} 
             onClick={() => {
-              console.log("Member stack clicked!");
               if (onViewMembers) onViewMembers();
             }} 
-            style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', cursor: 'pointer' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}
             title="View members"
           >
             <div className={styles.memberStack}>
@@ -113,14 +176,13 @@ function HeroSection({ comm, joined, onToggleJoin, onCreatePost, userCommunities
                   style={{
                     background: `linear-gradient(135deg, hsl(${i * 60 + 200}, 70%, 60%), hsl(${i * 60 + 240}, 70%, 50%))`,
                     zIndex: 4 - i,
-                    marginLeft: i === 0 ? 0 : -8,
                   }}
                 >
                   {initial}
                 </div>
               ))}
               {comm.members > 4 && (
-                <div className={styles.memberOverflow} style={{ marginLeft: -8 }}>
+                <div className={styles.memberOverflow}>
                   +{formatCount(comm.members - 4)}
                 </div>
               )}
@@ -135,7 +197,6 @@ function HeroSection({ comm, joined, onToggleJoin, onCreatePost, userCommunities
               </span>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -143,10 +204,15 @@ function HeroSection({ comm, joined, onToggleJoin, onCreatePost, userCommunities
 }
 
 function AboutCard({ comm }) {
+  // Handle local storage migration of goals -> rules
+  const displayRules = comm.rules || comm.goals;
+
   return (
     <div className={styles.aboutCard}>
-      <h3 className={styles.aboutTitle}>About</h3>
-      <p className={styles.aboutDesc}>{comm.desc}</p>
+      <div>
+        <h4 className={styles.sectionLabel}>About</h4>
+        <p className={styles.aboutDesc}>{comm.desc}</p>
+      </div>
 
       {comm.interests && comm.interests.length > 0 && (
         <div className={styles.interestsSection}>
@@ -159,16 +225,16 @@ function AboutCard({ comm }) {
         </div>
       )}
 
-      {comm.goals && comm.goals.length > 0 && (
-        <div className={styles.goalsSection}>
-          <h4 className={styles.sectionLabel}>Community Goals</h4>
-          <ul className={styles.goalsList}>
-            {comm.goals.map((goal, i) => (
-              <li key={i} className={styles.goalItem}>
+      {displayRules && displayRules.length > 0 && (
+        <div className={styles.rulesSection}>
+          <h4 className={styles.sectionLabel}>Community Rules</h4>
+          <ul className={styles.rulesList}>
+            {displayRules.map((rule, i) => (
+              <li key={i} className={styles.ruleItem}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
-                {goal}
+                {rule}
               </li>
             ))}
           </ul>
@@ -194,66 +260,66 @@ function AboutCard({ comm }) {
           </div>
         </div>
       )}
-
-    </div>
-  );
-}
-
-
-
-function SidebarCommunities({ title, communities, allComms }) {
-  if (!communities || communities.length === 0) return null;
-
-  return (
-    <div className={styles.sidebarSection}>
-      <h3 className={styles.sidebarTitle}>{title}</h3>
-      <div className={styles.sidebarList}>
-        {communities.slice(0, 4).map((item) => {
-          const comm = typeof item === 'string' ? allComms[item] : item;
-          if (!comm) return null;
-          return (
-            <div key={comm.id} className={styles.sidebarItem}>
-              <div className={styles.sidebarItemAvatar} style={{ background: comm.color }}>
-                {isImageUrl(comm.avatar) ? (
-                  <img src={comm.avatar} alt={comm.name} className={styles.sidebarItemAvatarImg} />
-                ) : (
-                  <DefaultAvatar />
-                )}
-              </div>
-              <div className={styles.sidebarItemInfo}>
-                <span className={styles.sidebarItemName}>{comm.name}</span>
-                <span className={styles.sidebarItemMeta}>
-                  {formatCount(comm.members)} members
-                  {comm.growth && <span className={styles.sidebarItemGrowth}> · {comm.growth}</span>}
-                </span>
-              </div>
-              {comm.trending && <span className={styles.sidebarTrendingIcon}>🔥</span>}
-            </div>
-          );
-        })}
-      </div>
     </div>
   );
 }
 
 export default function CommunityView({ communityId, onBack, onPostClick }) {
-  const { posts, communities: allCommunities, users, currentUser, toggleJoinCommunity, addPost } = useData();
+  const { posts, communities: allCommunities, users, currentUser, toggleJoinCommunity, addPost, updateCommunity } = useData();
   const [showMembersModal, setShowMembersModal] = useState(false);
-  const comm = allCommunities[communityId];
+  const [showAdminModal, setShowAdminModal] = useState(false);
+  const [showMobileDetails, setShowMobileDetails] = useState(() => {
+    const saved = localStorage.getItem('meetify_show_community_details');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  
+  const rawComm = allCommunities[communityId];
+  const { isLoading, data: comm, error, retry } = useSimulatedFetch(rawComm, 800, [communityId]);
+
+  if (isLoading) {
+    return (
+      <div className={styles.wrapper}>
+        <div className={styles.mobileHeader}>
+          <button className={styles.backBtn} onClick={onBack}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+          </button>
+          <Skeleton type="text" width="120px" height="1.5rem" style={{ margin: 0 }} />
+        </div>
+        <div className={styles.heroSection}>
+          <Skeleton type="rect" width="100%" height="240px" style={{ borderRadius: 0 }} />
+        </div>
+        <div className={styles.main}>
+          <div className={styles.leftColumn}>
+            <Skeleton type="rect" width="100%" height="140px" style={{ marginBottom: '1.5rem' }} />
+            <PostSkeleton />
+            <PostSkeleton />
+          </div>
+          <div className={`${styles.rightColumn} ${!showMobileDetails ? styles.hiddenOnMobile : ''}`}>
+            <Skeleton type="rect" width="100%" height="400px" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.wrapper} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+        <ErrorState onRetry={retry} />
+      </div>
+    );
+  }
 
   if (!comm) return null;
 
   const userCommunities = users[currentUser?.username]?.communities || currentUser?.communities || [];
   const joined = userCommunities.includes(comm.name);
   const communityPosts = posts.filter(p => p.communityId === comm.id);
-
-  const activityPhrase = getActivityPhrase(comm);
-
-  // Compute sidebar communities
-  const allCommValues = Object.values(allCommunities).filter(c => !c.isUniversity && c.id !== comm.id);
-  const trendingComms = allCommValues.filter(c => c.trending).sort((a, b) => b.newMembersThisWeek - a.newMembersThisWeek);
-  const recommendedComms = allCommValues.filter(c => !c.trending).sort((a, b) => b.members - a.members);
-  const recentlyActive = [...allCommValues].sort((a, b) => (b.discussionsToday || 0) - (a.discussionsToday || 0));
+  const isAdmin = comm.memberList?.some(m => m.id === currentUser?.id && m.admin);
 
   const handleToggleJoin = (e) => {
     e.stopPropagation();
@@ -278,17 +344,67 @@ export default function CommunityView({ communityId, onBack, onPostClick }) {
 
   return (
     <div className={styles.wrapper}>
+      <div className={styles.mobileHeader}>
+        <button 
+          className={styles.backBtn}
+          onClick={onBack}
+          aria-label="Go back"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <h1 className={styles.mobileTitle}>{comm.name}</h1>
+        <div style={{ position: 'relative' }}>
+          <button 
+            className={styles.backBtn}
+            onClick={() => setShowMobileMenu(!showMobileMenu)}
+            aria-label="Menu"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="1"></circle>
+              <circle cx="12" cy="5" r="1"></circle>
+              <circle cx="12" cy="19" r="1"></circle>
+            </svg>
+          </button>
+          {showMobileMenu && (
+            <div className={styles.mobileDropdownMenu}>
+              <button 
+                onClick={() => {
+                  const newVal = !showMobileDetails;
+                  setShowMobileDetails(newVal);
+                  localStorage.setItem('meetify_show_community_details', JSON.stringify(newVal));
+                  setShowMobileMenu(false);
+                }}
+              >
+                {showMobileDetails ? 'Hide Details' : 'Show Details'}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
       <HeroSection
         comm={comm}
         joined={joined}
         onToggleJoin={handleToggleJoin}
         onCreatePost={handleCreatePostClick}
         userCommunities={userCommunities}
+        isAdmin={isAdmin}
+        onOpenAdmin={() => setShowAdminModal(true)}
+        onUpdateCommunity={updateCommunity}
         onViewMembers={() => {
-          console.log("Setting showMembersModal to true");
           setShowMembersModal(true);
         }}
       />
+
+      {showAdminModal && (
+        <CommunityAdminModal
+          community={comm}
+          onClose={() => setShowAdminModal(false)}
+        />
+      )}
 
       {showMembersModal && (
         <CommunityMembersModal
@@ -297,8 +413,6 @@ export default function CommunityView({ communityId, onBack, onPostClick }) {
           onClose={() => setShowMembersModal(false)}
         />
       )}
-
-
 
       <div className={styles.main}>
         <div className={styles.leftColumn}>
@@ -310,7 +424,7 @@ export default function CommunityView({ communityId, onBack, onPostClick }) {
 
           {joined && (
             <div className={styles.composerWrap}>
-              <PostComposer onSubmit={(text, poll) => addPost(text, poll, comm.id)} />
+              <PostComposer onSubmit={(text, poll, media) => addPost(text, poll, comm.id, media)} />
             </div>
           )}
 
@@ -351,7 +465,7 @@ export default function CommunityView({ communityId, onBack, onPostClick }) {
           </div>
         </div>
 
-        <div className={styles.rightColumn}>
+        <div className={`${styles.rightColumn} ${!showMobileDetails ? styles.hiddenOnMobile : ''}`}>
           <AboutCard comm={comm} />
         </div>
       </div>

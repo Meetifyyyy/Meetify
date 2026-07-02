@@ -1,143 +1,295 @@
 import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { showToast } from '../../utils/toast';
+import { useSmartBack } from '../../hooks/useSmartBack';
 import styles from './SettingsRoute.module.css';
+
+function ChevronRight() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="9 18 15 12 9 6" />
+    </svg>
+  );
+}
 
 export default function SettingsRoute() {
   const { currentUser, updateProfile } = useAuth();
-  const [activeTab, setActiveTab] = useState('account');
+  const navigate = useNavigate();
+  const location = useLocation();
+  const goBack = useSmartBack();
 
-  // Account details state
+  const [activePanel, setActivePanel] = useState(location.state?.panel || null); // null = main list
+
+  // Account state
   const [displayName, setDisplayName] = useState(currentUser?.displayName || '');
   const [email, setEmail] = useState(currentUser?.email || '');
   const [bio, setBio] = useState(currentUser?.bio || '');
 
-  // Mock state for toggles
+  // Social Links state
+  const [socialLinks, setSocialLinks] = useState({
+    instagram: currentUser?.socialLinks?.instagram || '',
+    facebook: currentUser?.socialLinks?.facebook || '',
+    linkedin: currentUser?.socialLinks?.linkedin || '',
+    twitter: currentUser?.socialLinks?.twitter || '',
+  });
+  const [socialErrors, setSocialErrors] = useState({});
+
+  // Privacy & notifications state
   const [emailNotifs, setEmailNotifs] = useState(true);
   const [pushNotifs, setPushNotifs] = useState(false);
   const [privateProfile, setPrivateProfile] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const validateSocialLinks = () => {
+    const errors = {};
+    if (socialLinks.instagram && !socialLinks.instagram.includes('instagram.com/')) {
+      errors.instagram = 'Must be a valid Instagram URL';
+    }
+    if (socialLinks.facebook && !socialLinks.facebook.includes('facebook.com/')) {
+      errors.facebook = 'Must be a valid Facebook URL';
+    }
+    if (socialLinks.linkedin && !socialLinks.linkedin.includes('linkedin.com/')) {
+      errors.linkedin = 'Must be a valid LinkedIn URL';
+    }
+    if (socialLinks.twitter && !socialLinks.twitter.includes('twitter.com/') && !socialLinks.twitter.includes('x.com/')) {
+      errors.twitter = 'Must be a valid Twitter/X URL';
+    }
+    setSocialErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSave = () => {
-    if (activeTab === 'account') {
+    if (activePanel === 'account') {
       updateProfile({ displayName, email, bio });
+      showToast('Saved');
+    } else if (activePanel === 'social') {
+      if (!validateSocialLinks()) {
+        showToast('Please fix the errors before saving');
+        return;
+      }
+      updateProfile({ socialLinks });
+      showToast('Saved');
+    } else {
+      showToast('Saved');
     }
-    showToast('Settings saved successfully');
+  };
+
+  const panelTitle = {
+    account: 'Account Details',
+    social: 'Social Links',
+    privacy: 'Privacy & Notifications',
   };
 
   return (
-    <main className="centre centre-wide animate-in">
-      <div className={styles.settingsContainer}>
-        <aside className={styles.sidebar}>
-          <button 
-            className={`${styles.navBtn} ${activeTab === 'account' ? styles.active : ''}`}
-            onClick={() => setActiveTab('account')}
-          >
-            Account Details
-          </button>
-          <button 
-            className={`${styles.navBtn} ${activeTab === 'privacy' ? styles.active : ''}`}
-            onClick={() => setActiveTab('privacy')}
-          >
-            Privacy & Notifications
-          </button>
-          <button 
-            className={`${styles.navBtn} ${activeTab === 'appearance' ? styles.active : ''}`}
-            onClick={() => setActiveTab('appearance')}
-          >
-            Appearance
-          </button>
-        </aside>
+    <div className={styles.page}>
+      {/* ── Sticky header ── */}
+      <header className={styles.topBar}>
+        <button
+          className={styles.backBtn}
+          aria-label="Go back"
+          onClick={() => {
+            if (activePanel) setActivePanel(null);
+            else goBack('/home');
+          }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+          </svg>
+        </button>
 
-        <section className={styles.content}>
-          {activeTab === 'account' && (
-            <div className="animate-in">
-              <h2 className={styles.sectionTitle}>Account Details</h2>
-              <div className={styles.settingGroup}>
-                <div className={styles.inputGroup}>
-                  <label>Display Name</label>
-                  <input type="text" value={displayName} onChange={e => setDisplayName(e.target.value)} />
-                </div>
-                <div className={styles.inputGroup}>
-                  <label>Username</label>
-                  <input type="text" defaultValue={currentUser?.username} disabled />
-                </div>
-                <div className={styles.inputGroup}>
-                  <label>Email Address</label>
-                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} />
-                </div>
-                <div className={styles.inputGroup}>
-                  <label>Bio</label>
-                  <input type="text" value={bio} onChange={e => setBio(e.target.value)} />
-                </div>
-                <button className={styles.saveBtn} onClick={handleSave}>Save Changes</button>
-              </div>
+        <span className={styles.topBarTitle}>
+          {activePanel ? panelTitle[activePanel] : 'Settings'}
+        </span>
+
+        {/* Spacer to keep title centred */}
+        <div style={{ width: 44 }} />
+      </header>
+
+      {/* ── Main list ── */}
+      {!activePanel && (
+        <div className={`${styles.body} animate-in`}>
+
+          {/* Account section */}
+          <div className={styles.sectionLabel}>Account</div>
+          <div className={styles.group}>
+            <button className={styles.row} onClick={() => setActivePanel('account')}>
+              <span className={styles.rowIcon}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+                </svg>
+              </span>
+              <span className={styles.rowLabel}>Account Details</span>
+              <span className={styles.rowChev}><ChevronRight /></span>
+            </button>
+            <div className={styles.divider} />
+            <button className={styles.row} onClick={() => setActivePanel('social')}>
+              <span className={styles.rowIcon}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+              </span>
+              <span className={styles.rowLabel}>Social Links</span>
+              <span className={styles.rowChev}><ChevronRight /></span>
+            </button>
+            <div className={styles.divider} />
+            <button className={styles.row} onClick={() => setActivePanel('privacy')}>
+              <span className={styles.rowIcon}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              </span>
+              <span className={styles.rowLabel}>Privacy &amp; Notifications</span>
+              <span className={styles.rowChev}><ChevronRight /></span>
+            </button>
+          </div>
+
+          {/* More section */}
+          <div className={styles.sectionLabel}>More</div>
+          <div className={styles.group}>
+            <button className={styles.row} onClick={() => showToast('Help centre coming soon')}>
+              <span className={styles.rowIcon}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+              </span>
+              <span className={styles.rowLabel}>Help &amp; Support</span>
+              <span className={styles.rowChev}><ChevronRight /></span>
+            </button>
+            <div className={styles.divider} />
+            <button className={`${styles.row} ${styles.rowDanger}`} onClick={() => showToast('Log out coming soon')}>
+              <span className={styles.rowIcon}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+              </span>
+              <span className={styles.rowLabel}>Log Out</span>
+            </button>
+          </div>
+
+          <p className={styles.version}>Meetify · v1.0.0</p>
+        </div>
+      )}
+
+      {/* ── Account Details panel ── */}
+      {activePanel === 'account' && (
+        <div className={`${styles.body} animate-in`}>
+          <div className={styles.group}>
+            <div className={styles.inputRow}>
+              <label className={styles.inputLabel}>Display Name</label>
+              <input
+                className={styles.input}
+                type="text"
+                value={displayName}
+                onChange={e => setDisplayName(e.target.value)}
+              />
             </div>
-          )}
-
-          {activeTab === 'privacy' && (
-            <div className="animate-in">
-              <h2 className={styles.sectionTitle}>Privacy & Notifications</h2>
-              <div className={styles.settingGroup}>
-                <div className={styles.settingItem}>
-                  <div className={styles.settingInfo}>
-                    <span className={styles.settingLabel}>Private Profile</span>
-                    <span className={styles.settingDesc}>Only approved followers can see your posts.</span>
-                  </div>
-                  <label className={styles.toggle}>
-                    <input type="checkbox" checked={privateProfile} onChange={e => setPrivateProfile(e.target.checked)} />
-                    <span className={styles.slider}></span>
-                  </label>
-                </div>
-                
-                <div className={styles.settingItem}>
-                  <div className={styles.settingInfo}>
-                    <span className={styles.settingLabel}>Email Notifications</span>
-                    <span className={styles.settingDesc}>Receive emails for important activity.</span>
-                  </div>
-                  <label className={styles.toggle}>
-                    <input type="checkbox" checked={emailNotifs} onChange={e => setEmailNotifs(e.target.checked)} />
-                    <span className={styles.slider}></span>
-                  </label>
-                </div>
-
-                <div className={styles.settingItem}>
-                  <div className={styles.settingInfo}>
-                    <span className={styles.settingLabel}>Push Notifications</span>
-                    <span className={styles.settingDesc}>Receive browser push notifications.</span>
-                  </div>
-                  <label className={styles.toggle}>
-                    <input type="checkbox" checked={pushNotifs} onChange={e => setPushNotifs(e.target.checked)} />
-                    <span className={styles.slider}></span>
-                  </label>
-                </div>
-                <button className={styles.saveBtn} onClick={handleSave}>Save Preferences</button>
-              </div>
+            <div className={styles.divider} />
+            <div className={styles.inputRow}>
+              <label className={styles.inputLabel}>Username</label>
+              <input
+                className={styles.input}
+                type="text"
+                defaultValue={currentUser?.username}
+                disabled
+              />
             </div>
-          )}
+            <div className={styles.divider} />
+            <div className={styles.inputRow}>
+              <label className={styles.inputLabel}>Email</label>
+              <input
+                className={styles.input}
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+              />
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.inputRow}>
+              <label className={styles.inputLabel}>Bio</label>
+              <input
+                className={styles.input}
+                type="text"
+                value={bio}
+                onChange={e => setBio(e.target.value)}
+              />
+            </div>
+          </div>
+          <button className={styles.saveBtn} onClick={handleSave}>Save Changes</button>
+        </div>
+      )}
 
-          {activeTab === 'appearance' && (
-            <div className="animate-in">
-              <h2 className={styles.sectionTitle}>Appearance</h2>
-              <div className={styles.settingGroup}>
-                <div className={styles.settingItem}>
-                  <div className={styles.settingInfo}>
-                    <span className={styles.settingLabel}>Dark Mode</span>
-                    <span className={styles.settingDesc}>Toggle experimental dark mode (coming soon).</span>
-                  </div>
-                  <label className={styles.toggle}>
-                    <input type="checkbox" checked={darkMode} onChange={e => {
-                      setDarkMode(e.target.checked);
-                      showToast('Dark mode is currently in development');
-                    }} />
-                    <span className={styles.slider}></span>
-                  </label>
+      {/* ── Social Links panel ── */}
+      {activePanel === 'social' && (
+        <div className={`${styles.body} animate-in`}>
+          <div className={styles.group}>
+            {['instagram', 'facebook', 'linkedin', 'twitter'].map((platform, idx) => (
+              <div key={platform}>
+                {idx > 0 && <div className={styles.divider} />}
+                <div className={styles.inputRow}>
+                  <label className={styles.inputLabel} style={{ textTransform: 'capitalize' }}>{platform}</label>
+                  <input
+                    className={styles.input}
+                    type="text"
+                    placeholder={`https://${platform === 'twitter' ? 'x' : platform}.com/yourprofile`}
+                    value={socialLinks[platform]}
+                    onChange={e => {
+                      setSocialLinks(prev => ({ ...prev, [platform]: e.target.value }));
+                      if (socialErrors[platform]) setSocialErrors(prev => ({ ...prev, [platform]: null }));
+                    }}
+                  />
+                  {socialErrors[platform] && <div style={{ color: 'var(--color-danger)', fontSize: '0.75rem', marginTop: '4px' }}>{socialErrors[platform]}</div>}
                 </div>
               </div>
+            ))}
+          </div>
+          <button className={styles.saveBtn} onClick={handleSave}>Save Links</button>
+        </div>
+      )}
+
+      {/* ── Privacy & Notifications panel ── */}
+      {activePanel === 'privacy' && (
+        <div className={`${styles.body} animate-in`}>
+          <div className={styles.group}>
+            <div className={styles.toggleRow}>
+              <div className={styles.toggleInfo}>
+                <span className={styles.rowLabel}>Private Profile</span>
+                <span className={styles.toggleDesc}>Only approved followers see your posts</span>
+              </div>
+              <label className={styles.toggle}>
+                <input type="checkbox" checked={privateProfile} onChange={e => setPrivateProfile(e.target.checked)} />
+                <span className={styles.slider} />
+              </label>
             </div>
-          )}
-        </section>
-      </div>
-    </main>
+            <div className={styles.divider} />
+            <div className={styles.toggleRow}>
+              <div className={styles.toggleInfo}>
+                <span className={styles.rowLabel}>Email Notifications</span>
+                <span className={styles.toggleDesc}>Get emails for important activity</span>
+              </div>
+              <label className={styles.toggle}>
+                <input type="checkbox" checked={emailNotifs} onChange={e => setEmailNotifs(e.target.checked)} />
+                <span className={styles.slider} />
+              </label>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.toggleRow}>
+              <div className={styles.toggleInfo}>
+                <span className={styles.rowLabel}>Push Notifications</span>
+                <span className={styles.toggleDesc}>Browser push alerts</span>
+              </div>
+              <label className={styles.toggle}>
+                <input type="checkbox" checked={pushNotifs} onChange={e => setPushNotifs(e.target.checked)} />
+                <span className={styles.slider} />
+              </label>
+            </div>
+          </div>
+          <button className={styles.saveBtn} onClick={handleSave}>Save Preferences</button>
+        </div>
+      )}
+
+
+    </div>
   );
 }

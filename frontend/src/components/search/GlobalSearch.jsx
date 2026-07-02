@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
-import logo from '../../assets/images/logo.webp';
+import logo from '../../assets/images/logo.png';
 import styles from './GlobalSearch.module.css';
 
 export default function GlobalSearch({ variant = 'header', isActive = false, autoFocus = false }) {
@@ -13,6 +13,14 @@ export default function GlobalSearch({ variant = 'header', isActive = false, aut
   const inputRef = useRef(null);
   const containerRef = useRef(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [recentSearches, setRecentSearches] = useState(() => {
+    try {
+      const saved = localStorage.getItem('meetifyy_recent_searches');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
   
   // Track where the user was before they started searching
   const [preSearchPath, setPreSearchPath] = useState('/');
@@ -76,11 +84,47 @@ export default function GlobalSearch({ variant = 'header', isActive = false, aut
     navigate(preSearchPath, { replace: true });
   };
 
+  const addRecentSearch = (text) => {
+    if (!text.trim()) return;
+    const updated = [text, ...recentSearches.filter(t => t !== text)].slice(0, 5);
+    setRecentSearches(updated);
+    localStorage.setItem('meetifyy_recent_searches', JSON.stringify(updated));
+  };
+
+  const removeRecentSearch = (e, text) => {
+    e.stopPropagation();
+    const updated = recentSearches.filter(t => t !== text);
+    setRecentSearches(updated);
+    localStorage.setItem('meetifyy_recent_searches', JSON.stringify(updated));
+  };
+
+  const clearAllRecent = (e) => {
+    e.stopPropagation();
+    setRecentSearches([]);
+    localStorage.setItem('meetifyy_recent_searches', JSON.stringify([]));
+  };
+
   const handleSuggestionClick = (text) => {
+    setQuery(text);
+    setIsFocused(false);
+    addRecentSearch(text);
+    navigate(`/search?q=${encodeURIComponent(text)}`);
+  };
+
+  const handleRecentClick = (text) => {
     setQuery(text);
     setIsFocused(false);
     navigate(`/search?q=${encodeURIComponent(text)}`);
   };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && query.trim()) {
+      addRecentSearch(query.trim());
+      setIsFocused(false);
+    }
+  };
+
+  const showDropdown = isFocused && !query.trim() && variant !== 'bottomNav';
 
   return (
     <div ref={containerRef} className={`${styles.container} ${variant === 'bottomNav' ? styles.bottomNavContainer : ''} ${isActive ? styles.active : ''}`}>
@@ -96,16 +140,17 @@ export default function GlobalSearch({ variant = 'header', isActive = false, aut
              <line x1="21" y1="21" x2="16.65" y2="16.65" />
            </svg>
         ) : (
-          <img className={styles.searchIcon} src={logo} alt="Meetify" />
+          <img className={styles.searchIcon} src={logo} alt="Meetifyy" />
         )}
         <input
           ref={inputRef}
           type="text"
-          className={`${styles.input} ${variant === 'bottomNav' ? styles.bottomNavInput : ''} ${variant === 'mobileSearchPage' ? styles.mobileSearchPageInput : ''}`}
+          className={`${styles.input} ${variant === 'bottomNav' ? styles.bottomNavInput : ''} ${variant === 'mobileSearchPage' ? styles.mobileSearchPageInput : ''} ${showDropdown ? styles.dropdownOpen : ''}`}
           placeholder="Search..."
           value={query}
           onChange={handleSearchChange}
           onFocus={() => setIsFocused(true)}
+          onKeyDown={handleKeyDown}
         />
         {query && (
           <button 
@@ -119,8 +164,33 @@ export default function GlobalSearch({ variant = 'header', isActive = false, aut
         )}
       </div>
 
-      {isFocused && !query.trim() && variant !== 'bottomNav' && (
+      {showDropdown && (
         <div className={styles.dropdownMenu}>
+          {recentSearches.length > 0 && (
+            <>
+              <div className={styles.dropdownHeader}>
+                Recent
+                <button className={styles.clearAllBtn} onClick={clearAllRecent}>Clear all</button>
+              </div>
+              {recentSearches.map((text, i) => (
+                <div key={`recent-${i}`} className={styles.dropdownItem} onClick={() => handleRecentClick(text)}>
+                  <svg className={styles.dropdownIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <span>{text}</span>
+                  <button className={styles.removeRecentBtn} onClick={(e) => removeRecentSearch(e, text)}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                </div>
+              ))}
+              <div style={{ height: '4px', borderBottom: '1px solid var(--color-border-light)', margin: '4px 0 0' }}></div>
+            </>
+          )}
+
           <div className={styles.dropdownHeader}>Try searching for...</div>
           {suggestedSearches.map((sug, i) => (
              <div key={i} className={styles.dropdownItem} onClick={() => handleSuggestionClick(sug.text)}>

@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useSmartBack } from '../hooks/useSmartBack';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, AlertCircle } from 'lucide-react';
+import Background from '../components/common/Background';
 import styles from './signup/SignupFlow.module.css';
 
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const goBack = useSmartBack();
 
   const [user, setUser] = useState('');
   const [pass, setPass] = useState('');
@@ -26,21 +29,23 @@ export default function LoginPage() {
     // We are mocking auth
     const success = login(user.trim(), pass);
     if (success) {
-      navigate('/home');
+      navigate('/home', { replace: true });
     } else {
       setError('User not found. Please check your username or sign up.');
     }
   };
 
   return (
-    <div className={styles.flowContainer}>
-      <div className={`${styles.bgBlob} ${styles.blob1}`} />
-      <div className={`${styles.bgBlob} ${styles.blob2}`} />
+    <>
+      <Background />
+      <div className={styles.flowContainer}>
       
       <div className={styles.progressContainer}>
-        <button onClick={() => navigate('/')} className={styles.backButton}>
-          <ArrowLeft size={18} />
-          Back
+        <button onClick={() => goBack('/')} className={styles.backButton}>
+          <span className={styles.iconCircle}>
+            <ArrowLeft size={20} />
+          </span>
+          <span className={styles.backText}>Back</span>
         </button>
       </div>
 
@@ -97,6 +102,7 @@ export default function LoginPage() {
           </form>
         </motion.div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

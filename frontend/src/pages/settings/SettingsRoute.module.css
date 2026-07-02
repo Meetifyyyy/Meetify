@@ -1,96 +1,208 @@
-.settingsContainer {
+/* ── Page shell ── */
+.page {
   width: 100%;
-  padding: 2rem 2rem;
-  display: flex;
-  gap: 2rem;
-  align-items: flex-start;
-}
-
-.sidebar {
-  width: 240px;
+  max-width: 650px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+}
+
+/* ── Sticky top bar ── */
+.topBar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  padding: 0 4px;
+  background: transparent;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--color-text-main);
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.backBtn:hover {
+  background: var(--color-border-light);
+}
+
+.topBarTitle {
+  font-family: var(--font-family-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  letter-spacing: -0.01em;
+}
+
+/* ── Scrollable body ── */
+.body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0 80px;
+}
+
+/* ── Section label ── */
+.sectionLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  padding: 18px 20px 6px;
+}
+
+/* ── Card group ── */
+.group {
+  background: var(--color-bg-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 18px;
+  margin: 0 16px 8px;
+  overflow: hidden;
+}
+
+/* ── List row ── */
+.row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 14px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  gap: 14px;
+  text-align: left;
+  transition: background 0.12s;
+}
+
+.row:hover,
+.row:active {
+  background: var(--color-bg-soft);
+}
+
+.rowIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--color-bg-main);
+  color: var(--color-text-main);
   flex-shrink: 0;
 }
 
-.navBtn {
-  text-align: left;
-  padding: 0.75rem 1rem;
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-md);
+.rowLabel {
+  flex: 1;
   font-size: 0.95rem;
   font-weight: 500;
+  color: var(--color-text-main);
+}
+
+.rowChev {
   color: var(--color-text-muted);
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.navBtn:hover {
-  background: var(--color-bg-white);
-  color: var(--color-text-main);
-}
-
-.navBtn.active {
-  background: var(--color-bg-white);
-  color: var(--color-primary);
-  font-weight: 600;
-  box-shadow: var(--shadow-sm);
-}
-
-.content {
-  flex: 1;
-  background: var(--color-bg-white);
-  border-radius: var(--radius-lg);
-  padding: 2rem;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--color-border);
-}
-
-.sectionTitle {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-text-main);
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid var(--color-border-light);
-  padding-bottom: 0.5rem;
-}
-
-.settingGroup {
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.settingItem {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
 }
 
-.settingInfo {
+.rowDanger .rowLabel {
+  color: var(--color-danger);
+}
+
+.rowDanger .rowIcon {
+  color: var(--color-danger);
+}
+
+/* ── Divider ── */
+.divider {
+  height: 1px;
+  background: var(--color-border-light);
+  margin-left: 66px;
+}
+
+/* ── Version footer ── */
+.version {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  padding: 28px 0 12px;
+}
+
+/* ── Input rows (account panel) ── */
+.inputRow {
+  padding: 12px 16px;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 4px;
 }
 
-.settingLabel {
+.inputLabel {
+  font-size: 0.75rem;
   font-weight: 600;
-  color: var(--color-text-main);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-.settingDesc {
-  font-size: 0.85rem;
+.input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.95rem;
+  color: var(--color-text-main);
+  padding: 2px 0;
+}
+
+.input:disabled {
   color: var(--color-text-muted);
 }
 
-/* Toggle Switch */
+.input:focus {
+  border-bottom: 1.5px solid var(--color-primary);
+}
+
+/* ── Toggle rows (privacy / appearance) ── */
+.toggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  gap: 16px;
+}
+
+.toggleInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.toggleDesc {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+/* ── iOS-style toggle ── */
 .toggle {
   position: relative;
   display: inline-block;
-  width: 44px;
-  height: 24px;
+  width: 50px;
+  height: 28px;
+  flex-shrink: 0;
 }
 
 .toggle input {
@@ -102,96 +214,60 @@
 .slider {
   position: absolute;
   cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: var(--color-border-dark);
-  transition: .2s;
-  border-radius: 24px;
+  inset: 0;
+  background: var(--color-border-dark);
+  border-radius: 28px;
+  transition: background 0.22s;
 }
 
-.slider:before {
+.slider::before {
+  content: '';
   position: absolute;
-  content: "";
-  height: 18px;
-  width: 18px;
+  height: 22px;
+  width: 22px;
   left: 3px;
   bottom: 3px;
-  background-color: white;
-  transition: .2s;
+  background: white;
   border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.22s;
 }
 
-input:checked + .slider {
-  background-color: var(--color-primary);
+input:checked+.slider {
+  background: var(--color-success);
 }
 
-input:checked + .slider:before {
-  transform: translateX(20px);
+input:checked+.slider::before {
+  transform: translateX(22px);
 }
 
-/* Form inputs */
-.inputGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.inputGroup label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--color-text-main);
-}
-
-.inputGroup input {
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  font-size: 0.95rem;
-  background: var(--color-bg-main);
-  color: var(--color-text-main);
-  outline: none;
-}
-
-.inputGroup input:focus {
-  border-color: var(--color-primary);
-}
-
+/* ── Save button ── */
 .saveBtn {
-  margin-top: 1rem;
-  padding: 0.75rem 1.5rem;
+  display: block;
+  width: calc(100% - 32px);
+  margin: 20px 16px 0;
+  padding: 14px;
   background: var(--color-primary);
   color: white;
   border: none;
-  border-radius: var(--radius-full);
-  font-weight: 600;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  font-weight: 700;
   cursor: pointer;
-  align-self: flex-start;
-  transition: background 0.15s;
+  transition: background 0.15s, transform 0.1s;
 }
 
 .saveBtn:hover {
   background: var(--color-primary-dark, #1d4ed8);
 }
 
-@media (max-width: 768px) {
-  .settingsContainer {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 1.5rem 1rem;
-    gap: 1.5rem;
-  }
-  .sidebar {
-    width: 100%;
-    flex-direction: row;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
-  }
-  .navBtn {
-    white-space: nowrap;
-  }
-  .content {
-    padding: 1.5rem 1rem;
+.saveBtn:active {
+  transform: scale(0.98);
+}
+
+/* ── Desktop: centre the card ── */
+@media (min-width: 769px) {
+  .page {
+    padding-top: 0rem;
   }
 }

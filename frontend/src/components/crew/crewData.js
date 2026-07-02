@@ -1,5 +1,7 @@
+import { getRelativeDateLabel } from '../../utils/time';
+
 const ACTIVITY_CATEGORIES = [
-  'Sports', 'Learning', 'Professional', 'Travel', 'Creative', 'Social', 'Health & Fitness', 'Technology'
+  'Sports', 'Learning', 'Professional', 'Travel', 'Creative', 'Social', 'Health & Fitness', 'Technology', 'Coffee', 'Meetup', 'Hackathon', 'Event'
 ];
 
 const ACTIVITY_TEMPLATES = [
@@ -88,7 +90,7 @@ function generateCrewActivities(users) {
         coverImage: COVER_IMAGES[Math.floor(Math.random() * COVER_IMAGES.length)],
         tags: template.tags,
         
-        dateLabel: dateObj.label,
+        dateLabel: getRelativeDateLabel(realDate.toISOString()),
         date: realDate.toISOString(),
         time: timeStr,
         duration: durationStr,
@@ -100,7 +102,8 @@ function generateCrewActivities(users) {
         slotsFilled: Math.floor(Math.random() * Math.max(0, slots)),
         
         participants: [user.id], // Just mock host as participant for now
-        requests: []
+        requests: [],
+        invitedUsers: []
       };
       
       // Add random participants

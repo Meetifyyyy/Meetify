@@ -41,7 +41,7 @@
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--color-primary);
-  background: rgba(37, 99, 235, 0.06);
+  background: rgba(var(--color-primary-rgb), 0.15);
   border-radius: var(--radius-sm);
   cursor: default;
 }

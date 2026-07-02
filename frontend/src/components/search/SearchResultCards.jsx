@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { isImageUrl } from '../../utils/avatar';
 import DefaultAvatar from '../common/DefaultAvatar';
+import { getRelativeDateLabel } from '../../utils/time';
 import styles from './SearchResultCards.module.css';
 
 // Helper component to render highlighted text from Fuse.js matches
@@ -165,6 +166,36 @@ export function CollegeResult({ result, isSelected, onClick }) {
               {item.posts.length} communities
             </>
           )}
+        </div>
+      </div>
+    </button>
+  );
+}
+
+export function CrewResult({ result, isSelected, onClick }) {
+  const { item, matches } = result;
+  
+  return (
+    <button 
+      className={styles.resultCard} 
+      data-selected={isSelected} 
+      onClick={() => onClick(`/crew/${item.id}`)}
+    >
+      <div className={styles.avatar} style={{ borderRadius: '10px', background: 'linear-gradient(135deg, #2563EB, #7C3AED)' }}>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-bg-white)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <div className={styles.content}>
+        <div className={styles.title}>
+          <HighlightedText text={item.title} matches={matches} keyName="title" />
+        </div>
+        <div className={styles.subtitle}>
+          <span className={styles.postCommunity}>{item.category}</span>
+          <span className={styles.dot} />
+          <span>{item.hostName}</span>
+          <span className={styles.dot} />
+          <span>{getRelativeDateLabel(item.date) || item.dateLabel}</span>
         </div>
       </div>
     </button>

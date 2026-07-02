@@ -1,0 +1,65 @@
+/* Mobile-first: base styles apply at ≤768px */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  width: 100%;
+  position: relative;
+  background: var(--color-bg-main);
+  border-bottom: 1px solid var(--color-border-light);
+  padding: 0 0.5rem;
+  flex-shrink: 0;
+  border-radius: 20px;
+}
+
+.backBtn,
+.menuBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-main);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.backBtn:hover,
+.menuBtn:hover {
+  background: var(--color-border-light);
+}
+
+.username {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 120px);
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+  pointer-events: none;
+}
+
+/* Hide on larger screens — global header handles navigation there */
+@media (min-width: 769px) {
+  .header {
+    display: none;
+  }
+}
+
+/* Suppress transitions/animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .header {
+    transition: none;
+    animation: none;
+  }
+}

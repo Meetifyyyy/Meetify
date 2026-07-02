@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import styles from './ConfirmModal.module.css';
 
-export default function ConfirmModal({ title, desc, visible, onCancel, onConfirm }) {
+export default function ConfirmModal({ title, desc, visible, onCancel, onConfirm, confirmText = 'Confirm' }) {
   const overlayRef = useRef(null);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function ConfirmModal({ title, desc, visible, onCancel, onConfirm
         <div className={styles.confirmDesc}>{desc}</div>
         <div className={styles.confirmActions}>
           <button className={`${styles.confirmBtn} ${styles.confirmBtnCancel}`} onClick={handleClose}>Cancel</button>
-          <button className={`${styles.confirmBtn} ${styles.confirmBtnLeave}`} onClick={handleConfirm}>Leave</button>
+          <button className={`${styles.confirmBtn} ${styles.confirmBtnLeave}`} onClick={handleConfirm}>{confirmText}</button>
         </div>
       </div>
     </div>

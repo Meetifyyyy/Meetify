@@ -1,6 +1,10 @@
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import { useSmartBack } from '../hooks/useSmartBack';
 import { useData } from '../context/DataContext';
+import { useSimulatedFetch } from '../hooks/useSimulatedFetch';
+import { EmptyState, ErrorState } from '../components/common/StateViews';
 import PostView from '../components/feed/PostView';
+import PostSkeleton from '../components/feed/PostSkeleton';
 import RightPanel from '../components/layout/RightPanel';
 import rightPanelStyles from '../components/layout/RightPanel.module.css';
 import { isImageUrl } from '../utils/avatar';
@@ -8,40 +12,86 @@ import DefaultAvatar from '../components/common/DefaultAvatar';
 
 export default function PostDetailRoute() {
   const navigate = useNavigate();
+  const goBack = useSmartBack();
   const location = useLocation();
   const { id } = useParams();
   const { getUserById, getPostById, communities } = useData();
 
   const handleBack = () => {
-    navigate(-1);
+    goBack('/home');
   };
 
   // Always prefer live state from DataContext; use location.state only for context hints
-  const post = getPostById(id) || location.state?.post;
+  const fetchedPost = getPostById(id) || location.state?.post;
+  
+  const { isLoading, data: post, error, retry } = useSimulatedFetch(fetchedPost, 800, [id]);
+
   const sourceContext = location.state?.sourceContext || (post?.communityId ? 'community' : 'feed');
   const communityId = location.state?.communityId || post?.communityId;
+
+  if (isLoading) {
+    return (
+      <>
+        <main className="centre" style={{ marginTop: '1rem' }}>
+          <button 
+            className="back-btn" 
+            onClick={handleBack}
+            style={{ 
+              marginBottom: '1rem', 
+              display: 'inline-flex', 
+              alignItems: 'center', 
+              gap: '0.5rem', 
+              background: 'none', 
+              border: 'none', 
+              color: 'var(--color-text-muted)', 
+              cursor: 'pointer',
+              fontWeight: 600
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Back
+          </button>
+          <PostSkeleton />
+        </main>
+        <RightPanel>
+          <div className={rightPanelStyles.panelCard} style={{ opacity: 0.5 }}>
+            <div style={{ height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'var(--color-text-muted)' }}>
+              Loading context...
+            </div>
+          </div>
+        </RightPanel>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="centre">
+        <ErrorState onRetry={retry} />
+      </main>
+    );
+  }
 
   if (!post) {
     return (
       <main className="centre">
-        <div style={{
-          padding: '3rem 2rem',
-          textAlign: 'center',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '1rem',
-          marginTop: '4rem'
-        }}>
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-light)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="8" x2="12" y2="12" />
-            <line x1="12" y1="16" x2="12.01" y2="16" />
-          </svg>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-text-main)', margin: 0 }}>Post not found</h2>
-          <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', margin: 0 }}>This post may have been removed or the link is incorrect.</p>
+        <EmptyState 
+          title="Post not found" 
+          message="This post may have been removed or the link is incorrect."
+          icon={
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-light)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '1rem' }}>
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+          }
+        />
+        <div style={{ textAlign: 'center' }}>
           <button
-            onClick={() => navigate('/home')}
+            onClick={() => goBack('/home')}
             style={{
               marginTop: '0.5rem',
               padding: '0.6rem 1.5rem',
@@ -75,13 +125,13 @@ export default function PostDetailRoute() {
 
             <div style={{ display: 'flex', gap: '2rem', marginBottom: '1.5rem' }}>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <div style={{ fontFamily: 'var(--font-family-display)', fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text-main)' }}>{comm.members.toLocaleString()}</div>
+                <div style={{ fontFamily: 'var(--font-family-display)', fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text-main)' }}>{comm.members?.toLocaleString() || '0'}</div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Members</div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <div style={{ fontFamily: 'var(--font-family-display)', fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text-main)' }}>
                   <span style={{ display: 'inline-block', marginRight: '6px', width: '8px', height: '8px', borderRadius: '50%', background: 'var(--color-success)' }}></span>
-                  {Math.floor(comm.members * 0.12).toLocaleString()}
+                  {Math.floor((comm.members || 0) * 0.12).toLocaleString()}
                 </div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Online</div>
               </div>
@@ -136,7 +186,7 @@ export default function PostDetailRoute() {
 
               {/* Action Buttons */}
               <div style={{ display: 'flex', gap: '0.75rem' }}>
-                <button style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.65rem', borderRadius: 'var(--radius-full)', border: 'none', background: 'var(--color-primary)', color: '#fff', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-family-sans)', transition: 'opacity 0.2s' }}>
+                <button style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.65rem', borderRadius: 'var(--radius-full)', border: 'none', background: 'var(--color-primary)', color: 'var(--color-bg-white)', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-family-sans)', transition: 'opacity 0.2s' }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                   Follow
                 </button>
@@ -168,7 +218,7 @@ export default function PostDetailRoute() {
                       onClick={() => commId && navigate(`/communities/${commId}`)}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                        <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'linear-gradient(135deg, #22C55E, #10B981)', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#fff', fontSize: '0.8rem', fontWeight: 700 }}>
+                        <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'linear-gradient(135deg, #22C55E, #10B981)', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'var(--color-bg-white)', fontSize: '0.8rem', fontWeight: 700 }}>
                           {commName.charAt(0)}
                         </div>
                         <div>

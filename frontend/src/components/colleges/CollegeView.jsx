@@ -32,6 +32,20 @@ export default function CollegeView({ collegeId, onBack, onPostClick }) {
 
   return (
     <div className={styles.collegeViewWrapper}>
+      <div className={styles.mobileHeader}>
+        <button 
+          className={styles.backBtn}
+          onClick={onBack}
+          aria-label="Go back"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <h1 className={styles.mobileTitle}>{comm.name}</h1>
+      </div>
+
       {/* College Header */}
       <div className={styles.collegeHeader}>
         <div className={styles.collegeBanner} style={{ background: comm.color }}>
@@ -46,7 +60,7 @@ export default function CollegeView({ collegeId, onBack, onPostClick }) {
             </div>
             <p className={styles.collegeDesc}>{comm.desc}</p>
             <div className={styles.collegeMeta}>
-              <span><strong>{comm.members.toLocaleString()}</strong> Students</span>
+              <span><strong>{comm.members?.toLocaleString() || '0'}</strong> Students</span>
               <span className={styles.metaDivider}>•</span>
               <span className={styles.onlineCount}><span className={styles.onlineDot} /><strong>{comm.online}</strong> active now</span>
             </div>
@@ -94,7 +108,7 @@ export default function CollegeView({ collegeId, onBack, onPostClick }) {
               <div className={styles.feedTab}>
                 {joined && (
                   <div className={styles.composerWrapper}>
-                    <PostComposer onSubmit={(text, poll) => addPost(text, poll, comm.id)} />
+                    <PostComposer onSubmit={(text, poll, media) => addPost(text, poll, comm.id, media)} />
                   </div>
                 )}
                 <div className={styles.postsList}>

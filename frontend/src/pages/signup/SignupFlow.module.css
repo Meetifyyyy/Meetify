@@ -3,37 +3,15 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  background-color: var(--color-bg-main, #ffffff);
-  color: var(--color-text-main, #111827);
+  background-color: transparent;
+  color: var(--color-text-main, var(--color-text-main));
   font-family: inherit;
   position: relative;
   overflow-x: hidden;
   overflow-y: auto;
 }
 
-/* Background visual elements for the premium vibe */
-.bgBlob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(100px);
-  z-index: 0;
-  opacity: 0.4;
-  pointer-events: none;
-}
-.blob1 {
-  top: -10%;
-  left: -10%;
-  width: 50vw;
-  height: 50vw;
-  background: rgba(99, 102, 241, 0.15); /* Indigo tint */
-}
-.blob2 {
-  bottom: -10%;
-  right: -10%;
-  width: 60vw;
-  height: 60vw;
-  background: rgba(236, 72, 153, 0.1); /* Pink tint */
-}
+
 
 /* Progress Bar Container */
 .progressContainer {
@@ -46,26 +24,43 @@
   align-items: center;
   justify-content: space-between;
   z-index: 10;
-  background: linear-gradient(to bottom, var(--color-bg-main, #ffffff) 60%, transparent);
+  background: linear-gradient(to bottom, var(--color-bg-main, var(--color-bg-white)) 60%, transparent);
 }
 
 .backButton {
   background: none;
   border: none;
-  color: var(--color-text-muted, #6b7280);
+  color: var(--color-text-main);
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: color 0.2s;
-  padding: 0.5rem;
-  border-radius: var(--radius-sm);
+  gap: 0.75rem;
+  padding: 0;
+  transition: opacity 0.2s;
 }
 .backButton:hover {
-  color: var(--color-text-main, #111827);
-  background: rgba(0,0,0,0.03);
+  opacity: 0.8;
+}
+
+.iconCircle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--color-bg-alt, var(--color-border));
+  transition: background 0.2s;
+}
+.backButton:hover .iconCircle {
+  background: var(--color-border-dark);
+}
+
+.backText {
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-family: var(--font-family-display, inherit);
+  letter-spacing: -0.01em;
 }
 
 .progressTrack {
@@ -80,7 +75,7 @@
 
 .progressFill {
   height: 100%;
-  background: var(--color-primary, #6366f1);
+  background: var(--color-primary, var(--color-primary));
   border-radius: 4px;
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -88,7 +83,7 @@
 .stepIndicator {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--color-text-muted, #6b7280);
+  color: var(--color-text-muted, var(--color-text-muted));
 }
 
 /* Main Content Area */
@@ -119,13 +114,13 @@
   font-weight: 800;
   letter-spacing: -0.02em;
   margin-bottom: 0.5rem;
-  color: var(--color-text-main, #111827);
+  color: var(--color-text-main, var(--color-text-main));
   line-height: 1.2;
 }
 
 .subheadline {
   font-size: 1.125rem;
-  color: var(--color-text-muted, #6b7280);
+  color: var(--color-text-muted, var(--color-text-muted));
   margin-bottom: 2.5rem;
 }
 
@@ -136,7 +131,7 @@
   font-weight: 600;
   letter-spacing: -0.01em;
   border: none;
-  border-bottom: 2px solid rgba(0,0,0,0.1);
+  border-bottom: 2px solid var(--color-border);
   padding: 0.5rem 0;
   background: transparent;
   outline: none;
@@ -145,15 +140,15 @@
   margin-bottom: 1rem;
 }
 .largeInput::placeholder {
-  color: rgba(0,0,0,0.15);
+  color: var(--color-text-light);
 }
 .largeInput:focus {
-  border-bottom-color: var(--color-primary, #6366f1);
+  border-bottom-color: var(--color-primary, var(--color-primary));
 }
 
 .feedbackText {
   font-size: 1rem;
-  color: var(--color-primary, #6366f1);
+  color: var(--color-primary, var(--color-primary));
   font-weight: 500;
   min-height: 1.5rem;
 }
@@ -186,8 +181,8 @@
 }
 .optionChip.selected {
   background: rgba(99, 102, 241, 0.1);
-  border-color: var(--color-primary, #6366f1);
-  color: var(--color-primary, #6366f1);
+  border-color: var(--color-primary, var(--color-primary));
+  color: var(--color-primary, var(--color-primary));
 }
 
 .chipIcon {
@@ -212,7 +207,7 @@
   padding: 0.75rem 1.5rem;
   border-radius: 999px;
   background: var(--color-bg-elevated, #f9fafb);
-  color: var(--color-text-main, #111827);
+  color: var(--color-text-main, var(--color-text-main));
   font-weight: 600;
   cursor: pointer;
   border: 2px solid transparent;
@@ -224,7 +219,7 @@
   background: var(--color-bg-hover, #f3f4f6);
 }
 .bubble.selected {
-  background: var(--color-primary, #6366f1);
+  background: var(--color-primary, var(--color-primary));
   color: white;
   transform: scale(1.1);
   box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
@@ -234,7 +229,7 @@
 .continueBtn {
   margin-top: 3rem;
   padding: 1rem 2.5rem;
-  background: var(--color-text-main, #111827);
+  background: var(--color-primary);
   color: white;
   border: none;
   border-radius: 999px;
@@ -245,11 +240,11 @@
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow:(--shadow-sm);
 }
 .continueBtn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  box-shadow:(--shadow-sm);
 }
 .continueBtn:disabled {
   opacity: 0.5;

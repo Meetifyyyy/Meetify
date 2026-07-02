@@ -5,10 +5,11 @@
   padding: 1.25rem 2rem 0;
   flex: 1;
   min-height: 0;
+  overflow: hidden;
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
-  animation: dashboardFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: none;
 }
 
 .dashboardWide {
@@ -45,11 +46,15 @@
   .dashboard,
   .dashboardWide {
     grid-template-columns: minmax(0, 1fr);
-    padding: 0 0.75rem;
+    padding: 0.5rem 0.75rem 0;
     gap: 0;
   }
 
   .dashboardCompact {
-    padding: 0 0.5rem;
+    padding: 1rem 0.5rem 0;
+  }
+
+  .noPaddingMobile {
+    padding: 0 !important;
   }
 }

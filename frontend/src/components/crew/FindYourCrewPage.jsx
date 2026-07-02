@@ -16,7 +16,6 @@ export default function FindYourCrewPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-  // Only show loading skeleton briefly on first visit; data comes from context now
   useEffect(() => {
     if (crewActivities && crewActivities.length > 0) {
       setLoading(false);
@@ -42,51 +41,101 @@ export default function FindYourCrewPage() {
 
   return (
     <>
-      <main className={`centre centre-wide animate-in ${styles.pageContainer}`}>
-        <CrewHeader 
-          selectedCategory={selectedCategory} 
-          onCategoryChange={setSelectedCategory}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          onCreateActivity={() => setIsCreateModalOpen(true)}
-        />
+      <main className="centre centre-wide animate-in">
+        <div className={styles.page}>
+          <CrewHeader 
+            selectedCategory={selectedCategory} 
+            onCategoryChange={setSelectedCategory}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            onCreateActivity={() => setIsCreateModalOpen(true)}
+          />
 
-        <div className={styles.content}>
-          {loading ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem', padding: '1rem' }}>
-              {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} style={{ height: '300px', borderRadius: '16px', backgroundColor: '#E7E3DC', animation: 'skeletonPulse 1.5s infinite' }} />
-              ))}
-            </div>
-          ) : sections ? (
-            <>
-              {sections.recommended?.length > 0 && (
-                <section className={styles.categorySection} style={{ marginBottom: '2rem' }}>
-                  <h2 className={styles.sectionTitle} style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', padding: '0 1rem' }}>Recommended for you</h2>
-                  <div className={styles.cardGrid} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem', padding: '0 1rem' }}>
-                    {sections.recommended.map(a => <CrewCard key={a.id} activity={a} onClick={() => handleActivityClick(a)} />)}
+          <div className={styles.content}>
+            {loading ? (
+              <div className={styles.grid}>
+                {[1, 2, 3, 4, 5, 6].map(i => (
+                  <div key={i} style={{ height: '180px', borderRadius: '12px', backgroundColor: 'var(--color-border-light)', animation: 'skeletonPulse 1.5s infinite' }} />
+                ))}
+              </div>
+            ) : sections ? (
+              <>
+                {sections.recommended?.length > 0 && (
+                  <section className={styles.gridSection}>
+                    <div className={styles.sectionHeader}>
+                      <h2 className={styles.sectionTitle}>Recommended for you</h2>
+                    </div>
+                    <div className={styles.grid}>
+                      {sections.recommended.map(a => <CrewCard key={a.id} activity={a} onClick={() => handleActivityClick(a)} />)}
+                    </div>
+                  </section>
+                )}
+                {sections.happeningNearby?.length > 0 && (
+                  <section className={styles.gridSection}>
+                    <div className={styles.sectionHeader}>
+                      <h2 className={styles.sectionTitle}>Happening Nearby</h2>
+                    </div>
+                    <div className={styles.grid}>
+                      {sections.happeningNearby.map(a => <CrewCard key={a.id} activity={a} onClick={() => handleActivityClick(a)} />)}
+                    </div>
+                  </section>
+                )}
+                {sections.recentlyAdded?.length > 0 && (
+                  <section className={styles.gridSection}>
+                    <div className={styles.sectionHeader}>
+                      <h2 className={styles.sectionTitle}>Recently Added</h2>
+                    </div>
+                    <div className={styles.grid}>
+                      {sections.recentlyAdded.map(a => <CrewCard key={a.id} activity={a} onClick={() => handleActivityClick(a)} />)}
+                    </div>
+                  </section>
+                )}
+                {sections.startingSoon?.length > 0 && (
+                  <section className={styles.gridSection}>
+                    <div className={styles.sectionHeader}>
+                      <h2 className={styles.sectionTitle}>Starting Soon</h2>
+                    </div>
+                    <div className={styles.grid}>
+                      {sections.startingSoon.map(a => <CrewCard key={a.id} activity={a} onClick={() => handleActivityClick(a)} />)}
+                    </div>
+                  </section>
+                )}
+                {sections.popular?.length > 0 && (
+                  <section className={styles.gridSection}>
+                    <div className={styles.sectionHeader}>
+                      <h2 className={styles.sectionTitle}>Popular</h2>
+                    </div>
+                    <div className={styles.grid}>
+                      {sections.popular.map(a => <CrewCard key={a.id} activity={a} onClick={() => handleActivityClick(a)} />)}
+                    </div>
+                  </section>
+                )}
+              </>
+            ) : (
+              <section className={styles.gridSection}>
+                {filteredActivities.length > 0 && (
+                  <div className={styles.sectionHeader}>
+                    <h2 className={styles.sectionTitle}>All Activities</h2>
+                    <span style={{ fontFamily: 'var(--font-family-sans)', fontSize: '0.78rem', fontWeight: 500, color: 'var(--color-text-light)' }}>
+                      {filteredActivities.length} activities
+                    </span>
                   </div>
-                </section>
-              )}
-              {sections.happeningNearby?.length > 0 && (
-                <section className={styles.categorySection} style={{ marginBottom: '2rem' }}>
-                  <h2 className={styles.sectionTitle} style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem', padding: '0 1rem' }}>Happening Nearby</h2>
-                  <div className={styles.cardGrid} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem', padding: '0 1rem' }}>
-                    {sections.happeningNearby.map(a => <CrewCard key={a.id} activity={a} onClick={() => handleActivityClick(a)} />)}
-                  </div>
-                </section>
-              )}
-            </>
-          ) : (
-            <div className={styles.cardGrid} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem', padding: '1rem' }}>
-              {filteredActivities.map(a => <CrewCard key={a.id} activity={a} onClick={() => handleActivityClick(a)} />)}
-              {filteredActivities.length === 0 && (
-                <div style={{ textAlign: 'center', gridColumn: '1 / -1', padding: '3rem', color: 'var(--color-text-muted)' }}>
-                   No activities found matching your criteria.
+                )}
+                <div className={styles.grid}>
+                  {filteredActivities.map(a => <CrewCard key={a.id} activity={a} onClick={() => handleActivityClick(a)} />)}
                 </div>
-              )}
-            </div>
-          )}
+                {filteredActivities.length === 0 && (
+                  <div className={styles.empty}>
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
+                      <circle cx="11" cy="11" r="8" />
+                      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    <p>No activities match your search.</p>
+                  </div>
+                )}
+              </section>
+            )}
+          </div>
         </div>
       </main>
 

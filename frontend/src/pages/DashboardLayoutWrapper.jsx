@@ -12,6 +12,7 @@ export default function DashboardLayoutWrapper() {
   
   // Determine if wide layout is needed based on route handle
   const isWide = matches.some(match => match.handle?.wide);
+  const isMessages = matches.some(match => match.pathname.startsWith('/messages'));
   
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -32,7 +33,7 @@ export default function DashboardLayoutWrapper() {
     <>
       <Background />
       <Header variant="dashboard" />
-      <DashboardLayout wide={isWide}>
+      <DashboardLayout wide={isWide} noPaddingMobile={isMessages}>
         <Sidebar onCommunityClick={handleCommunityClick} />
         <Outlet />
       </DashboardLayout>

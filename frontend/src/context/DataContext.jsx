@@ -4,6 +4,7 @@ import { communities as initialCommunities } from '../data/communities';
 import { initialMessages } from '../data/messages';
 import { generateCrewActivities } from '../components/crew/crewData';
 import { useAuth } from './AuthContext';
+import { parseTimeString } from '../utils/time';
 
 const DataContext = createContext(null);
 
@@ -12,7 +13,7 @@ export function DataProvider({ children }) {
 
   // Compute once, not at module level, so it's inside React lifecycle
   const [users, setUsers] = useState(() => {
-    const saved = localStorage.getItem('meetify_users');
+    const saved = localStorage.getItem('meetifyy_users');
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -30,10 +31,16 @@ export function DataProvider({ children }) {
   });
 
   const [posts, setPosts] = useState(() => {
-    const saved = localStorage.getItem('meetify_posts');
+    const mapWithTimestamps = (items) => items.map(item => ({
+      ...item,
+      createdAt: item.createdAt || parseTimeString(item.time),
+      replies: item.replies ? mapWithTimestamps(item.replies) : undefined
+    }));
+
+    const saved = localStorage.getItem('meetifyy_posts');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        return mapWithTimestamps(JSON.parse(saved));
       } catch (e) {
         console.error(e);
       }
@@ -51,11 +58,11 @@ export function DataProvider({ children }) {
         communityId: comm.id
       }))
     );
-    return [...initialPosts, ...commPosts];
+    return mapWithTimestamps([...initialPosts, ...commPosts]);
   });
 
   const [communitiesState, setCommunitiesState] = useState(() => {
-    const saved = localStorage.getItem('meetify_communities');
+    const saved = localStorage.getItem('meetifyy_communities');
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -67,7 +74,7 @@ export function DataProvider({ children }) {
   });
 
   const [conversations, setConversations] = useState(() => {
-    const saved = localStorage.getItem('meetify_conversations');
+    const saved = localStorage.getItem('meetifyy_conversations');
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -79,7 +86,7 @@ export function DataProvider({ children }) {
   });
 
   const [crewActivities, setCrewActivities] = useState(() => {
-    const saved = localStorage.getItem('meetify_crew_activities');
+    const saved = localStorage.getItem('meetifyy_crew_activities');
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -92,24 +99,68 @@ export function DataProvider({ children }) {
 
   // Persist states to localStorage when changed
   useEffect(() => {
-    localStorage.setItem('meetify_users', JSON.stringify(users));
+    localStorage.setItem('meetifyy_users', JSON.stringify(users));
   }, [users]);
 
   useEffect(() => {
-    localStorage.setItem('meetify_posts', JSON.stringify(posts));
+    localStorage.setItem('meetifyy_posts', JSON.stringify(posts));
   }, [posts]);
 
   useEffect(() => {
-    localStorage.setItem('meetify_communities', JSON.stringify(communitiesState));
+    localStorage.setItem('meetifyy_communities', JSON.stringify(communitiesState));
   }, [communitiesState]);
 
   useEffect(() => {
-    localStorage.setItem('meetify_conversations', JSON.stringify(conversations));
+    localStorage.setItem('meetifyy_conversations', JSON.stringify(conversations));
   }, [conversations]);
 
   useEffect(() => {
-    localStorage.setItem('meetify_crew_activities', JSON.stringify(crewActivities));
+    localStorage.setItem('meetifyy_crew_activities', JSON.stringify(crewActivities));
   }, [crewActivities]);
+
+  // Dynamic seed: Ensure the current user has some crew invitations if they are logged in
+  useEffect(() => {
+    if (currentUser && currentUser.id && crewActivities && crewActivities.length > 0) {
+      const userInvitedCount = crewActivities.filter(a => a.invitedUsers && a.invitedUsers.includes(currentUser.id)).length;
+      const sessionKey = `meetifyy_seeded_invites_${currentUser.id}`;
+      if (!sessionStorage.getItem(sessionKey) && userInvitedCount === 0) {
+        sessionStorage.setItem(sessionKey, 'true');
+        let count = 0;
+        const updated = crewActivities.map(a => {
+          const invited = a.invitedUsers || [];
+          if (a.hostId !== currentUser.id && count < 2 && !a.participants.includes(currentUser.id)) {
+            count++;
+            return {
+              ...a,
+              invitedUsers: [...invited, currentUser.id]
+            };
+          }
+          return {
+            ...a,
+            invitedUsers: invited
+          };
+        });
+        if (count > 0) {
+          setCrewActivities(updated);
+        }
+      }
+    }
+  }, [currentUser, crewActivities]);
+
+  // Helper for stable object comparison
+  const stableStringify = (obj) => {
+    if (obj === null || typeof obj !== 'object') return JSON.stringify(obj);
+    if (Array.isArray(obj)) return JSON.stringify(obj);
+    return JSON.stringify(Object.keys(obj).sort().reduce((acc, key) => {
+      acc[key] = obj[key];
+      return acc;
+    }, {}));
+  };
+
+  const currentUserRef = useRef(currentUser);
+  useEffect(() => {
+    currentUserRef.current = currentUser;
+  }, [currentUser]);
 
   // Sync: merge currentUser changes from AuthContext into DataContext users list
   useEffect(() => {
@@ -129,9 +180,11 @@ export function DataProvider({ children }) {
           // Compare only non-list fields to prevent erasing followingList/followersList
           const comp1 = { ...currentUser };
           const comp2 = { ...existing };
+          delete comp1.followingList;
+          delete comp1.followersList;
           delete comp2.followingList;
           delete comp2.followersList;
-          if (JSON.stringify(comp1) !== JSON.stringify(comp2)) {
+          if (stableStringify(comp1) !== stableStringify(comp2)) {
             return {
               ...prev,
               [currentUser.username]: {
@@ -148,15 +201,16 @@ export function DataProvider({ children }) {
 
   // Sync: push DataContext users list changes for current user back to AuthContext
   useEffect(() => {
-    if (currentUser && currentUser.username && updateCurrentUser) {
-      const liveUser = users[currentUser.username];
+    const cu = currentUserRef.current;
+    if (cu && cu.username && updateCurrentUser) {
+      const liveUser = users[cu.username];
       if (liveUser) {
-        if (JSON.stringify(liveUser) !== JSON.stringify(currentUser)) {
+        if (stableStringify(liveUser) !== stableStringify(cu)) {
           updateCurrentUser(liveUser);
         }
       }
     }
-  }, [users, currentUser, updateCurrentUser]);
+  }, [users, updateCurrentUser]);
 
   // Notification callback — set by NotificationBridge to avoid circular deps
   const onNotifyRef = useRef(null);
@@ -202,7 +256,6 @@ export function DataProvider({ children }) {
   }, [posts]);
 
   const likePost = useCallback(async (postId) => {
-    await new Promise(resolve => setTimeout(resolve, 600));
     setPosts(prev => {
       const updated = prev.map(p => {
         if (p.id === postId) {
@@ -232,14 +285,16 @@ export function DataProvider({ children }) {
     });
   }, [currentUser, notify]);
 
-  const addPost = useCallback(async (text, poll, communityId = null) => {
+  const addPost = useCallback(async (text, poll, communityId = null, media = null) => {
     await new Promise(resolve => setTimeout(resolve, 600));
 
     const newPost = {
       id: `post_${Date.now()}`,
       authorId: currentUser.id,
-      time: 'Just now',
+      createdAt: Date.now(),
+      time: 'just now',
       text,
+      media,
       poll: poll ? {
         ...poll,
         votes: poll.options.map(() => 0),
@@ -287,7 +342,8 @@ export function DataProvider({ children }) {
       const newReply = {
         id: `r_${Date.now()}`,
         authorId: currentUser.id,
-        time: 'Just now',
+        createdAt: Date.now(),
+        time: 'just now',
         text,
         likedBy: [],
         likes: 0,
@@ -333,7 +389,6 @@ export function DataProvider({ children }) {
   }, [currentUser, users, notify]);
 
   const likeComment = useCallback(async (postId, commentId) => {
-    await new Promise(resolve => setTimeout(resolve, 600));
     setPosts(prev => prev.map(p => {
       if (p.id !== postId) return p;
 
@@ -444,6 +499,14 @@ export function DataProvider({ children }) {
       const commName = commToUpdate.name;
       const isJoined = userCommunities.includes(commName);
 
+      if (!isJoined && commToUpdate.bannedUsers && commToUpdate.bannedUsers[currentUser.id]) {
+        const banExpiry = commToUpdate.bannedUsers[currentUser.id];
+        if (Date.now() < banExpiry) {
+          // User is currently banned
+          return prevComm;
+        }
+      }
+
       // Notify on join (not leave)
       if (!isJoined) {
         notify('community_join', { communityId, actorId: currentUser?.id, text: `joined ${commName}` });
@@ -481,9 +544,59 @@ export function DataProvider({ children }) {
       ...communityData,
       members: 1,
       isUniversity: false,
+      memberList: [{
+        id: currentUser.id,
+        name: currentUser.displayName,
+        avatar: currentUser.avatar,
+        role: 'Creator',
+        admin: true
+      }],
+      bannedUsers: {}
     };
-    setCommunities(prev => ({ ...prev, [id]: newComm }));
+    setCommunitiesState(prev => ({ ...prev, [id]: newComm }));
+    
+    // Auto join the community
+    updateCurrentUser({
+      communities: [...(currentUser.communities || []), newComm.name]
+    });
+
     return id;
+  }, [currentUser, updateCurrentUser]);
+
+  const updateCommunity = useCallback(async (communityId, updates) => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    setCommunitiesState(prev => {
+      const comm = prev[communityId];
+      if (!comm) return prev;
+      return {
+        ...prev,
+        [communityId]: { ...comm, ...updates }
+      };
+    });
+  }, []);
+
+  const kickMember = useCallback(async (communityId, userIdToKick) => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    setCommunitiesState(prev => {
+      const comm = prev[communityId];
+      if (!comm) return prev;
+      
+      const newMemberList = (comm.memberList || []).filter(m => m.id !== userIdToKick);
+      const newBannedUsers = {
+        ...(comm.bannedUsers || {}),
+        [userIdToKick]: Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days from now
+      };
+
+      return {
+        ...prev,
+        [communityId]: { 
+          ...comm, 
+          memberList: newMemberList,
+          bannedUsers: newBannedUsers,
+          members: Math.max(0, comm.members - 1)
+        }
+      };
+    });
   }, []);
 
   const updateFollowerCount = useCallback((targetUsername, isFollowingNow) => {
@@ -547,26 +660,36 @@ export function DataProvider({ children }) {
     });
   }, [currentUser, notify]);
 
-  const sendDirectMessage = useCallback(async (convId, text, replyTo = null) => {
+  const sendDirectMessage = useCallback(async (convId, text, replyTo = null, inviteData = null) => {
     await new Promise(resolve => setTimeout(resolve, 300));
     const now = new Date();
     const timeStr = now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
 
-    setConversations((prev) =>
-      prev.map((c) =>
-        c.id === convId
-          ? {
-              ...c,
-              messages: [
-                ...c.messages,
-                { from: 'me', text, time: timeStr, replyTo: replyTo ? { text: replyTo.text, from: replyTo.from } : null }
-              ],
-              lastMsg: text,
-              time: 'now',
-            }
-          : c
-      )
-    );
+    setConversations((prev) => {
+      const convIndex = prev.findIndex(c => c.id === convId);
+      if (convIndex === -1) return prev;
+      
+      const updatedConv = {
+        ...prev[convIndex],
+        messages: [
+          ...prev[convIndex].messages,
+          { 
+            from: 'me', 
+            text, 
+            time: timeStr, 
+            replyTo: replyTo ? { text: replyTo.text, from: replyTo.from } : null,
+            inviteData: inviteData || null
+          }
+        ],
+        lastMsg: text,
+        time: 'now',
+      };
+      
+      const newConvs = [...prev];
+      newConvs.splice(convIndex, 1);
+      newConvs.unshift(updatedConv); // Move to top
+      return newConvs;
+    });
   }, []);
 
   const reactToMessage = useCallback(async (convId, messageIndex, reaction) => {
@@ -653,14 +776,111 @@ export function DataProvider({ children }) {
       return {
         ...a,
         slotsFilled: Math.min(a.slotsFilled + 1, a.slotsNeeded),
-        participants: [...a.participants, currentUser?.id]
+        participants: [...a.participants, currentUser?.id],
+        invitedUsers: (a.invitedUsers || []).filter(uid => uid !== currentUser?.id)
       };
     }));
   }, [currentUser, notify]);
 
+  const declineCrewInvitation = useCallback(async (activityId) => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    setCrewActivities(prev => prev.map(a => {
+      if (a.id !== activityId) return a;
+      return {
+        ...a,
+        invitedUsers: (a.invitedUsers || []).filter(uid => uid !== currentUser?.id)
+      };
+    }));
+  }, [currentUser]);
+
   const addCrewActivity = useCallback((newActivity) => {
     setCrewActivities(prev => [newActivity, ...prev]);
   }, []);
+
+  const createGroupConversation = useCallback(async (groupName, userIds) => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    const directMembers = [];
+    const invitedMembers = [];
+    const myFollowers = currentUser?.followersList || [];
+    
+    for (const uid of userIds) {
+      const u = Object.values(users).find(usr => usr.id === uid);
+      if (u && myFollowers.includes(u.username)) {
+        directMembers.push(uid);
+      } else if (u) {
+        invitedMembers.push(u);
+      }
+    }
+
+    const newId = 'g_' + Date.now();
+    const newConv = {
+      id: newId,
+      name: groupName,
+      isGroup: true,
+      adminId: currentUser?.id,
+      members: [currentUser?.id, ...directMembers],
+      avatar: null, // No default avatar yet, or can use name initials
+      color: 'var(--color-secondary)',
+      online: true,
+      lastMsg: 'Group created',
+      time: 'Just now',
+      unread: 0,
+      description: '',
+      createdAt: Date.now(),
+      messages: []
+    };
+    setConversations(prev => [newConv, ...prev]);
+
+    // Send invites to non-followers
+    for (const u of invitedMembers) {
+      const dmConvId = await startConversation(u);
+      sendDirectMessage(dmConvId, `I've invited you to join the group "${groupName}".`, null, {
+        groupId: newId,
+        groupName: groupName
+      });
+    }
+
+    return newId;
+  }, [currentUser, users, startConversation, sendDirectMessage]);
+
+  const updateGroupInfo = useCallback(async (convId, newName, newAvatar, newDescription) => {
+    setConversations(prev => prev.map(c => 
+      c.id === convId ? { 
+        ...c, 
+        name: newName !== undefined ? newName : c.name, 
+        avatar: newAvatar !== undefined ? newAvatar : c.avatar,
+        description: newDescription !== undefined ? newDescription : c.description
+      } : c
+    ));
+  }, []);
+
+  const addGroupMember = useCallback(async (convId, userId) => {
+    setConversations(prev => prev.map(c => {
+      if (c.id === convId && !c.members.includes(userId)) {
+        return { ...c, members: [...c.members, userId] };
+      }
+      return c;
+    }));
+  }, []);
+
+  const removeGroupMember = useCallback(async (convId, userId) => {
+    setConversations(prev => prev.map(c => {
+      if (c.id === convId) {
+        return { ...c, members: c.members.filter(id => id !== userId) };
+      }
+      return c;
+    }));
+  }, []);
+
+  const leaveGroup = useCallback(async (convId) => {
+    setConversations(prev => prev.map(c => {
+      if (c.id === convId) {
+        return { ...c, members: c.members.filter(id => id !== currentUser?.id) };
+      }
+      return c;
+    }));
+  }, [currentUser]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const liveCurrentUser = enrichUser(users[currentUser?.username] || currentUser);
@@ -695,6 +915,8 @@ export function DataProvider({ children }) {
       likeComment,
       voteInPoll,
       toggleJoinCommunity,
+      updateCommunity,
+      kickMember,
       updateFollowerCount,
       toggleFollow,
       sendDirectMessage,
@@ -702,7 +924,13 @@ export function DataProvider({ children }) {
       clearChat,
       toggleBlockUser,
       startConversation,
+      createGroupConversation,
+      updateGroupInfo,
+      addGroupMember,
+      removeGroupMember,
+      leaveGroup,
       joinCrewActivity,
+      declineCrewInvitation,
       addCrewActivity,
       setOnNotify
     }}>

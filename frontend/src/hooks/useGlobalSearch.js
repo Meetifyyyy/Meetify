@@ -3,7 +3,7 @@ import Fuse from 'fuse.js';
 import { useData } from '../context/DataContext';
 
 export function useGlobalSearch(initialQuery = '', limit = 5) {
-  const { users, posts, communities } = useData();
+  const { users, posts, communities, crewActivities } = useData();
   const [query, setQuery] = useState(initialQuery);
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
   const [isSearching, setIsSearching] = useState(false);
@@ -11,7 +11,8 @@ export function useGlobalSearch(initialQuery = '', limit = 5) {
     posts: [],
     communities: [],
     users: [],
-    colleges: []
+    colleges: [],
+    crew: []
   });
 
   // Debounce the query
@@ -29,7 +30,7 @@ export function useGlobalSearch(initialQuery = '', limit = 5) {
   }, [initialQuery]);
 
   // Prepare searchable data
-  const { searchablePosts, searchableUsers, searchableCommunities, searchableColleges } = useMemo(() => {
+  const { searchablePosts, searchableUsers, searchableCommunities, searchableColleges, searchableCrew } = useMemo(() => {
     const usersList = Object.values(users || {});
     
     const postsList = (posts || []).map(p => {
@@ -48,13 +49,19 @@ export function useGlobalSearch(initialQuery = '', limit = 5) {
     const communitiesList = commList.filter(c => !c.isUniversity && !c.collegeId);
     const collegesList = commList.filter(c => c.isUniversity);
 
+    const crewList = (crewActivities || []).map(a => ({
+      ...a,
+      tagsJoined: (a.tags || []).join(' ')
+    }));
+
     return {
       searchablePosts: postsList,
       searchableUsers: usersList,
       searchableCommunities: communitiesList,
-      searchableColleges: collegesList
+      searchableColleges: collegesList,
+      searchableCrew: crewList
     };
-  }, [users, posts, communities]);
+  }, [users, posts, communities, crewActivities]);
 
   // Create Fuse instances
   const fuseOptions = {
@@ -97,14 +104,24 @@ export function useGlobalSearch(initialQuery = '', limit = 5) {
           { name: 'name', weight: 1.0 },
           { name: 'desc', weight: 0.5 }
         ]
+      }),
+      crew: new Fuse(searchableCrew, {
+        ...fuseOptions,
+        keys: [
+          { name: 'title', weight: 1.0 },
+          { name: 'description', weight: 0.6 },
+          { name: 'category', weight: 0.8 },
+          { name: 'tagsJoined', weight: 0.7 },
+          { name: 'hostName', weight: 0.5 }
+        ]
       })
     };
-  }, [searchablePosts, searchableUsers, searchableCommunities, searchableColleges]);
+  }, [searchablePosts, searchableUsers, searchableCommunities, searchableColleges, searchableCrew]);
 
   // Perform search when debouncedQuery changes
   useEffect(() => {
     if (!debouncedQuery.trim()) {
-      setResults({ posts: [], communities: [], users: [], colleges: [] });
+      setResults({ posts: [], communities: [], users: [], colleges: [], crew: [] });
       setIsSearching(false);
       return;
     }
@@ -113,11 +130,9 @@ export function useGlobalSearch(initialQuery = '', limit = 5) {
     const searchUsers = fuseInstances.users.search(debouncedQuery);
     const searchCommunities = fuseInstances.communities.search(debouncedQuery);
     const searchColleges = fuseInstances.colleges.search(debouncedQuery);
+    const searchCrew = fuseInstances.crew.search(debouncedQuery);
 
-    // Helper to rank and limit results. 
-    // We can add engagement weighting here if needed (e.g. subtracting from score because Fuse score: lower is better).
     const formatResults = (list, maxLimit) => {
-      // For engagement weighting, we can adjust the score slightly based on popularity
       const weighted = list.map(item => {
         let weightFactor = 0;
         if (item.item.likes) weightFactor = Math.min(item.item.likes * 0.001, 0.1);
@@ -126,11 +141,10 @@ export function useGlobalSearch(initialQuery = '', limit = 5) {
         
         return {
           ...item,
-          score: item.score - weightFactor // Lower score is better in Fuse
+          score: item.score - weightFactor
         };
       });
 
-      // Sort by modified score
       weighted.sort((a, b) => a.score - b.score);
       return weighted.slice(0, maxLimit);
     };
@@ -139,7 +153,8 @@ export function useGlobalSearch(initialQuery = '', limit = 5) {
       posts: formatResults(searchPosts, limit),
       communities: formatResults(searchCommunities, limit),
       users: formatResults(searchUsers, limit),
-      colleges: formatResults(searchColleges, limit)
+      colleges: formatResults(searchColleges, limit),
+      crew: formatResults(searchCrew, limit)
     });
     setIsSearching(false);
   }, [debouncedQuery, fuseInstances, limit]);
