@@ -1,7 +1,9 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { Search, Users, Activity, UsersRound, Calendar, Filter, UserPlus, UserCheck, MapPin, Clock, UsersIcon } from 'lucide-react';
 import { useGlobalSearch } from '../hooks/useGlobalSearch';
 import { useData } from '../context/DataContext';
+import { useSmartBack } from '../hooks/useSmartBack';
 import { PostResult, CommunityResult, UserResult, CollegeResult, CrewResult } from '../components/search/SearchResultCards';
 import GlobalSearch from '../components/search/GlobalSearch';
 import { isImageUrl } from '../utils/avatar';
@@ -9,13 +11,150 @@ import DefaultAvatar from '../components/common/DefaultAvatar';
 import Skeleton from '../components/common/Skeleton';
 import styles from './SearchResultsRoute.module.css';
 
+// Compact horizontal activity row
+function ActivityRow({ activity, onClick }) {
+  const { joinCrewActivity, requestToJoinActivity, currentUser } = useData();
+  const isJoined = activity.participants?.includes(currentUser?.id);
+  const hasRequested = activity.pendingRequests?.includes(currentUser?.id);
+  const isApproval = activity.participationType === 'approval';
+
+  const categoryColors = {
+    'Sports':           { bg: 'rgba(37,99,235,0.1)',    color: '#2563EB' },
+    'Health & Fitness': { bg: 'rgba(16,185,129,0.1)',   color: '#10B981' },
+    'Gaming':           { bg: 'rgba(124,58,237,0.1)',   color: '#7C3AED' },
+    'Creative':         { bg: 'rgba(255,107,53,0.1)',   color: '#FF6B35' },
+    'Social':           { bg: 'rgba(245,158,11,0.1)',   color: '#F59E0B' },
+    'Event':            { bg: 'rgba(236,72,153,0.1)',   color: '#EC4899' },
+  };
+  const theme = categoryColors[activity.category] || { bg: 'rgba(37,99,235,0.1)', color: '#2563EB' };
+
+  return (
+    <div className={styles.activityRow} onClick={onClick}>
+      <div className={styles.activityRowIcon} style={{ background: theme.bg, color: theme.color }}>
+        <Activity size={20} />
+      </div>
+      <div className={styles.activityRowInfo}>
+        <span className={styles.activityRowTitle}>{activity.title}</span>
+        <div className={styles.activityRowMeta}>
+          {activity.dateLabel && (
+            <span className={styles.activityRowMetaItem}>
+              <Clock size={11} />
+              {activity.dateLabel}{activity.time ? ` • ${activity.time}` : ''}
+            </span>
+          )}
+          {activity.location && (
+            <span className={styles.activityRowMetaItem}>
+              <MapPin size={11} />
+              {activity.location}
+            </span>
+          )}
+          {activity.slotsNeeded && (
+            <span className={styles.activityRowMetaItem}>
+              <UsersIcon size={11} />
+              {Math.min(activity.slotsFilled || 0, activity.slotsNeeded)}/{activity.slotsNeeded} joined
+            </span>
+          )}
+        </div>
+      </div>
+      <button
+        className={`${styles.rowActionBtn} ${(isJoined || hasRequested) ? styles.rowActionBtnActive : ''}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (isJoined || hasRequested) return;
+          if (isApproval) requestToJoinActivity(activity.id);
+          else joinCrewActivity(activity.id);
+        }}
+      >
+        {isJoined ? 'Joined' : hasRequested ? 'Requested' : isApproval ? 'Request' : 'Join'}
+      </button>
+    </div>
+  );
+}
+
+// Compact horizontal community row
+function CommunityRow({ comm, onClick }) {
+  const { toggleJoinCommunity, currentUser } = useData();
+  const isJoined = currentUser?.communities?.includes(comm.name);
+
+  return (
+    <div className={styles.communityRow} onClick={onClick}>
+      <div
+        className={styles.communityRowAvatar}
+        style={comm.color ? { background: comm.color } : { background: 'linear-gradient(135deg, #2563EB, #7C3AED)' }}
+      >
+        {isImageUrl(comm.avatar)
+          ? <img src={comm.avatar} alt={comm.name} />
+          : <span>{comm.name.charAt(0).toUpperCase()}</span>
+        }
+      </div>
+      <div className={styles.communityRowInfo}>
+        <span className={styles.communityRowName}>{comm.name}</span>
+        <span className={styles.communityRowMembers}>
+          <UsersIcon size={12} />
+          {(comm.members || 0).toLocaleString()} members
+        </span>
+      </div>
+      <button
+        className={`${styles.rowActionBtn} ${isJoined ? styles.rowActionBtnActive : styles.rowActionBtnOutline}`}
+        onClick={(e) => { e.stopPropagation(); toggleJoinCommunity(comm.id); }}
+      >
+        {isJoined ? 'Joined' : 'Join'}
+      </button>
+    </div>
+  );
+}
+
+// Person row in sidebar
+function PersonRow({ user, idx }) {
+  const { toggleFollow, currentUser, users } = useData();
+  // Always read from latest users state so button updates immediately
+  const latestMe = users?.[currentUser?.username];
+  const isFollowing = latestMe?.followingList?.includes(user.username);
+
+  return (
+    <div className={styles.sidebarItem}>
+      <div className={styles.sidebarAvatar}>
+        {isImageUrl(user.avatar)
+          ? <img src={user.avatar} alt={user.displayName} />
+          : <DefaultAvatar />
+        }
+      </div>
+      <div className={styles.sidebarItemInfo}>
+        <div className={styles.sidebarItemNameRow}>
+          <span className={styles.sidebarItemName}>{user.displayName}</span>
+          {user.verified && <span className={styles.verifiedBadge}>✓</span>}
+        </div>
+        <span className={styles.sidebarItemHandle}>@{user.username}</span>
+        <span className={styles.sidebarItemDesc}>
+          {user.bio ? user.bio.substring(0, 35) + '...' : 'Student • Explorer'}
+        </span>
+        <div className={styles.mutualFriends}>
+          <div className={styles.mutualAvatars}>
+            <div className={styles.mutualAvatar}><DefaultAvatar /></div>
+            <div className={styles.mutualAvatar}><DefaultAvatar /></div>
+          </div>
+          <span>{(idx + 1) * 4 + 2} mutual friends</span>
+        </div>
+      </div>
+      <button
+        className={`${styles.followBtn} ${isFollowing ? styles.followBtnActive : ''}`}
+        title={isFollowing ? 'Unfollow' : 'Follow'}
+        onClick={(e) => { e.stopPropagation(); toggleFollow(user.username); }}
+      >
+        {isFollowing ? <UserCheck size={15} /> : <UserPlus size={15} />}
+      </button>
+    </div>
+  );
+}
+
 export default function SearchResultsRoute() {
   const [searchParams] = useSearchParams();
   const q = searchParams.get('q') || '';
   const navigate = useNavigate();
-  const [activeSection, setActiveSection] = useState('top');
+  const goBack = useSmartBack();
+  const [activeSection, setActiveSection] = useState('all');
   const containerRef = useRef(null);
-  const { communities, users } = useData();
+  const { communities, users, crewActivities, posts } = useData();
 
   useEffect(() => {
     if (containerRef.current) {
@@ -27,42 +166,30 @@ export default function SearchResultsRoute() {
   
   const { results, isSearching } = useGlobalSearch(q, 20);
   
-  const handleNavigate = (path) => {
-    navigate(path);
-  };
-
-  const handleQuickSearch = (query) => {
-    navigate(`/search?q=${encodeURIComponent(query)}`);
-  };
+  const handleNavigate = (path) => navigate(path);
 
   const hasResults = 
-    results.posts.length > 0 || 
-    results.communities.length > 0 || 
-    results.users.length > 0 || 
-    results.colleges.length > 0 ||
-    results.crew.length > 0;
+    results.posts.length > 0 || results.communities.length > 0 ||
+    results.users.length > 0 || results.colleges.length > 0 || results.crew.length > 0;
 
   const topMatches = useMemo(() => {
     const sorted = [];
-    if (results.posts.length > 0) {
-      sorted.push(...results.posts.slice(0, 3).map(r => ({ ...r, type: 'post' })));
-    }
-    if (results.users.length > 0) {
-      sorted.push(...results.users.slice(0, 3).map(r => ({ ...r, type: 'user' })));
-    }
-    if (results.communities.length > 0) {
-      sorted.push(...results.communities.slice(0, 2).map(r => ({ ...r, type: 'community' })));
-    }
-    if (results.colleges.length > 0) {
-      sorted.push(...results.colleges.slice(0, 2).map(r => ({ ...r, type: 'college' })));
-    }
-    if (results.crew.length > 0) {
-      sorted.push(...results.crew.slice(0, 2).map(r => ({ ...r, type: 'crew' })));
-    }
+    if (results.posts.length > 0) sorted.push(...results.posts.slice(0, 3).map(r => ({ ...r, type: 'post' })));
+    if (results.users.length > 0) sorted.push(...results.users.slice(0, 3).map(r => ({ ...r, type: 'user' })));
+    if (results.communities.length > 0) sorted.push(...results.communities.slice(0, 2).map(r => ({ ...r, type: 'community' })));
+    if (results.colleges.length > 0) sorted.push(...results.colleges.slice(0, 2).map(r => ({ ...r, type: 'college' })));
+    if (results.crew.length > 0) sorted.push(...results.crew.slice(0, 2).map(r => ({ ...r, type: 'crew' })));
     return sorted;
   }, [results]);
 
-  // Popular communities
+  const suggestedUsers = useMemo(() => {
+    if (!users) return [];
+    return Object.values(users)
+      .filter(u => u.username !== 'current_user')
+      .sort((a, b) => (b.followers || 0) - (a.followers || 0))
+      .slice(0, 4);
+  }, [users]);
+
   const popularCommunities = useMemo(() => {
     if (!communities) return [];
     return Object.values(communities)
@@ -71,233 +198,234 @@ export default function SearchResultsRoute() {
       .slice(0, 5);
   }, [communities]);
 
-  // Suggested people
-  const suggestedUsers = useMemo(() => {
-    if (!users) return [];
-    return Object.values(users)
-      .sort((a, b) => (b.followers || 0) - (a.followers || 0))
-      .slice(0, 6);
-  }, [users]);
+  const trendingActivities = useMemo(() => {
+    if (!crewActivities) return [];
+    const now = new Date();
+    return crewActivities
+      .filter(a => !a.date || new Date(a.date) > now)
+      .sort((a, b) => (b.slotsFilled || 0) - (a.slotsFilled || 0))
+      .slice(0, 4);
+  }, [crewActivities]);
 
-
+  const topPosts = useMemo(() => {
+    if (!posts) return [];
+    return [...posts].sort((a, b) => (b.likes || 0) - (a.likes || 0)).slice(0, 3);
+  }, [posts]);
 
   const sections = [
-    { id: 'top', label: 'Top' },
-    { id: 'posts', label: 'Posts' },
-    { id: 'users', label: 'Users' },
-    { id: 'community', label: 'Community' },
-    { id: 'college', label: 'College' },
-    { id: 'crew', label: 'Crew' }
+    { id: 'all', label: 'All', icon: Search },
+    { id: 'users', label: 'People', icon: Users },
+    { id: 'activities', label: 'Activities', icon: Activity },
+    { id: 'community', label: 'Communities', icon: UsersRound },
+    { id: 'events', label: 'Events', icon: Calendar }
   ];
 
-  const trendingTopics = [
-    { label: 'React', query: 'React', emoji: '⚛️' },
-    { label: 'Figma & Design', query: 'Figma', emoji: '🎨' },
-    { label: 'AI & ML', query: 'AI', emoji: '🤖' },
-    { label: 'Rust', query: 'Rust', emoji: '🦀' },
-    { label: 'GLA University', query: 'GLA', emoji: '🎓' },
-    { label: 'Hackathons', query: 'hackathon', emoji: '🏆' },
-    { label: 'Open Source', query: 'open source', emoji: '🌐' },
-    { label: 'Internships', query: 'internship', emoji: '💼' }
-  ];
-  
+  // What to show in left column when on explore page (no query)
+  const showActivitiesOnly = !q.trim() && activeSection === 'activities';
+  const showCommunitiesOnly = !q.trim() && activeSection === 'community';
+  const showPeopleOnly = !q.trim() && activeSection === 'users';
+
   return (
     <div ref={containerRef} className={`centre centre-wide ${styles.container}`}>
-      
-      <div className={styles.mobileSearchHeader}>
-        <GlobalSearch variant="mobileSearchPage" autoFocus />
-      </div>
-
-      {!q.trim() ? (
-        <div className={styles.explorePage}>
-          {/* Hero with inline search */}
-          <div className={styles.exploreHero}>
-            <h1 className={styles.heroTitle}>Explore</h1>
-            <p className={styles.heroSubtitle}>Discover people, communities, and conversations</p>
-
-          </div>
-
-          {/* Two-column layout */}
-          <div className={styles.exploreColumns}>
-            {/* Left column — main content */}
-            <div className={styles.exploreMain}>
-              {/* Quick category search */}
-              <div className={styles.quickCategories}>
-                <button className={styles.quickCatBtn} onClick={() => navigate('/crew')}>
-                  <div className={styles.quickCatIcon} style={{ background: 'linear-gradient(135deg, #2563EB, #7C3AED)' }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-bg-white)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                    </svg>
-                  </div>
-                  <div className={styles.quickCatText}>
-                    <span className={styles.quickCatTitle}>Find your crew</span>
-                  </div>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={styles.quickCatArrow}><polyline points="9 18 15 12 9 6"/></svg>
-                </button>
-
-                <button className={styles.quickCatBtn} onClick={() => navigate('/communities')}>
-                  <div className={styles.quickCatIcon} style={{ background: 'linear-gradient(135deg, #7C3AED, #EC4899)' }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-bg-white)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                    </svg>
-                  </div>
-                  <div className={styles.quickCatText}>
-                    <span className={styles.quickCatTitle}>Communities</span>
-                  </div>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={styles.quickCatArrow}><polyline points="9 18 15 12 9 6"/></svg>
-                </button>
-
-                <button className={styles.quickCatBtn} onClick={() => navigate('/communities', { state: { category: 'colleges' } })}>
-                  <div className={styles.quickCatIcon} style={{ background: 'linear-gradient(135deg, #10B981, #2563EB)' }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-bg-white)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
-                    </svg>
-                  </div>
-                  <div className={styles.quickCatText}>
-                    <span className={styles.quickCatTitle}>Colleges</span>
-                  </div>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={styles.quickCatArrow}><polyline points="9 18 15 12 9 6"/></svg>
-                </button>
-
-                <button className={styles.quickCatBtn} onClick={() => navigate('/home')}>
-                  <div className={styles.quickCatIcon} style={{ background: 'linear-gradient(135deg, #F59E0B, #FF6B35)' }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-bg-white)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>
-                    </svg>
-                  </div>
-                  <div className={styles.quickCatText}>
-                    <span className={styles.quickCatTitle}>Posts</span>
-                  </div>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={styles.quickCatArrow}><polyline points="9 18 15 12 9 6"/></svg>
-                </button>
-              </div>
-
-              {/* Trending */}
-              <div className={styles.sectionBlock}>
-                <div className={styles.sectionHeader}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
-                    <polyline points="17 6 23 6 23 12"/>
-                  </svg>
-                  <h2 className={styles.sectionTitle}>Trending</h2>
-                </div>
-                <div className={styles.trendingChips}>
-                  {trendingTopics.map((topic, i) => (
-                    <button
-                      key={topic.query}
-                      className={styles.trendingChip}
-                      onClick={() => handleQuickSearch(topic.query)}
-                      style={{ animationDelay: `${0.15 + i * 0.04}s` }}
-                    >
-                      <span className={styles.chipEmoji}>{topic.emoji}</span>
-                      <span className={styles.chipLabel}>{topic.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* People to discover */}
-              {suggestedUsers.length > 0 && (
-                <div className={styles.sectionBlock}>
-                  <div className={styles.sectionHeader}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-highlight)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                    </svg>
-                    <h2 className={styles.sectionTitle}>People to discover</h2>
-                  </div>
-                  <div className={styles.peopleScroll}>
-                    {suggestedUsers.map((u, i) => (
-                      <button
-                        key={u.id}
-                        className={styles.personCard}
-                        onClick={() => navigate(`/profile/${u.username}`)}
-                        style={{ animationDelay: `${0.2 + i * 0.05}s` }}
-                      >
-                        <div className={styles.personAvatarWrap}>
-                          {isImageUrl(u.avatar) ? (
-                            <img src={u.avatar} alt={u.displayName} className={styles.personAvatar} />
-                          ) : (
-                            <DefaultAvatar />
-                          )}
-                        </div>
-                        <span className={styles.personName}>{u.displayName}</span>
-                        <span className={styles.personHandle}>@{u.username}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Right column — sidebar */}
-            <div className={styles.exploreSidebar}>
-              {/* Popular communities */}
-              {popularCommunities.length > 0 && (
-                <div className={styles.sidebarCard}>
-                  <div className={styles.sectionHeader}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                      <circle cx="9" cy="7" r="4"/>
-                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                    </svg>
-                    <h2 className={styles.sectionTitle}>Popular Communities</h2>
-                  </div>
-                  <div className={styles.communityList}>
-                    {popularCommunities.map((c, i) => (
-                      <button 
-                        key={c.id} 
-                        className={styles.communityItem}
-                        onClick={() => navigate(`/communities/${c.id}`)}
-                        style={{ animationDelay: `${0.25 + i * 0.05}s` }}
-                      >
-                        <div 
-                          className={styles.communityAvatar}
-                          style={c.color ? { background: c.color } : {}}
-                        >
-                          {isImageUrl(c.avatar) ? (
-                            <img src={c.avatar} alt={c.name} />
-                          ) : (
-                            <DefaultAvatar />
-                          )}
-                        </div>
-                        <div className={styles.communityInfo}>
-                          <span className={styles.communityName}>{c.name}</span>
-                          <span className={styles.communityMembers}>{c.members?.toLocaleString() || 0} members</span>
-                        </div>
-                        <svg className={styles.communityArrow} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Keyboard shortcut hint */}
-              <div className={styles.sidebarHint}>
-                <div className={styles.hintContent}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2" y="4" width="20" height="16" rx="2" ry="2"/><path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M8 12h.001M12 12h.001M16 12h.001M7 16h10"/>
-                  </svg>
-                  <span><kbd>Ctrl</kbd> + <kbd>K</kbd> to search from anywhere</span>
-                </div>
-              </div>
-            </div>
-          </div>
+      {/* Header */}
+      <div className={styles.headerArea}>
+        {/* Mobile back row — hidden on desktop */}
+        <div className={styles.mobileBackRow}>
+          <button className={styles.backBtn} onClick={() => goBack('/home')} aria-label="Go back">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
+          </button>
+          <h1 className={styles.backTitle}>Search</h1>
         </div>
-      ) : (
-        <div className={styles.searchResults}>
-          <div className={styles.sectionTabs}>
-            {sections.map(sec => (
+
+        {/* Desktop title */}
+        <h1 className={styles.pageTitle}>Search</h1>
+        <p className={styles.pageSubtitle}>Find people, activities, and communities ✨</p>
+        
+        <div className={styles.searchRow}>
+          <div className={styles.searchWrapper}>
+            <GlobalSearch variant="mobileSearchPage" />
+          </div>
+          <button className={styles.filterBtn}>
+            <Filter size={18} />
+            <span>Filters</span>
+          </button>
+        </div>
+
+        <div className={styles.sectionTabs}>
+          {sections.map(sec => {
+            const Icon = sec.icon;
+            return (
               <button
                 key={sec.id}
                 className={`${styles.sectionTabBtn} ${activeSection === sec.id ? styles.activeSectionTab : ''}`}
                 onClick={() => setActiveSection(sec.id)}
               >
+                <Icon size={15} className={styles.tabIcon} />
                 {sec.label}
               </button>
-            ))}
-          </div>
+            );
+          })}
+        </div>
+      </div>
 
+      {/* Explore page (no search query) */}
+      {!q.trim() ? (
+        <div className={styles.explorePage}>
+          {/* People-only view */}
+          {showPeopleOnly && (
+            <div className={styles.fullWidthSection}>
+              <div className={styles.sectionHeader}>
+                <h2 className={styles.sectionTitle}>People you may know</h2>
+              </div>
+              <div className={styles.sidebarBlock}>
+                <div className={styles.sidebarList}>
+                  {suggestedUsers.map((u, idx) => (
+                    <PersonRow key={u.id} user={u} idx={idx} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Activities-only view */}
+          {showActivitiesOnly && (
+            <div className={styles.fullWidthSection}>
+              <div className={styles.sectionHeader}>
+                <h2 className={styles.sectionTitle}>Trending Activities</h2>
+                <button className={styles.viewAllBtn} onClick={() => navigate('/crew')}>View all</button>
+              </div>
+              <div className={styles.rowList}>
+                {trendingActivities.map(activity => (
+                  <ActivityRow
+                    key={activity.id}
+                    activity={activity}
+                    onClick={() => navigate(`/crew/${activity.id}`, { state: { activity } })}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Communities-only view */}
+          {showCommunitiesOnly && (
+            <div className={styles.fullWidthSection}>
+              <div className={styles.sectionHeader}>
+                <h2 className={styles.sectionTitle}>Popular Communities</h2>
+                <button className={styles.viewAllBtn} onClick={() => navigate('/communities')}>View all</button>
+              </div>
+              <div className={styles.rowList}>
+                {popularCommunities.map(c => (
+                  <CommunityRow
+                    key={c.id}
+                    comm={c}
+                    onClick={() => navigate(`/communities/${c.id}`)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* All / default two-column view */}
+          {(activeSection === 'all' || activeSection === 'events') && (
+            <div className={styles.exploreColumns}>
+              {/* Left Column */}
+              <div className={styles.exploreMain}>
+                {/* Top Posts */}
+                {topPosts.length > 0 && (
+                  <div className={styles.sectionBlock}>
+                    <div className={styles.sectionHeader}>
+                      <h2 className={styles.sectionTitle}>Top Posts</h2>
+                      <button className={styles.viewAllBtn} onClick={() => navigate('/home')}>View all</button>
+                    </div>
+                    <div className={styles.topPostsList}>
+                      {topPosts.map((post) => {
+                        const author = users ? Object.values(users).find(u => u.id === post.authorId) : null;
+                        return (
+                          <button key={post.id} className={styles.topPostCard} onClick={() => navigate(`/posts/${post.id}`)}>
+                            <div className={styles.topPostAvatar}>
+                              {author && isImageUrl(author.avatar)
+                                ? <img src={author.avatar} alt={author.displayName} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                                : <DefaultAvatar />
+                              }
+                            </div>
+                            <div className={styles.topPostInfo}>
+                              <span className={styles.topPostName}>{author?.displayName || 'Someone'}</span>
+                              <p className={styles.topPostText}>{post.text?.substring(0, 80)}{post.text?.length > 80 ? '...' : ''}</p>
+                              <div className={styles.topPostMeta}>
+                                <span>❤️ {post.likes || 0}</span>
+                                <span>💬 {post.comments || 0}</span>
+                              </div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Trending Activities */}
+                {trendingActivities.length > 0 && (
+                  <div className={styles.sectionBlock}>
+                    <div className={styles.sectionHeader}>
+                      <h2 className={styles.sectionTitle}>Trending Activities</h2>
+                      <button className={styles.viewAllBtn} onClick={() => navigate('/crew')}>View all</button>
+                    </div>
+                    <div className={styles.rowList}>
+                      {trendingActivities.map(activity => (
+                        <ActivityRow
+                          key={activity.id}
+                          activity={activity}
+                          onClick={() => navigate(`/crew/${activity.id}`, { state: { activity } })}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Right Column */}
+              <div className={styles.exploreSidebar}>
+                {/* People */}
+                <div className={styles.sidebarBlock}>
+                  <div className={styles.sectionHeader}>
+                    <h2 className={styles.sectionTitle}>People</h2>
+                    <button className={styles.viewAllBtn} onClick={() => setActiveSection('users')}>View all</button>
+                  </div>
+                  <div className={styles.sidebarList}>
+                    {suggestedUsers.map((u, idx) => (
+                      <PersonRow key={u.id} user={u} idx={idx} />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Communities */}
+                {popularCommunities.length > 0 && (
+                  <div className={styles.sidebarBlock}>
+                    <div className={styles.sectionHeader}>
+                      <h2 className={styles.sectionTitle}>Communities</h2>
+                      <button className={styles.viewAllBtn} onClick={() => navigate('/communities')}>View all</button>
+                    </div>
+                    <div className={styles.rowList}>
+                      {popularCommunities.slice(0, 4).map(c => (
+                        <CommunityRow
+                          key={c.id}
+                          comm={c}
+                          onClick={() => navigate(`/communities/${c.id}`)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        /* Search results for active query */
+        <div className={styles.searchResults}>
           {isSearching ? (
             <div className={styles.sectionContent}>
               <div className={styles.resultsContainer}>
@@ -316,104 +444,56 @@ export default function SearchResultsRoute() {
             </div>
           ) : !hasResults ? (
             <div className={styles.empty}>
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/><path d="M8 11h6"/>
-              </svg>
+              <Search size={48} className={styles.emptyIcon} />
               <p>No results for "{q}"</p>
               <span>Check spelling or try a different term.</span>
             </div>
           ) : (
-        <div className={styles.sectionContent}>
-          {activeSection === 'top' && (
-            <div className={styles.resultsContainer}>
-              {topMatches.length > 0 ? (
-                <div className={styles.list}>
-                  {topMatches.map(r => {
-                    if (r.type === 'user') return <UserResult key={`top-u-${r.item.id}`} result={r} onClick={handleNavigate} />;
-                    if (r.type === 'community') return <CommunityResult key={`top-c-${r.item.id}`} result={r} onClick={handleNavigate} />;
-                    if (r.type === 'college') return <CollegeResult key={`top-col-${r.item.id}`} result={r} onClick={handleNavigate} />;
-                    if (r.type === 'post') return <PostResult key={`top-p-${r.item.id}`} result={r} onClick={handleNavigate} />;
-                    if (r.type === 'crew') return <CrewResult key={`top-cr-${r.item.id}`} result={r} onClick={handleNavigate} />;
-                    return null;
-                  })}
+            <div className={styles.sectionContent}>
+              {activeSection === 'all' && (
+                <div className={styles.resultsContainer}>
+                  {topMatches.length > 0 ? (
+                    <div className={styles.list}>
+                      {topMatches.map(r => {
+                        if (r.type === 'user') return <UserResult key={`top-u-${r.item.id}`} result={r} onClick={handleNavigate} />;
+                        if (r.type === 'community') return <CommunityResult key={`top-c-${r.item.id}`} result={r} onClick={handleNavigate} />;
+                        if (r.type === 'college') return <CollegeResult key={`top-col-${r.item.id}`} result={r} onClick={handleNavigate} />;
+                        if (r.type === 'post') return <PostResult key={`top-p-${r.item.id}`} result={r} onClick={handleNavigate} />;
+                        if (r.type === 'crew') return <CrewResult key={`top-cr-${r.item.id}`} result={r} onClick={handleNavigate} />;
+                        return null;
+                      })}
+                    </div>
+                  ) : <div className={styles.sectionEmpty}>No top matches for "{q}"</div>}
                 </div>
-              ) : (
-                <div className={styles.sectionEmpty}>No top matches for "{q}"</div>
+              )}
+              {activeSection === 'users' && (
+                <div className={styles.resultsContainer}>
+                  {results.users.length > 0
+                    ? <div className={styles.list}>{results.users.map(r => <UserResult key={`u-${r.item.id}`} result={r} onClick={handleNavigate} />)}</div>
+                    : <div className={styles.sectionEmpty}>No people for "{q}"</div>}
+                </div>
+              )}
+              {activeSection === 'activities' && (
+                <div className={styles.resultsContainer}>
+                  {results.posts.length > 0
+                    ? <div className={styles.list}>{results.posts.map(r => <PostResult key={`p-${r.item.id}`} result={r} onClick={handleNavigate} />)}</div>
+                    : <div className={styles.sectionEmpty}>No activities for "{q}"</div>}
+                </div>
+              )}
+              {activeSection === 'community' && (
+                <div className={styles.resultsContainer}>
+                  {results.communities.length > 0
+                    ? <div className={styles.list}>{results.communities.map(r => <CommunityResult key={`c-${r.item.id}`} result={r} onClick={handleNavigate} />)}</div>
+                    : <div className={styles.sectionEmpty}>No communities for "{q}"</div>}
+                </div>
+              )}
+              {activeSection === 'events' && (
+                <div className={styles.resultsContainer}>
+                  <div className={styles.sectionEmpty}>No events for "{q}"</div>
+                </div>
               )}
             </div>
           )}
-
-          {activeSection === 'posts' && (
-            <div className={styles.resultsContainer}>
-              {results.posts.length > 0 ? (
-                <div className={styles.list}>
-                  {results.posts.map((r) => (
-                    <PostResult key={`p-${r.item.id}`} result={r} onClick={handleNavigate} />
-                  ))}
-                </div>
-              ) : (
-                <div className={styles.sectionEmpty}>No posts for "{q}"</div>
-              )}
-            </div>
-          )}
-
-          {activeSection === 'users' && (
-            <div className={styles.resultsContainer}>
-              {results.users.length > 0 ? (
-                <div className={styles.list}>
-                  {results.users.map((r) => (
-                    <UserResult key={`u-${r.item.id}`} result={r} onClick={handleNavigate} />
-                  ))}
-                </div>
-              ) : (
-                <div className={styles.sectionEmpty}>No users for "{q}"</div>
-              )}
-            </div>
-          )}
-
-          {activeSection === 'community' && (
-            <div className={styles.resultsContainer}>
-              {results.communities.length > 0 ? (
-                <div className={styles.list}>
-                  {results.communities.map((r) => (
-                    <CommunityResult key={`c-${r.item.id}`} result={r} onClick={handleNavigate} />
-                  ))}
-                </div>
-              ) : (
-                <div className={styles.sectionEmpty}>No communities for "{q}"</div>
-              )}
-            </div>
-          )}
-
-          {activeSection === 'college' && (
-            <div className={styles.resultsContainer}>
-              {results.colleges.length > 0 ? (
-                <div className={styles.list}>
-                  {results.colleges.map((r) => (
-                    <CollegeResult key={`col-${r.item.id}`} result={r} onClick={handleNavigate} />
-                  ))}
-                </div>
-              ) : (
-                <div className={styles.sectionEmpty}>No colleges for "{q}"</div>
-              )}
-            </div>
-          )}
-
-          {activeSection === 'crew' && (
-            <div className={styles.resultsContainer}>
-              {results.crew.length > 0 ? (
-                <div className={styles.list}>
-                  {results.crew.map((r) => (
-                    <CrewResult key={`cr-${r.item.id}`} result={r} onClick={handleNavigate} />
-                  ))}
-                </div>
-              ) : (
-                <div className={styles.sectionEmpty}>No crew activities for "{q}"</div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
         </div>
       )}
     </div>

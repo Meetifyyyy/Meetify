@@ -97,6 +97,11 @@ export function DataProvider({ children }) {
     return generateCrewActivities(initialUsers);
   });
 
+  const [savedActivities, setSavedActivities] = useState(() => {
+    const saved = localStorage.getItem('meetifyy_saved_activities');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   // Persist states to localStorage when changed
   useEffect(() => {
     localStorage.setItem('meetifyy_users', JSON.stringify(users));
@@ -117,6 +122,10 @@ export function DataProvider({ children }) {
   useEffect(() => {
     localStorage.setItem('meetifyy_crew_activities', JSON.stringify(crewActivities));
   }, [crewActivities]);
+
+  useEffect(() => {
+    localStorage.setItem('meetifyy_saved_activities', JSON.stringify(savedActivities));
+  }, [savedActivities]);
 
   // Dynamic seed: Ensure the current user has some crew invitations if they are logged in
   useEffect(() => {
@@ -145,6 +154,51 @@ export function DataProvider({ children }) {
         }
       }
     }
+  }, [currentUser, crewActivities]);
+
+  // Sync: Ensure the current user has temporary chats for any activities they've already joined
+  useEffect(() => {
+    if (!currentUser) return;
+
+    setConversations(prevConvs => {
+      let changed = false;
+      const newConvs = [...prevConvs];
+
+      crewActivities.forEach(act => {
+        if (act.participants?.includes(currentUser.id) || act.hostId === currentUser.id) {
+          const actChatId = `act_${act.id}`;
+          const existing = newConvs.find(c => c.id === actChatId);
+          
+          if (!existing) {
+            newConvs.unshift({
+              id: actChatId,
+              name: act.title,
+              isActivityChat: true,
+              activityId: act.id,
+              color: 'var(--color-primary)',
+              online: true,
+              lastMsg: 'Group chat created!',
+              time: 'Just now',
+              unread: 0,
+              messages: [],
+              participants: act.participants || []
+            });
+            changed = true;
+          } else if (!existing.participants?.includes(currentUser.id)) {
+            const idx = newConvs.findIndex(c => c.id === actChatId);
+            if (idx !== -1) {
+              newConvs[idx] = {
+                ...existing,
+                participants: [...(existing.participants || []), currentUser.id]
+              };
+              changed = true;
+            }
+          }
+        }
+      });
+
+      return changed ? newConvs : prevConvs;
+    });
   }, [currentUser, crewActivities]);
 
   // Helper for stable object comparison
@@ -771,7 +825,7 @@ export function DataProvider({ children }) {
       const alreadyJoined = a.participants.includes(currentUser?.id);
       if (alreadyJoined) return a;
 
-      notify('crew_join', { activityId, actorId: currentUser?.id, text: `joined ${a.title}` });
+      notify('crew_join', { activityId, actorId: currentUser?.id, targetId: a.hostId, text: `joined ${a.title}` });
 
       return {
         ...a,
@@ -780,7 +834,103 @@ export function DataProvider({ children }) {
         invitedUsers: (a.invitedUsers || []).filter(uid => uid !== currentUser?.id)
       };
     }));
-  }, [currentUser, notify]);
+
+    // Manage activity conversation
+    setConversations(prev => {
+      const activityChatId = `act_${activityId}`;
+      const existingConv = prev.find(c => c.id === activityChatId);
+      
+      if (existingConv) {
+        // Add user to participants if not already and inject system message
+        if (!existingConv.participants?.includes(currentUser?.id)) {
+          const sysMsg = { id: Date.now(), type: 'system', text: `@${currentUser?.username || 'someone'} has joined`, time: 'Just now' };
+          return prev.map(c => c.id === activityChatId ? {
+            ...c,
+            participants: [...(c.participants || []), currentUser?.id],
+            messages: [...(c.messages || []), sysMsg]
+          } : c);
+        }
+        return prev;
+      } else {
+        // Find activity title to name the chat
+        const act = crewActivities.find(a => a.id === activityId);
+        const title = act ? act.title : 'Activity Chat';
+        const sysMsg = { id: Date.now(), type: 'system', text: `@${currentUser?.username || 'someone'} has joined`, time: 'Just now' };
+        const newConv = {
+          id: activityChatId,
+          name: title,
+          isActivityChat: true,
+          activityId: activityId,
+          color: 'var(--color-primary)',
+          online: true,
+          lastMsg: 'Group chat created!',
+          time: 'Just now',
+          unread: 0,
+          messages: [sysMsg],
+          participants: [currentUser?.id]
+        };
+        return [newConv, ...prev];
+      }
+    });
+
+  }, [currentUser, notify, crewActivities]);
+
+  const requestToJoinActivity = useCallback((activityId) => {
+    setCrewActivities(prev => prev.map(a => {
+      if (a.id === activityId) {
+        return {
+          ...a,
+          pendingRequests: [...(a.pendingRequests || []), currentUser?.id]
+        };
+      }
+      return a;
+    }));
+    
+    // Find activity to get host ID
+    const activity = crewActivities.find(a => a.id === activityId);
+    if (activity && activity.hostId) {
+      notify('ACTIVITY_JOIN_REQUEST', {
+        activityId,
+        actorId: currentUser?.id,
+        targetUsername: activity.hostId, // Using targetUsername for routing if needed, but actorId is what NotificationContext checks for the sender
+        text: `requested to join your activity "${activity.title}".`,
+      });
+    }
+  }, [currentUser, notify, crewActivities]);
+
+  const acceptJoinRequest = useCallback((activityId, requesterId) => {
+    // 1. Remove from pendingRequests and add to participants
+    setCrewActivities(prev => prev.map(a => {
+      if (a.id === activityId) {
+        return {
+          ...a,
+          pendingRequests: (a.pendingRequests || []).filter(id => id !== requesterId),
+          participants: [...(a.participants || []), requesterId],
+          slotsFilled: (a.slotsFilled || 0) + 1
+        };
+      }
+      return a;
+    }));
+
+    // 2. Add to group chat and send system message
+    const activityChatId = `act_${activityId}`;
+    setConversations(prev => {
+      const existing = prev.find(c => c.id === activityChatId);
+      if (existing) {
+        const requester = Object.values(users).find(u => u.id === requesterId);
+        const reqName = requester ? requester.username : 'someone';
+        const sysMsg = { id: Date.now(), type: 'system', text: `@${reqName} has joined`, time: 'Just now' };
+        
+        return prev.map(c => c.id === activityChatId ? {
+          ...c,
+          participants: [...(c.participants || []), requesterId],
+          messages: [...(c.messages || []), sysMsg]
+        } : c);
+      }
+      return prev; // If it doesn't exist, we don't worry about it here
+    });
+
+  }, [users]);
 
   const declineCrewInvitation = useCallback(async (activityId) => {
     await new Promise(resolve => setTimeout(resolve, 300));
@@ -795,7 +945,24 @@ export function DataProvider({ children }) {
 
   const addCrewActivity = useCallback((newActivity) => {
     setCrewActivities(prev => [newActivity, ...prev]);
-  }, []);
+
+    // Create a temporary group chat for this activity
+    const activityChatId = `act_${newActivity.id}`;
+    const newConv = {
+      id: activityChatId,
+      name: newActivity.title,
+      isActivityChat: true,
+      activityId: newActivity.id,
+      color: 'var(--color-primary)',
+      online: true,
+      lastMsg: 'Group chat created!',
+      time: 'Just now',
+      unread: 0,
+      messages: [],
+      participants: [currentUser?.id]
+    };
+    setConversations(prev => [newConv, ...prev]);
+  }, [currentUser]);
 
   const createGroupConversation = useCallback(async (groupName, userIds) => {
     await new Promise(resolve => setTimeout(resolve, 300));
@@ -843,6 +1010,85 @@ export function DataProvider({ children }) {
 
     return newId;
   }, [currentUser, users, startConversation, sendDirectMessage]);
+
+  const startInstantMatch = useCallback(async (preferences) => {
+    // Mocking the match search with a delay
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    let allUsers = Object.values(users).filter(u => u.id !== currentUser?.id);
+    let matchedActivities = [];
+    
+    if (preferences.activity) {
+      const query = preferences.activity.toLowerCase();
+      allUsers = allUsers.map(u => {
+        let score = 0;
+        if (u.interests && u.interests.some(i => i.toLowerCase().includes(query))) score += 5;
+        if (u.skills && u.skills.some(s => s.toLowerCase().includes(query))) score += 3;
+        if (u.bio && u.bio.toLowerCase().includes(query)) score += 1;
+        return { ...u, matchScore: score };
+      });
+      allUsers.sort((a, b) => b.matchScore - a.matchScore);
+      
+      // Intelligent search for similar activities
+      const allActivities = crewActivities.filter(a => a.hostId !== currentUser?.id && !(a.participants || []).includes(currentUser?.id));
+      const scoredActivities = allActivities.map(a => {
+        let score = 0;
+        if (a.title && a.title.toLowerCase().includes(query)) score += 5;
+        if (a.category && a.category.toLowerCase().includes(query)) score += 4;
+        if (a.tags && a.tags.some(t => t.toLowerCase().includes(query))) score += 3;
+        if (a.description && a.description.toLowerCase().includes(query)) score += 2;
+        return { ...a, matchScore: score };
+      });
+      
+      matchedActivities = scoredActivities.filter(a => a.matchScore > 0).sort((a, b) => b.matchScore - a.matchScore).slice(0, 3);
+      
+      if (matchedActivities.length === 0 && allActivities.length > 0) {
+        // Fallback: Suggest some popular activities if no direct match found
+        matchedActivities = [...allActivities].sort((a, b) => b.slotsFilled - a.slotsFilled).slice(0, 2);
+      }
+    }
+    
+    let numPeople = 3;
+    if (preferences.people === '1 Person') numPeople = 1;
+    else if (preferences.people === 'Small Group (4-8)') numPeople = 5;
+    else if (preferences.people === 'Doesn\'t Matter') numPeople = 4;
+
+    const matchedUsers = allUsers.slice(0, numPeople);
+      
+    return {
+      activity: preferences.activity,
+      users: matchedUsers,
+      activities: matchedActivities,
+      distance: '2 km away',
+      joinedTime: '3 mins ago'
+    };
+  }, [users, currentUser, crewActivities]);
+
+  const createTemporaryGroupChat = useCallback(async (activityName, userIds) => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    const newId = 't_' + Date.now();
+    const newConv = {
+      id: newId,
+      name: activityName,
+      isGroup: true,
+      isTemporary: true,
+      expiresAt: Date.now() + 4 * 60 * 60 * 1000, // 4 hours from now
+      adminId: currentUser?.id,
+      members: [currentUser?.id, ...userIds],
+      avatar: null,
+      color: '#6366f1',
+      online: true,
+      lastMsg: 'Temporary room created',
+      time: 'Just now',
+      unread: 0,
+      description: `Instant Match for ${activityName}`,
+      createdAt: Date.now(),
+      messages: []
+    };
+    setConversations(prev => [newConv, ...prev]);
+    return newId;
+  }, [currentUser]);
 
   const updateGroupInfo = useCallback(async (convId, newName, newAvatar, newDescription) => {
     setConversations(prev => prev.map(c => 
@@ -911,6 +1157,14 @@ export function DataProvider({ children }) {
     });
   }, [conversations, users]);
 
+  const toggleSaveActivity = useCallback((activityId) => {
+    setSavedActivities(prev => 
+      prev.includes(activityId) 
+        ? prev.filter(id => id !== activityId)
+        : [...prev, activityId]
+    );
+  }, []);
+
   return (
     <DataContext.Provider value={{
       users,
@@ -918,6 +1172,8 @@ export function DataProvider({ children }) {
       communities: enrichedCommunities,
       conversations: enrichedConversations,
       crewActivities,
+      savedActivities,
+      toggleSaveActivity,
       currentUser: liveCurrentUser,
       searchQuery,
       setSearchQuery,
@@ -950,8 +1206,12 @@ export function DataProvider({ children }) {
       removeGroupMember,
       leaveGroup,
       joinCrewActivity,
+      requestToJoinActivity,
+      acceptJoinRequest,
       declineCrewInvitation,
       addCrewActivity,
+      startInstantMatch,
+      createTemporaryGroupChat,
       setOnNotify
     }}>
       {children}

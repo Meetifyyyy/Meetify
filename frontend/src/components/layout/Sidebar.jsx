@@ -32,8 +32,9 @@ const CompassOutline = () => (
 );
 
 const CompassSolid = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-    <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 5.523 4.477 10 10 10s10-4.477 10-10C22 6.477 17.523 2 12 2zM16.24 7.76L14.12 14.12L7.76 16.24L9.88 9.88L16.24 7.76z" />
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor" stroke="none" />
   </svg>
 );
 

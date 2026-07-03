@@ -31,11 +31,16 @@ const TYPE_ICONS = {
       <circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" y1="9" x2="9.01" y2="9" /><line x1="15" y1="9" x2="15.01" y2="9" />
     </svg>
   ),
+  ACTIVITY_JOIN_REQUEST: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="8.5" cy="7" r="4" /><line x1="20" y1="8" x2="20" y2="14" /><line x1="23" y1="11" x2="17" y2="11" />
+    </svg>
+  ),
 };
 
 export default function NotificationsMenu({ isOpen, onClose }) {
   const { notifications, markAsRead, markAllRead, dismissNotification, clearAll, unreadCount, timeAgo } = useNotifications();
-  const { getUserById } = useData();
+  const { getUserById, acceptJoinRequest } = useData();
   const navigate = useNavigate();
 
   const handleClick = (notif) => {
@@ -130,6 +135,26 @@ export default function NotificationsMenu({ isOpen, onClose }) {
                     <strong>{actor.name}</strong> {notif.text}
                   </div>
                   <div className={styles.time}>{timeAgo(notif.createdAt)}</div>
+                  {notif.type === 'ACTIVITY_JOIN_REQUEST' && (
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                      <button 
+                        style={{ padding: '4px 12px', background: 'var(--color-primary)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem' }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          acceptJoinRequest(notif.activityId, notif.actorId);
+                          dismissNotification(notif.id);
+                        }}
+                      >
+                        Accept
+                      </button>
+                      <button 
+                        style={{ padding: '4px 12px', background: 'transparent', color: 'var(--color-text)', border: '1px solid var(--color-border)', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem' }}
+                        onClick={(e) => handleDismiss(e, notif.id)}
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <button

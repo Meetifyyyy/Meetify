@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSmartBack } from '../../hooks/useSmartBack';
 import { useData } from '../../context/DataContext';
@@ -24,12 +24,45 @@ function ConversationSkeleton() {
 
 export default function ConversationList({ conversations, activeChatId, onSelect, showChatOnMobile }) {
   const navigate = useNavigate();
-  const { startConversation, createGroupConversation } = useData();
+  const { startConversation, createGroupConversation, crewActivities } = useData();
   const [contextMenu, setContextMenu] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTab, setSelectedTab] = useState('Chats');
   const goBack = useSmartBack();
 
-  const { isLoading, data: loadedConvs, error, retry } = useSimulatedFetch(conversations, 800);
+  const filteredInputConvs = useMemo(() => {
+    return (conversations || []).filter(c => {
+      const isActChat = c.isActivityChat || c.isTemporary;
+      
+      if (selectedTab === 'Activity') {
+        if (!isActChat) return false;
+        
+        // Setup proper logic to remove temporary chat 4 hours after activity finishes
+        if (c.activityId && crewActivities) {
+           const activity = crewActivities.find(a => a.id === c.activityId);
+           if (activity && activity.date && activity.time) {
+             // Mock parsing of activity date + time
+             // We assume activity duration is roughly 2 hours for calculation
+             const activityDateStr = `${activity.date} ${activity.time.split(' - ')[0]}`;
+             const activityTime = new Date(activityDateStr).getTime();
+             if (!isNaN(activityTime)) {
+               const fourHoursMs = 4 * 60 * 60 * 1000;
+               const durationMs = 2 * 60 * 60 * 1000; // rough duration
+               // Filter out if current time is past (activity start + duration + 4 hours)
+               if (Date.now() > activityTime + durationMs + fourHoursMs) {
+                 return false;
+               }
+             }
+           }
+        }
+        return true;
+      } else {
+        return !isActChat;
+      }
+    });
+  }, [conversations, selectedTab, crewActivities]);
+
+  const { isLoading, data: loadedConvs, error, retry } = useSimulatedFetch(filteredInputConvs, 800);
 
   useEffect(() => {
     const handleClick = () => setContextMenu(null);
@@ -80,6 +113,17 @@ export default function ConversationList({ conversations, activeChatId, onSelect
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
           </svg>
         </button>
+      </div>
+      <div className={styles.tabsRow}>
+        {['Chats', 'Activity'].map(tab => (
+          <button 
+            key={tab} 
+            className={`${styles.tabBtn} ${selectedTab === tab ? styles.activeTab : ''}`} 
+            onClick={() => setSelectedTab(tab)}
+          >
+            {tab}
+          </button>
+        ))}
       </div>
       <div className={styles.searchRow}>
         <div className={styles.msgConvSearch}>

@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
+import { useData } from '../../context/DataContext';
 import { useSmartBack } from '../../hooks/useSmartBack';
 import { isImageUrl } from '../../utils/avatar';
 import { getRelativeDateLabel } from '../../utils/time';
 import DefaultAvatar from '../common/DefaultAvatar';
+import ShareActivityModal from './ShareActivityModal';
 import styles from './ActivityDetailPage.module.css';
 
 /* ── Icon helpers ──────────────────────────────────────────── */
@@ -106,10 +108,16 @@ export default function ActivityDetailPage() {
   const location = useLocation();
   const goBack = useSmartBack();
 
-  const activity = location.state?.activity;
+  const { crewActivities, savedActivities, toggleSaveActivity } = useData();
+
+  const activity = useMemo(() => {
+    return crewActivities?.find(a => a.id === id) || location.state?.activity;
+  }, [crewActivities, id, location.state]);
 
   const [hasJoined, setHasJoined] = useState(false);
   const [hasRequested, setHasRequested] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const isSaved = savedActivities?.includes(activity?.id);
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([
     { id: 1, author: 'Jane Doe', text: 'Looking forward to this!', time: '2 hours ago' },
@@ -144,6 +152,10 @@ export default function ActivityDetailPage() {
     }
   };
 
+  const handleSave = () => {
+    toggleSaveActivity(activity.id);
+  };
+
   const handlePostComment = (e) => {
     e.preventDefault();
     if (!comment.trim()) return;
@@ -173,6 +185,16 @@ export default function ActivityDetailPage() {
         <article className={styles.article}>
         {/* ── Header Card ── */}
         <div className={styles.header}>
+          <button className={styles.shareBtn} onClick={() => setShowShareModal(true)} aria-label="Share Activity">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+          </button>
+          
           <span className={styles.categoryBadge}>{category}</span>
 
           <h1 className={styles.title}>{title}</h1>
@@ -189,22 +211,32 @@ export default function ActivityDetailPage() {
             </div>
           </div>
 
-          {/* CTA Button */}
-          {hasJoined ? (
-            <button className={styles.joinedBtn} disabled>
-              <IconCheck /> Joined
+          {/* CTA Buttons */}
+          <div className={styles.actionRow}>
+            {hasJoined ? (
+              <button className={styles.joinedBtn} disabled>
+                <IconCheck /> Joined
+              </button>
+            ) : hasRequested ? (
+              <button className={styles.requestedBtn} disabled>
+                <IconCheck /> Request Sent
+              </button>
+            ) : (
+              <button className={styles.joinBtn} onClick={handleJoin} disabled={isFull}>
+                {isFull ? 'Activity Full' : participationType === 'open' ? 'Join Activity' : 'Request to Join'}
+              </button>
+            )}
+            
+            <button 
+              className={`${styles.saveBtn} ${isSaved ? styles.savedIcon : ''}`} 
+              aria-label={isSaved ? "Unsave" : "Save"} 
+              onClick={handleSave}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+              </svg>
             </button>
-          ) : hasRequested ? (
-            <button className={styles.requestedBtn} disabled>
-              <IconCheck /> Request Sent
-            </button>
-          ) : isFull ? (
-            <button className={styles.fullBtn} disabled>Activity Full</button>
-          ) : (
-            <button className={styles.joinBtn} onClick={handleJoin}>
-              {participationType === 'open' ? 'Join Activity' : 'Send Request'}
-            </button>
-          )}
+          </div>
         </div>
 
         {/* ── Body Grid ── */}
@@ -254,18 +286,26 @@ export default function ActivityDetailPage() {
           </div>
 
           {/* Right: Details */}
-          <DetailsCard
-            date={date}
-            time={time}
-            duration={duration}
-            actLocation={actLocation}
-            isOnline={isOnline}
-            slotsFilled={slotsFilled}
-            spotsLeft={spotsLeft}
-            activity={activity}
-          />
+          <div className={styles.sidebar}>
+            <DetailsCard
+              date={date}
+              time={time}
+              duration={duration}
+              actLocation={actLocation}
+              isOnline={isOnline}
+              slotsFilled={slotsFilled}
+              spotsLeft={spotsLeft}
+              activity={activity}
+            />
+          </div>
         </div>
-      </article>
+        </article>
+
+        <ShareActivityModal 
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          activity={activity}
+        />
       </div>
     </main>
   );

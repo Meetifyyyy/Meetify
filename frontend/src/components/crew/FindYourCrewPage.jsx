@@ -1,20 +1,27 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import CrewHeader from './CrewHeader';
 import CrewCard from './CrewCard';
 import CreateActivityModal from './CreateActivityModal';
-import { getRecommendedByContext, filterActivities } from './crewData';
+import CrewRightPanel from './CrewRightPanel';
+import { filterActivities } from './crewData';
+import InstantMatchupCard from './InstantMatchupCard';
+import InstantMatchFlow from './InstantMatchFlow';
 import styles from './FindYourCrewPage.module.css';
 
 export default function FindYourCrewPage() {
-  const { users, currentUser, crewActivities, addCrewActivity } = useData();
+  const { crewActivities, addCrewActivity, currentUser, savedActivities } = useData();
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(!crewActivities || crewActivities.length === 0);
   
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedTab, setSelectedTab] = useState(location.state?.selectedTab || 'For You');
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isInstantMatchOpen, setIsInstantMatchOpen] = useState(false);
+  const [initialActivityData, setInitialActivityData] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(3);
 
   useEffect(() => {
     if (crewActivities && crewActivities.length > 0) {
@@ -25,15 +32,31 @@ export default function FindYourCrewPage() {
     }
   }, [crewActivities]);
 
-  const filteredActivities = useMemo(() => 
-    filterActivities(crewActivities, { category: selectedCategory, search: searchQuery }),
-    [crewActivities, selectedCategory, searchQuery]
-  );
+  const filteredActivities = useMemo(() => {
+    if (!crewActivities) return [];
+    
+    const now = new Date();
+    // Filter out past activities
+    let activities = crewActivities.filter(a => {
+      if (!a.date) return true;
+      return new Date(a.date) > now;
+    });
 
-  const sections = useMemo(() => {
-    if (loading || selectedCategory || searchQuery) return null;
-    return getRecommendedByContext(currentUser, crewActivities, users);
-  }, [currentUser, crewActivities, users, loading, selectedCategory, searchQuery]);
+    // Filter by tab
+    if (selectedTab === 'For You') {
+      activities = activities.slice(0, 10);
+    } else if (selectedTab === 'My Activities') {
+      activities = activities.filter(a => 
+        a.participants && a.participants.includes(currentUser?.id)
+      ).sort((a, b) => new Date(a.dateLabel + ' 2024') - new Date(b.dateLabel + ' 2024'));
+    } else if (selectedTab === 'Saved') {
+      activities = activities.filter(a => savedActivities?.includes(a.id));
+    } else if (selectedTab === 'Popular') {
+      activities = [...activities].sort((a, b) => b.slotsFilled - a.slotsFilled).slice(0, 10);
+    }
+
+    return filterActivities(activities, { search: searchQuery });
+  }, [crewActivities, searchQuery, selectedTab, currentUser, savedActivities]);
 
   const handleActivityClick = useCallback((activity) => {
     navigate(`/crew/${activity.id}`, { state: { activity } });
@@ -43,111 +66,106 @@ export default function FindYourCrewPage() {
     <>
       <main className="centre centre-wide animate-in">
         <div className={styles.page}>
+          
           <CrewHeader 
-            selectedCategory={selectedCategory} 
-            onCategoryChange={setSelectedCategory}
+            selectedTab={selectedTab} 
+            onTabChange={setSelectedTab}
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
-            onCreateActivity={() => setIsCreateModalOpen(true)}
           />
 
-          <div className={styles.content}>
-            {loading ? (
-              <div className={styles.grid}>
-                {[1, 2, 3, 4, 5, 6].map(i => (
-                  <div key={i} style={{ height: '180px', borderRadius: '12px', backgroundColor: 'var(--color-border-light)', animation: 'skeletonPulse 1.5s infinite' }} />
-                ))}
-              </div>
-            ) : sections ? (
-              <>
-                {sections.recommended?.length > 0 && (
-                  <section className={styles.gridSection}>
-                    <div className={styles.sectionHeader}>
-                      <h2 className={styles.sectionTitle}>Recommended for you</h2>
-                    </div>
-                    <div className={styles.grid}>
-                      {sections.recommended.map(a => <CrewCard key={a.id} activity={a} onClick={() => handleActivityClick(a)} />)}
-                    </div>
-                  </section>
-                )}
-                {sections.happeningNearby?.length > 0 && (
-                  <section className={styles.gridSection}>
-                    <div className={styles.sectionHeader}>
-                      <h2 className={styles.sectionTitle}>Happening Nearby</h2>
-                    </div>
-                    <div className={styles.grid}>
-                      {sections.happeningNearby.map(a => <CrewCard key={a.id} activity={a} onClick={() => handleActivityClick(a)} />)}
-                    </div>
-                  </section>
-                )}
-                {sections.recentlyAdded?.length > 0 && (
-                  <section className={styles.gridSection}>
-                    <div className={styles.sectionHeader}>
-                      <h2 className={styles.sectionTitle}>Recently Added</h2>
-                    </div>
-                    <div className={styles.grid}>
-                      {sections.recentlyAdded.map(a => <CrewCard key={a.id} activity={a} onClick={() => handleActivityClick(a)} />)}
-                    </div>
-                  </section>
-                )}
-                {sections.startingSoon?.length > 0 && (
-                  <section className={styles.gridSection}>
-                    <div className={styles.sectionHeader}>
-                      <h2 className={styles.sectionTitle}>Starting Soon</h2>
-                    </div>
-                    <div className={styles.grid}>
-                      {sections.startingSoon.map(a => <CrewCard key={a.id} activity={a} onClick={() => handleActivityClick(a)} />)}
-                    </div>
-                  </section>
-                )}
-                {sections.popular?.length > 0 && (
-                  <section className={styles.gridSection}>
-                    <div className={styles.sectionHeader}>
-                      <h2 className={styles.sectionTitle}>Popular</h2>
-                    </div>
-                    <div className={styles.grid}>
-                      {sections.popular.map(a => <CrewCard key={a.id} activity={a} onClick={() => handleActivityClick(a)} />)}
-                    </div>
-                  </section>
-                )}
-              </>
-            ) : (
-              <section className={styles.gridSection}>
-                {filteredActivities.length > 0 && (
-                  <div className={styles.sectionHeader}>
-                    <h2 className={styles.sectionTitle}>All Activities</h2>
-                    <span style={{ fontFamily: 'var(--font-family-sans)', fontSize: '0.78rem', fontWeight: 500, color: 'var(--color-text-light)' }}>
-                      {filteredActivities.length} activities
-                    </span>
-                  </div>
-                )}
-                <div className={styles.grid}>
-                  {filteredActivities.map(a => <CrewCard key={a.id} activity={a} onClick={() => handleActivityClick(a)} />)}
+          <div className={styles.layout}>
+            <div className={styles.content}>
+              {loading ? (
+                <div className={styles.list}>
+                  {[1, 2, 3].map(i => (
+                    <div key={i} style={{ height: '140px', borderRadius: '16px', backgroundColor: 'var(--color-border-light)', animation: 'skeletonPulse 1.5s infinite' }} />
+                  ))}
                 </div>
-                {filteredActivities.length === 0 && (
-                  <div className={styles.empty}>
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
-                      <circle cx="11" cy="11" r="8" />
-                      <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                    </svg>
-                    <p>No activities match your search.</p>
-                  </div>
-                )}
-              </section>
-            )}
+              ) : (
+                <>
+                  {selectedTab === 'For You' && (
+                    <InstantMatchupCard onFindMatch={() => setIsInstantMatchOpen(true)} />
+                  )}
+                  
+                  <section className={styles.listSection}>
+                    {selectedTab !== 'For You' && (
+                      <div className={styles.sectionHeader}>
+                        <h2 className={styles.sectionTitle}>
+                          {selectedTab === 'My Activities' ? 'My Activities' : 
+                           selectedTab === 'Saved' ? 'Saved Activities' : 
+                           selectedTab === 'Popular' ? 'Most Popular' : 'Activities'}
+                        </h2>
+                      </div>
+                    )}
+                    
+                    <div className={styles.list}>
+                      {filteredActivities.length > 0 ? (
+                        filteredActivities.slice(0, visibleCount).map(a => <CrewCard key={a.id} activity={a} onClick={() => handleActivityClick(a)} />)
+                      ) : (
+                        <div className={styles.empty}>
+                          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                          </svg>
+                          <p>No activities match your search.</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {filteredActivities.length > visibleCount && (
+                      <button className={styles.loadMoreBtn} onClick={() => setVisibleCount(p => p + 3)}>
+                        Load More
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </button>
+                    )}
+                  </section>
+                </>
+              )}
+            </div>
+            
+            <div className={styles.sidebarWrapper}>
+              <CrewRightPanel 
+                onCreateActivity={() => {
+                  setInitialActivityData(null);
+                  setIsCreateModalOpen(true);
+                }}
+                onViewAll={() => {
+                  setSelectedTab('My Activities');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              />
+            </div>
           </div>
+          
         </div>
       </main>
 
-      {isCreateModalOpen && (
-        <CreateActivityModal 
-          onClose={() => setIsCreateModalOpen(false)} 
-          onPublish={(newActivity) => {
-            addCrewActivity(newActivity);
-            setIsCreateModalOpen(false);
-          }}
-        />
-      )}
+      <CreateActivityModal 
+        isOpen={isCreateModalOpen} 
+        onClose={() => {
+          setIsCreateModalOpen(false);
+          setInitialActivityData(null);
+        }} 
+        initialData={initialActivityData}
+        onSuccess={(newActivity) => {
+          addCrewActivity(newActivity);
+          setIsCreateModalOpen(false);
+          setInitialActivityData(null);
+        }}
+      />
+      
+      <InstantMatchFlow 
+        isOpen={isInstantMatchOpen} 
+        onClose={() => setIsInstantMatchOpen(false)} 
+        onCreateActivity={(data) => {
+          setInitialActivityData(data);
+          setIsInstantMatchOpen(false);
+          setIsCreateModalOpen(true);
+        }}
+      />
     </>
   );
 }

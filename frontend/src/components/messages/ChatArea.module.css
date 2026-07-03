@@ -260,13 +260,41 @@
 
 .msgBubbleWrapper {
   position: relative;
-  max-width: 75%;
+  max-width: 85%;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.msgBubbleContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.msgSenderName {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-bottom: 4px;
+  margin-left: 4px;
+}
+
+.msgSenderAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: white;
   display: flex;
   align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  flex-shrink: 0;
 }
 
 .msgBubbleContainerMe .msgBubbleWrapper {
   justify-content: flex-end;
+  flex-direction: row-reverse;
 }
 
 .msgBubbleContainerThem .msgBubbleWrapper {
@@ -578,6 +606,40 @@
   color: var(--color-primary);
 }
 
+.msgEmptyState {
+  margin: auto;
+  color: var(--color-text-light);
+  font-size: 0.95rem;
+  background: var(--color-bg-white);
+  padding: 0.75rem 1.25rem;
+  border-radius: 100px;
+  border: 1px solid var(--color-border);
+  align-self: center;
+}
+
+.systemMessageContainer {
+  display: flex;
+  justify-content: center;
+  margin: 0.75rem 0;
+  width: 100%;
+}
+
+.systemMessageText {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 80%;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+[data-theme='dark'] .systemMessageText {
+  background: rgba(255, 255, 255, 0.05);
+}
+
 .msgInput {
   flex: 1;
   padding: 0.55rem 0.85rem;
@@ -707,7 +769,7 @@
 
 .callCard {
   text-align: center;
-  color: var(--color-text-inverse);
+  color: #FFFFFF;
   animation: cardIn 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -743,7 +805,7 @@
   font-family: var(--font-family-display);
   font-size: 2.75rem;
   font-weight: 700;
-  color: var(--color-text-inverse);
+  color: #FFFFFF;
   box-shadow: 0 0 40px rgba(var(--color-primary-rgb), 0.15), inset 0 2px 4px rgba(255, 255, 255, 0.15);
   z-index: 2;
   border: 3px solid rgba(255, 255, 255, 0.15);
@@ -1004,7 +1066,7 @@
     border-radius: 50%;
     border: none;
     background: rgba(255, 255, 255, 0.08);
-    color: var(--color-text-inverse);
+    color: #FFFFFF;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1088,3 +1150,581 @@
   .msgBubbleMe .msgInviteBtn:hover {
     background: rgba(255, 255, 255, 0.9);
   }
+
+.msgTemporaryBanner {
+  background: #fdfae5;
+  border: 1px solid #fde047;
+  color: #854d0e;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  margin: 0.5rem 1rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  line-height: 1.4;
+  justify-content: center;
+  text-align: center;
+}
+
+.activityShareCard {
+  background: var(--color-bg-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  width: 100%;
+  max-width: 460px;
+  min-width: 280px;
+  margin-top: 8px;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  color: var(--color-text-main);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+  position: relative;
+  overflow: hidden;
+  border-left: 5px solid var(--color-primary);
+  align-items: stretch;
+}
+
+.activityShareCard:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15), 0 2px 8px rgba(15, 23, 42, 0.04);
+  transform: translateY(-2px);
+}
+
+.activityShareLeft {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0; /* allows text truncation */
+}
+
+.activityShareRight {
+  width: 110px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+  border-left: 1px dashed var(--color-border);
+  padding-left: 14px;
+  flex-shrink: 0;
+}
+
+.activityShareHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.activityShareHost {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.activityShareHostAvatar {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  border: 1px solid var(--color-border-dark);
+}
+
+.activityShareHostName {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.activityShareHostName strong {
+  color: var(--color-text-main);
+  font-weight: 600;
+}
+
+.activityShareBadge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background: var(--color-bg-soft);
+  color: var(--color-text-light);
+}
+
+/* Category Badge Colors */
+.badgeSports, .badgeHealthFitness {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--color-success);
+}
+.badgeGaming {
+  background: rgba(59, 130, 246, 0.12);
+  color: #3b82f6;
+}
+.badgeCreative {
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--color-secondary);
+}
+.badgeLearning {
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+}
+.badgeSocial, .badgeMeetup {
+  background: rgba(236, 72, 153, 0.12);
+  color: #db2777;
+}
+
+.activityShareTitle {
+  font-family: var(--font-family-display);
+  font-weight: 800;
+  font-size: 1.05rem;
+  line-height: 1.25;
+  color: var(--color-text-main);
+  margin: 2px 0 0;
+}
+
+.activityShareDesc {
+  font-size: 0.78rem;
+  color: var(--color-text-light);
+  line-height: 1.35;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.activityShareDetails {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  background: var(--color-bg-soft);
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  margin-top: auto;
+}
+
+.activityShareMeta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.activityShareMeta svg {
+  color: var(--color-text-light);
+  flex-shrink: 0;
+}
+
+.activityShareLocText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.activityShareProgress {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.activityShareProgressText {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.activityShareProgressBar {
+  height: 5px;
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.activityShareProgressFill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  transition: width var(--transition-slow);
+}
+
+.activityShareBtn {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(var(--color-primary-rgb), 0.15);
+}
+
+.activityShareBtn svg {
+  transition: transform var(--transition-fast);
+}
+
+.activityShareCard:hover .activityShareBtn {
+  background: var(--color-primary-hover);
+  box-shadow: 0 4px 8px rgba(var(--color-primary-rgb), 0.25);
+}
+
+.activityShareCard:hover .activityShareBtn svg {
+  transform: translateX(2px);
+}
+
+.postShareCard {
+  background: var(--color-bg-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  width: 100%;
+  max-width: 460px;
+  min-width: 280px;
+  margin-top: 8px;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  color: var(--color-text-main);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+  position: relative;
+  overflow: hidden;
+  border-left: 5px solid var(--color-secondary);
+  align-items: stretch;
+}
+
+.postShareCard:hover {
+  border-color: var(--color-secondary);
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.15), 0 2px 8px rgba(15, 23, 42, 0.04);
+  transform: translateY(-2px);
+}
+
+.postShareLeft {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.postShareRight {
+  width: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: stretch;
+  border-left: 1px dashed var(--color-border);
+  padding-left: 14px;
+  flex-shrink: 0;
+}
+
+.postShareHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.postShareAuthor {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.postShareAuthorAvatar {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  border: 1px solid var(--color-border-dark);
+}
+
+.postShareAuthorName {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.postShareAuthorName strong {
+  color: var(--color-text-main);
+  font-weight: 600;
+}
+
+.postShareBadge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.badgePost {
+  background: rgba(124, 58, 237, 0.12);
+  color: var(--color-secondary);
+}
+
+.badgePoll {
+  background: rgba(255, 107, 53, 0.12);
+  color: var(--color-highlight);
+}
+
+.postShareBody {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.postShareText {
+  font-size: 0.85rem;
+  color: var(--color-text-main);
+  line-height: 1.4;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.postSharePollQuestion {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+  background: var(--color-bg-soft);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+}
+
+.postSharePollQuestion svg {
+  color: var(--color-highlight);
+  flex-shrink: 0;
+}
+
+.postShareFooter {
+  margin-top: auto;
+  font-size: 0.72rem;
+  color: var(--color-text-light);
+}
+
+.postShareBtn {
+  background: var(--color-secondary);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(124, 58, 237, 0.15);
+}
+
+.postShareBtn svg {
+  transition: transform var(--transition-fast);
+}
+
+.postShareCard:hover .postShareBtn {
+  background: #6D28D9;
+  box-shadow: 0 4px 8px rgba(124, 58, 237, 0.25);
+}
+
+.postShareCard:hover .postShareBtn svg {
+  transform: translateX(2px);
+}
+
+.msgBubbleTransparent {
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+.msgBubbleTransparent .msgTimeLabel {
+  color: var(--color-text-muted) !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+.profileShareCard {
+  background: var(--color-bg-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  width: 100%;
+  max-width: 460px;
+  min-width: 280px;
+  margin-top: 8px;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  color: var(--color-text-main);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+  position: relative;
+  overflow: hidden;
+  border-left: 5px solid #10b981;
+  align-items: stretch;
+}
+
+.profileShareCard:hover {
+  border-color: #10b981;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.15), 0 2px 8px rgba(15, 23, 42, 0.04);
+  transform: translateY(-2px);
+}
+
+.profileShareLeft {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.profileShareRight {
+  width: 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  border-left: 1px dashed var(--color-border);
+  padding-left: 14px;
+  flex-shrink: 0;
+}
+
+.profileShareHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.profileShareBadge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+}
+
+.profileShareInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profileShareAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--color-bg-white);
+  box-shadow: var(--shadow-sm);
+}
+
+.profileShareDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.profileShareName {
+  font-family: var(--font-family-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--color-text-main);
+  line-height: 1.2;
+}
+
+.profileShareUsername {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.profileShareBio {
+  font-size: 0.82rem;
+  color: var(--color-text-light);
+  line-height: 1.4;
+  margin: 4px 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.profileShareStats {
+  display: flex;
+  gap: 16px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.profileShareStat {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.profileShareStat strong {
+  color: var(--color-text-main);
+  font-weight: 700;
+}
+
+.profileShareBtn {
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.15);
+}
+
+.profileShareBtn svg {
+  transition: transform var(--transition-fast);
+}
+
+.profileShareCard:hover .profileShareBtn {
+  background: #059669;
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.25);
+}
+
+.profileShareCard:hover .profileShareBtn svg {
+  transform: translateX(2px);
+}

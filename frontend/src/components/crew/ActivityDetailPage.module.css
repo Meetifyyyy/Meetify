@@ -98,6 +98,28 @@
   padding: 1.75rem 2rem;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--color-border);
+  position: relative;
+}
+
+.shareBtn {
+  position: absolute;
+  top: 1.75rem;
+  right: 2rem;
+  background: var(--color-bg-subtle);
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  color: var(--color-text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.shareBtn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  transform: scale(1.05);
 }
 
 .categoryBadge {
@@ -163,8 +185,14 @@
 }
 
 /* ---------- Action Buttons ---------- */
+.actionRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .joinBtn {
-  width: 100%;
+  flex: 1;
   padding: 0.75rem 1.5rem;
   background: var(--color-primary);
   color: #FFFFFF;
@@ -190,7 +218,7 @@
 }
 
 .joinedBtn {
-  width: 100%;
+  flex: 1;
   padding: 0.75rem 1.5rem;
   background: rgba(16, 185, 129, 0.08);
   color: var(--color-success);
@@ -207,7 +235,7 @@
 }
 
 .requestedBtn {
-  width: 100%;
+  flex: 1;
   padding: 0.75rem 1.5rem;
   background: rgba(124, 58, 237, 0.07);
   color: var(--color-secondary);
@@ -234,6 +262,32 @@
   font-size: 0.95rem;
   font-weight: 600;
   cursor: not-allowed;
+}
+
+.saveBtn {
+  width: 48px;
+  height: 48px;
+  background: var(--color-bg-white);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.saveBtn:hover {
+  background: var(--color-bg-soft);
+  color: var(--color-text-main);
+  border-color: var(--color-border-dark);
+}
+
+.saveBtn.savedIcon {
+  color: var(--color-primary);
+  fill: var(--color-primary);
 }
 
 /* ============================================================

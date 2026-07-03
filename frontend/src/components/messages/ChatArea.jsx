@@ -1,16 +1,23 @@
 import { useState, useEffect, useRef, Suspense, lazy } from 'react';
+import { useNavigate } from 'react-router-dom';
 import data from '@emoji-mart/data';
 import { isImageUrl } from '../../utils/avatar';
 import DefaultAvatar from '../common/DefaultAvatar';
 import GroupSettingsModal from './GroupSettingsModal';
+import ActivityChatDetailsModal from './ActivityChatDetailsModal';
 import { useSimulatedFetch } from '../../hooks/useSimulatedFetch';
 import Skeleton from '../common/Skeleton';
 import { ErrorState } from '../common/StateViews';
+import { useAuth } from '../../context/AuthContext';
+import { useData } from '../../context/DataContext';
 import styles from './ChatArea.module.css';
 
 const Picker = lazy(() => import('@emoji-mart/react'));
 
 export default function ChatArea({ conversation, onSendMessage, onReactMessage, onClearChat, onBlockUser, onJoinGroup, onBack, showChatOnMobile }) {
+  const navigate = useNavigate();
+  const { initial, currentUser } = useAuth();
+  const { users, crewActivities } = useData();
   const { isLoading, data: loadedMessages, error, retry } = useSimulatedFetch(conversation?.messages || [], 800, [conversation?.id]);
   const [inputValue, setInputValue] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -27,6 +34,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
   const [isSpeakerOn, setIsSpeakerOn] = useState(false);
   const [isMutedNotifications, setIsMutedNotifications] = useState(false);
   const [showGroupSettings, setShowGroupSettings] = useState(false);
+  const [showActivityDetails, setShowActivityDetails] = useState(false);
 
   const bodyRef = useRef(null);
   const timerRef = useRef(null);
@@ -177,8 +185,14 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
 
       <div className={styles.msgChatHeader}>
         <div 
-          className={`${styles.msgChatUser} ${conversation.isGroup ? styles.msgChatUserClickable : ''}`}
-          onClick={() => conversation.isGroup && setShowGroupSettings(true)}
+          className={`${styles.msgChatUser} ${(conversation.isGroup || conversation.isActivityChat) ? styles.msgChatUserClickable : ''}`}
+          onClick={() => {
+            if (conversation.isActivityChat) {
+              setShowActivityDetails(true);
+            } else if (conversation.isGroup) {
+              setShowGroupSettings(true);
+            }
+          }}
         >
           {onBack && (
             <button className={styles.msgChatBackBtn} onClick={(e) => { e.stopPropagation(); onBack(); }} title="Back">
@@ -249,25 +263,40 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                   </svg>
                   {isMutedNotifications ? 'Unmute Alerts' : 'Mute Alerts'}
                 </button>
-                <button 
-                  className={styles.msgDropdownItem} 
-                  onClick={() => { onClearChat(); setShowMoreMenu(false); }}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                  </svg>
-                  Clear Chat
-                </button>
-                <button 
-                  className={`${styles.msgDropdownItem} ${styles.msgDropdownItemDanger}`} 
-                  onClick={() => { onBlockUser(); setShowMoreMenu(false); }}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" /><line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
-                  </svg>
-                  {conversation.blocked ? 'Unblock Contact' : 'Block Contact'}
-                </button>
-
+                {conversation.isActivityChat ? (
+                  <button 
+                    className={styles.msgDropdownItem} 
+                    onClick={() => { setShowActivityDetails(true); setShowMoreMenu(false); }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" />
+                    </svg>
+                    Group Info
+                  </button>
+                ) : (
+                  <>
+                    <button 
+                      className={styles.msgDropdownItem} 
+                      onClick={() => { onClearChat && onClearChat(); setShowMoreMenu(false); }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      </svg>
+                      Clear Chat
+                    </button>
+                    {!conversation.isGroup && (
+                      <button 
+                        className={`${styles.msgDropdownItem} ${styles.msgDropdownItemDanger}`} 
+                        onClick={() => { onBlockUser && onBlockUser(); setShowMoreMenu(false); }}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <circle cx="12" cy="12" r="10" /><line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                        </svg>
+                        {conversation.blocked ? 'Unblock Contact' : 'Block Contact'}
+                      </button>
+                    )}
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -299,7 +328,17 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
         </div>
       )}
 
+
       <div className={styles.msgChatBody} ref={bodyRef}>
+        {(conversation.isTemporary || conversation.isActivityChat) && (
+          <div className={styles.msgTemporaryBanner}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+               <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <span>This is a temporary chat. Messages are end-to-end encrypted and the chat will be automatically deleted 4 hours after the activity finishes.</span>
+          </div>
+        )}
         {isLoading && (
           <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-start' }}>
@@ -322,6 +361,34 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
           <div className={styles.msgEmptyState}>No messages in this chat.</div>
         ) : (
           !isLoading && !error && loadedMessages && loadedMessages.map((msg, i) => {
+            if (msg.type === 'system') {
+              const parts = msg.text.split(/(@[a-zA-Z0-9_]+)/g);
+              return (
+                <div key={i} className={styles.systemMessageContainer}>
+                  <div className={styles.systemMessageText}>
+                    {parts.map((part, idx) => {
+                      if (part.startsWith('@')) {
+                        const username = part.substring(1);
+                        return (
+                          <span 
+                            key={idx} 
+                            style={{ color: 'var(--color-primary)', cursor: 'pointer', fontWeight: 600 }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/profile/${username}`);
+                            }}
+                          >
+                            {part}
+                          </span>
+                        );
+                      }
+                      return <span key={idx}>{part}</span>;
+                    })}
+                  </div>
+                </div>
+              );
+            }
+
             const hasQuery = searchQuery && msg.text.toLowerCase().includes(searchQuery.toLowerCase());
             const shouldDim = searchQuery && !hasQuery;
             
@@ -332,23 +399,56 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                 style={{ opacity: shouldDim ? 0.45 : 1 }}
               >
                 <div className={styles.msgBubbleWrapper}>
-                  {conversation.isGroup && msg.from !== 'me' && (
-                    <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginBottom: '4px', marginLeft: '4px' }}>
-                      {msg.senderName || 'Member'}
+                  {(conversation.isGroup || conversation.isActivityChat) && (
+                    <div 
+                      className={styles.msgSenderAvatar}
+                      style={{ cursor: 'pointer' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (msg.from === 'me') {
+                          if (currentUser?.username) {
+                            navigate(`/profile/${currentUser.username}`);
+                          }
+                        } else {
+                          if (users && msg.senderName) {
+                            const userObj = Object.values(users).find(u => u.displayName === msg.senderName || u.username === msg.senderName || u.name === msg.senderName);
+                            if (userObj && userObj.username) {
+                              navigate(`/profile/${userObj.username}`);
+                            }
+                          }
+                        }
+                      }}
+                    >
+                      {msg.from === 'me' ? (
+                        currentUser?.avatar && isImageUrl(currentUser.avatar) ? (
+                          <img src={currentUser.avatar} alt="Me" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                        ) : (
+                          initial
+                        )
+                      ) : (
+                        (() => {
+                           let avatarUrl = msg.senderAvatar;
+                           if (!avatarUrl && users && msg.senderName) {
+                             const userObj = Object.values(users).find(u => u.displayName === msg.senderName || u.username === msg.senderName || u.name === msg.senderName);
+                             if (userObj) avatarUrl = userObj.avatar;
+                           }
+                           
+                           if (avatarUrl && isImageUrl(avatarUrl)) {
+                             return <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />;
+                           }
+                           return (msg.senderName || 'M').charAt(0).toUpperCase();
+                        })()
+                      )}
                     </div>
                   )}
-                  <div className={`${styles.msgBubble} ${msg.from === 'me' ? styles.msgBubbleMe : styles.msgBubbleThem}`}>
-                    {/* Replied text reference inside bubble */}
-                    {msg.replyTo && (
-                      <div className={styles.msgBubbleReplyRef}>
-                        <div className={styles.msgBubbleReplyRefHeader}>
-                          {msg.replyTo.from === 'me' ? 'You' : conversation.name}
-                        </div>
-                        <div className={styles.msgBubbleReplyRefText}>{msg.replyTo.text}</div>
+                  <div className={styles.msgBubbleContent}>
+                    {(conversation.isGroup || conversation.isActivityChat) && msg.from !== 'me' && (
+                      <div className={styles.msgSenderName}>
+                        {msg.senderName || 'Member'}
                       </div>
                     )}
-
-                    <div className={styles.msgText}>
+                    <div className={`${styles.msgBubble} ${msg.from === 'me' ? styles.msgBubbleMe : styles.msgBubbleThem} ${((msg.inviteData?.type === 'activityShare' || msg.inviteData?.type === 'postShare' || msg.inviteData?.type === 'profileShare') && !msg.text) ? styles.msgBubbleTransparent : ''}`}>
+                      <div className={styles.msgText}>
                       {searchQuery && hasQuery ? (
                         (() => {
                           const idx = msg.text.toLowerCase().indexOf(searchQuery.toLowerCase());
@@ -365,7 +465,158 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                         msg.text
                       )}
                       
-                      {msg.inviteData && (
+                      {msg.inviteData && msg.inviteData.type === 'activityShare' ? (
+                        (() => {
+                          const dbActivity = crewActivities?.find(act => act.id === msg.inviteData.activity.id) || {};
+                          const activity = { ...dbActivity, ...msg.inviteData.activity };
+                          
+                          return (
+                            <div className={styles.activityShareCard} onClick={() => navigate('/crew/' + activity.id)}>
+                              <div className={styles.activityShareLeft}>
+                                <div className={styles.activityShareHeader}>
+                                  {activity.category && (
+                                    <span className={`${styles.activityShareBadge} ${styles['badge' + activity.category.replace(/[^a-zA-Z0-9]/g, '')]}`}>
+                                      {activity.category}
+                                    </span>
+                                  )}
+                                  <div className={styles.activityShareHost}>
+                                    {isImageUrl(activity.hostAvatar) ? (
+                                      <img src={activity.hostAvatar} alt={activity.hostName} className={styles.activityShareHostAvatar} />
+                                    ) : (
+                                      <DefaultAvatar name={activity.hostName} size={16} className={styles.activityShareHostAvatar} />
+                                    )}
+                                    <span className={styles.activityShareHostName}>
+                                      Hosted by <strong>{activity.hostName}</strong>
+                                    </span>
+                                  </div>
+                                </div>
+                                
+                                <div className={styles.activityShareTitle}>{activity.title}</div>
+                                {activity.description && (
+                                  <p className={styles.activityShareDesc}>{activity.description}</p>
+                                )}
+                                
+                                <div className={styles.activityShareDetails}>
+                                  <div className={styles.activityShareMeta}>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                    {activity.dateLabel || new Date(activity.date || Date.now()).toLocaleDateString()}
+                                  </div>
+                                  <div className={styles.activityShareMeta}>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    {activity.time}
+                                  </div>
+                                  {activity.location && (
+                                    <div className={styles.activityShareMeta}>
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                      <span className={styles.activityShareLocText}>{activity.location}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className={styles.activityShareRight}>
+                                {activity.slotsNeeded !== undefined && (
+                                  <div className={styles.activityShareProgress}>
+                                    <div className={styles.activityShareProgressText}>
+                                      <span>{activity.slotsFilled || 0}/{activity.slotsNeeded} spots</span>
+                                    </div>
+                                    <div className={styles.activityShareProgressBar}>
+                                      <div 
+                                        className={styles.activityShareProgressFill} 
+                                        style={{ width: `${Math.min(100, (((activity.slotsFilled || 0) || 0) / activity.slotsNeeded) * 100)}%` }}
+                                      />
+                                    </div>
+                                  </div>
+                                )}
+                                
+                                <button className={styles.activityShareBtn}>
+                                  View
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })()
+                      ) : msg.inviteData && msg.inviteData.type === 'postShare' ? (
+                        <div className={styles.postShareCard} onClick={() => navigate('/post/' + msg.inviteData.post.id)}>
+                          <div className={styles.postShareLeft}>
+                            <div className={styles.postShareHeader}>
+                              <span className={`${styles.postShareBadge} ${msg.inviteData.post.pollQuestion ? styles.badgePoll : styles.badgePost}`}>
+                                {msg.inviteData.post.pollQuestion ? 'Poll' : 'Post'}
+                              </span>
+                              <div className={styles.postShareAuthor}>
+                                {isImageUrl(msg.inviteData.post.authorAvatar) ? (
+                                  <img src={msg.inviteData.post.authorAvatar} alt={msg.inviteData.post.authorName} className={styles.postShareAuthorAvatar} />
+                                ) : (
+                                  <DefaultAvatar name={msg.inviteData.post.authorName} size={16} className={styles.postShareAuthorAvatar} />
+                                )}
+                                <span className={styles.postShareAuthorName}>
+                                  Shared from <strong>{msg.inviteData.post.authorName}</strong>
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className={styles.postShareBody}>
+                              {msg.inviteData.post.text && (
+                                <p className={styles.postShareText}>{msg.inviteData.post.text}</p>
+                              )}
+                              {msg.inviteData.post.pollQuestion && (
+                                <div className={styles.postSharePollQuestion}>
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /><line x1="9" y1="8" x2="9" y2="16" /><line x1="12" y1="11" x2="12" y2="16" /><line x1="15" y1="6" x2="15" y2="16" /></svg>
+                                  <span>{msg.inviteData.post.pollQuestion}</span>
+                                </div>
+                              )}
+                            </div>
+
+                            <div className={styles.postShareFooter}>
+                              <span className={styles.postShareTime}>{msg.inviteData.post.time || 'Recent'}</span>
+                            </div>
+                          </div>
+
+                          <div className={styles.postShareRight}>
+                            <button className={styles.postShareBtn}>
+                              View
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            </button>
+                          </div>
+                        </div>
+                      ) : msg.inviteData && msg.inviteData.type === 'profileShare' ? (
+                        <div className={styles.profileShareCard} onClick={() => navigate('/profile/' + msg.inviteData.profile.username)}>
+                          <div className={styles.profileShareLeft}>
+                            <div className={styles.profileShareHeader}>
+                              <span className={styles.profileShareBadge}>Profile</span>
+                            </div>
+                            
+                            <div className={styles.profileShareInfo}>
+                              {isImageUrl(msg.inviteData.profile.avatar) ? (
+                                <img src={msg.inviteData.profile.avatar} alt={msg.inviteData.profile.displayName} className={styles.profileShareAvatar} />
+                              ) : (
+                                <DefaultAvatar name={msg.inviteData.profile.displayName} size={48} className={styles.profileShareAvatar} />
+                              )}
+                              <div className={styles.profileShareDetails}>
+                                <div className={styles.profileShareName}>{msg.inviteData.profile.displayName}</div>
+                                <div className={styles.profileShareUsername}>@{msg.inviteData.profile.username}</div>
+                              </div>
+                            </div>
+
+                            {msg.inviteData.profile.bio && (
+                              <p className={styles.profileShareBio}>{msg.inviteData.profile.bio}</p>
+                            )}
+
+                            <div className={styles.profileShareStats}>
+                              <span className={styles.profileShareStat}><strong>{msg.inviteData.profile.followers || 0}</strong> Followers</span>
+                              <span className={styles.profileShareStat}><strong>{msg.inviteData.profile.following || 0}</strong> Following</span>
+                            </div>
+                          </div>
+
+                          <div className={styles.profileShareRight}>
+                            <button className={styles.profileShareBtn}>
+                              View
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            </button>
+                          </div>
+                        </div>
+                      ) : msg.inviteData ? (
                         <div className={styles.msgInviteCard}>
                           <div className={styles.msgInviteIcon}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -386,56 +637,14 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                             Join Group
                           </button>
                         </div>
-                      )}
+                      ) : null}
                     </div>
                     <div className={styles.msgTimeLabel}>{msg.time}</div>
-
-                    {/* Render reactions badge */}
-                    {msg.reactions && msg.reactions.length > 0 && (
-                      <div className={styles.msgReactionsBadge}>
-                        {msg.reactions.map((r, rIdx) => (
-                          <span key={rIdx}>{r}</span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Hover options menu for message */}
-                  <div className={styles.msgHoverActions}>
-                    <div className={styles.msgHoverReactionTrigger}>
-                      <button className={styles.msgHoverActionBtn} title="React">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                          <circle cx="12" cy="12" r="10" />
-                          <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-                          <line x1="9" y1="9" x2="9.01" y2="9" strokeWidth="2.5" />
-                          <line x1="15" y1="9" x2="15.01" y2="9" strokeWidth="2.5" />
-                        </svg>
-                      </button>
-                      <div className={styles.msgHoverReactionsPopover}>
-                        {reactionsList.map((emoji) => (
-                          <button 
-                            key={emoji} 
-                            className={styles.msgHoverReactionBtn} 
-                            onClick={() => onReactMessage(i, emoji)}
-                          >
-                            {emoji}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <button 
-                      className={styles.msgHoverActionBtn} 
-                      title="Reply"
-                      onClick={() => setReplyingTo({ text: msg.text, from: msg.from, index: i })}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <polyline points="9 17 4 12 9 7" /><path d="M20 18v-2a4 4 0 0 0-4-4H4" />
-                      </svg>
-                    </button>
                   </div>
                 </div>
               </div>
-            );
+            </div>
+          );
           })
         )}
         {isTyping && !isLoading && (
@@ -518,6 +727,13 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
             setShowGroupSettings(false);
             onBack();
           }}
+        />
+      )}
+
+      {showActivityDetails && (
+        <ActivityChatDetailsModal 
+          conversation={conversation} 
+          onClose={() => setShowActivityDetails(false)} 
         />
       )}
     </div>

@@ -6,6 +6,7 @@ import DefaultAvatar from '../common/DefaultAvatar';
 import { useData } from '../../context/DataContext';
 import { timeAgo } from '../../utils/time';
 import styles from './Post.module.css';
+import SharePostModal from './SharePostModal';
 
 function PollCard({ poll, postId }) {
   const { voteInPoll, currentUser } = useData();
@@ -94,6 +95,7 @@ function Post({ postData, communityTag, onClick }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState('');
+  const [showShareModal, setShowShareModal] = useState(false);
 
   const livePost = postData ? (getPostById(postData.id) || postData) : null;
   if (!livePost) return null;
@@ -110,12 +112,8 @@ function Post({ postData, communityTag, onClick }) {
 
   const handleShare = (e) => {
     e.stopPropagation();
-    const url = `${window.location.origin}/post/${id}`;
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(url).then(() => showToast('Link copied!')).catch(() => showToast('Link copied!'));
-    } else {
-      showToast('Link copied!');
-    }
+    e.preventDefault();
+    setShowShareModal(true);
   };
 
   return (
@@ -211,7 +209,7 @@ function Post({ postData, communityTag, onClick }) {
           </div>
         </div>
       ) : (
-        text && <div className={styles.postBody}>{text}</div>
+        text && (!poll || text.trim() !== poll.question.trim()) && <div className={styles.postBody}>{text}</div>
       )}
       {livePost.media && (
         <div className={styles.postMedia} onClick={(e) => e.stopPropagation()}>
@@ -247,6 +245,12 @@ function Post({ postData, communityTag, onClick }) {
           <span className={styles.shareText} style={{ fontSize: '0.85rem', fontWeight: 600 }}>Share</span>
         </button>
       </div>
+      <SharePostModal 
+        isOpen={showShareModal} 
+        onClose={() => setShowShareModal(false)} 
+        post={livePost} 
+        author={author} 
+      />
     </div>
   );
 }

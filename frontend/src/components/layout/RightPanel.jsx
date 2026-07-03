@@ -1,3 +1,4 @@
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { useFollow } from '../../context/FollowContext';
@@ -22,7 +23,7 @@ export function NotificationsActivity() {
   return (
     <div className={styles.panelCard}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <h3 className={styles.panelTitle} style={{ marginBottom: 0 }}>Activity</h3>
+        <h3 className={styles.panelTitle} style={{ marginBottom: 0 }}>Recent Activity</h3>
         <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', cursor: 'pointer', fontWeight: 500 }} onClick={() => navigate('/notifications')}>See all</span>
       </div>
       
@@ -161,23 +162,59 @@ export function OnlineFriends() {
 }
 
 export function UpcomingEvents() {
+  const { crewActivities, currentUser } = useData();
+  const navigate = useNavigate();
+
+  const myActivities = useMemo(() => {
+    if (!currentUser) return [];
+    return crewActivities
+      .filter(a => a.participants?.includes(currentUser.id))
+      .sort((a, b) => new Date(a.dateLabel + ' 2024') - new Date(b.dateLabel + ' 2024'));
+  }, [crewActivities, currentUser]);
+
   return (
     <div className={styles.panelCard}>
-      <h3 className={styles.panelTitle}>Upcoming</h3>
-      <div className={styles.eventItem}>
-        <div className={styles.eventDate}>Today<br /><span>3PM</span></div>
-        <div className={styles.eventDetail}>
-          <div className={styles.eventName}>Team Standup</div>
-          <div className={styles.eventMeta}>30 min</div>
-        </div>
+      <h3 className={styles.panelTitle}>My Upcoming Activities</h3>
+      <div className={styles.activityList}>
+        {myActivities.length === 0 ? (
+          <p className={styles.emptyText}>No upcoming activities yet. Join one to get started!</p>
+        ) : (
+          myActivities.slice(0, 2).map(activity => (
+            <div key={activity.id} className={styles.activityItem} onClick={() => navigate(`/crew/${activity.id}`, { state: { activity } })}>
+              <div className={styles.activityIcon}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+              </div>
+              <div className={styles.activityDetails}>
+                <h4>{activity.title}</h4>
+                <div className={styles.activityMeta}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                  <span>{activity.dateLabel} • {activity.time}</span>
+                </div>
+                <div className={styles.activityMeta}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                  </svg>
+                  <span>{Math.min(activity.slotsFilled, activity.slotsNeeded)} / {activity.slotsNeeded} joined</span>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
-      <div className={styles.eventItem}>
-        <div className={styles.eventDate}>Fri<br /><span>11AM</span></div>
-        <div className={styles.eventDetail}>
-          <div className={styles.eventName}>Design Review</div>
-          <div className={styles.eventMeta}>1 hr</div>
-        </div>
-      </div>
+      {myActivities.length > 2 && (
+        <button className={styles.viewAllBtn} onClick={() => navigate('/crew', { state: { selectedTab: 'My Activities' } })} style={{ marginTop: '1rem' }}>View All Activities</button>
+      )}
     </div>
   );
 }

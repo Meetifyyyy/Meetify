@@ -263,3 +263,91 @@
   margin-bottom: 0.5rem;
 }
 
+.viewAllBtn {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.2);
+  padding: 0.6rem;
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 0.5rem;
+  transition: all 0.2s;
+}
+
+.viewAllBtn:hover {
+  background: var(--color-bg-alt);
+  color: var(--color-primary-hover);
+}
+
+.activityList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.activityItem {
+  display: flex;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  margin: -0.75rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.activityItem:hover {
+  background: var(--color-bg-alt);
+}
+
+.emptyText {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin: 0;
+  padding: 1rem 0;
+  text-align: center;
+}
+
+.activityIcon {
+  background: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.activityDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  overflow: hidden;
+}
+
+.activityDetails h4 {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.activityMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.activityMeta svg {
+  color: var(--color-text-light);
+}

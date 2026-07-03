@@ -32,8 +32,8 @@ function NotificationSkeleton() {
 export default function NotificationsRoute() {
   const [activeTab, setActiveTab] = useState('all');
   const { currentUser } = useAuth();
-  const { notifications, markAsRead, markAllRead, clearAll, timeAgo } = useNotifications();
-  const { getUserById, crewActivities, joinCrewActivity, declineCrewInvitation } = useData();
+  const { notifications, markAsRead, markAllRead, clearAll, timeAgo, dismissNotification } = useNotifications();
+  const { getUserById, crewActivities, joinCrewActivity, declineCrewInvitation, acceptJoinRequest } = useData();
   const navigate = useNavigate();
   const goBack = useSmartBack();
 
@@ -296,6 +296,29 @@ export default function NotificationsRoute() {
                           <span className={styles.text}>{notif.text}</span>
                             {' '}
                             <span className={styles.time}>{timeStr}</span>
+                            {notif.type === 'ACTIVITY_JOIN_REQUEST' && (
+                              <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                                <button 
+                                  style={{ padding: '6px 16px', background: 'var(--color-primary)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold' }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    acceptJoinRequest(notif.activityId, notif.actorId);
+                                    dismissNotification(notif.id);
+                                  }}
+                                >
+                                  Accept
+                                </button>
+                                <button 
+                                  style={{ padding: '6px 16px', background: 'transparent', color: 'var(--color-text)', border: '1px solid var(--color-border)', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold' }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    dismissNotification(notif.id);
+                                  }}
+                                >
+                                  Reject
+                                </button>
+                              </div>
+                            )}
                           </div>
 
                           <div className={styles.actionSlot}>

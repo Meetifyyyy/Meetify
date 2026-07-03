@@ -85,8 +85,6 @@
 }
 
 .recommendCard:hover {
-  box-shadow:(--shadow-sm));
-  transform: translateY(-1px);
 }
 
 .recTitle {

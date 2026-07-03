@@ -71,7 +71,7 @@ export default function ProfilePage() {
     return (
       <main className="centre centre-wide animate-in">
         <div className={profileStyles.profileMainContent}>
-          <ProfilePageHeader username={targetUsername} />
+          <ProfilePageHeader username={targetUsername} isOwnProfile={targetUsername === username} profileUser={profileUser} />
           <div className={profileStyles.profileSidebarFixed}>
             <ProfileHeaderSkeleton />
           </div>
@@ -103,7 +103,7 @@ export default function ProfilePage() {
     <>
       <main className="centre centre-wide animate-in">
         <div className={profileStyles.profileMainContent}>
-          <ProfilePageHeader username={targetUsername} />
+          <ProfilePageHeader username={targetUsername} isOwnProfile={targetUsername === username} profileUser={profileUser} />
           <div className={profileStyles.profileSidebarFixed}>
             <ProfileHeader
               profileUsername={targetUsername}

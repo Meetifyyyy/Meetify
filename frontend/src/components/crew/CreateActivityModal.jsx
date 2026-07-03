@@ -5,8 +5,9 @@ import { useData } from '../../context/DataContext';
 import CustomSelect from '../common/CustomSelect';
 import { getRelativeDateLabel } from '../../utils/time';
 
-export default function CreateActivityModal({ onClose, onPublish }) {
+export default function CreateActivityModal({ isOpen, onClose, onPublish, initialData }) {
   const { currentUser } = useData();
+  
   const today = new Date();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -28,6 +29,59 @@ export default function CreateActivityModal({ onClose, onPublish }) {
     participationType: 'open',
     slotsNeeded: 2,
   });
+
+  useEffect(() => {
+    if (isOpen) {
+      if (initialData) {
+        const isStandard = ACTIVITY_CATEGORIES.includes(initialData.activity);
+        
+        let parsedSlots = 2;
+        if (initialData.people === '2-3 People') parsedSlots = 3;
+        if (initialData.people === 'Small Group (4-8)') parsedSlots = 5;
+        
+        setFormData(prev => ({
+          ...prev,
+          category: isStandard ? initialData.activity : (initialData.activity ? 'Other' : ''),
+          customCategory: isStandard ? '' : (initialData.activity || ''),
+          dateYear: today.getFullYear(),
+          dateMonth: today.getMonth() + 1,
+          dateDay: today.getDate(),
+          location: (initialData.location === 'Current Location' || initialData.location === 'Custom Area') ? '' : (initialData.location || ''),
+          slotsNeeded: parsedSlots
+        }));
+        
+        if (initialData.activity) {
+          setStep(2); // Skip category selection
+        } else {
+          setStep(1);
+        }
+      } else {
+        setStep(1);
+        setFormData({
+          category: '',
+          customCategory: '',
+          title: '',
+          description: '',
+          coverImage: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1000&auto=format&fit=crop',
+          tags: '',
+          dateYear: '',
+          dateMonth: '',
+          dateDay: '',
+          timeHour: '',
+          timeMinute: '',
+          timeAmPm: '',
+          duration: '1 hour',
+          location: '',
+          isOnline: false,
+          participationType: 'open',
+          slotsNeeded: 2,
+        });
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, initialData]);
+
+  if (!isOpen) return null;
 
   const getDaysInMonth = (year, month) => new Date(year, month, 0).getDate();
   const maxDays = getDaysInMonth(formData.dateYear, formData.dateMonth);
