@@ -15,7 +15,7 @@ import profileStyles from './ProfilePage.module.css';
 
 function ProfileHeaderSkeleton() {
   return (
-    <div style={{ background: 'var(--bg-glass)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', border: 'var(--border-glass)' }}>
+    <div style={{ background: 'var(--bg-glass)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', border: 'var(--border-glass)', backdropFilter: 'var(--blur-glass)', WebkitBackdropFilter: 'var(--blur-glass)' }}>
       <Skeleton type="rect" width="100%" height="180px" style={{ borderRadius: 0 }} />
       <div style={{ padding: '0 1.5rem 1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
          <div style={{ marginTop: '-48px', marginBottom: '1rem' }}>
@@ -36,7 +36,7 @@ function ProfileHeaderSkeleton() {
 
 function ProfileAboutSkeleton() {
   return (
-    <div style={{ background: 'var(--bg-glass)', borderRadius: 'var(--radius-lg)', padding: '1.5rem', marginBottom: '1.5rem', border: 'var(--border-glass)' }}>
+    <div style={{ background: 'var(--bg-glass)', borderRadius: 'var(--radius-lg)', padding: '1.5rem', marginBottom: '1.5rem', border: 'var(--border-glass)', backdropFilter: 'var(--blur-glass)', WebkitBackdropFilter: 'var(--blur-glass)' }}>
       <Skeleton type="text" width="30%" height="1.2rem" style={{ marginBottom: '1rem' }} />
       <Skeleton type="text" width="90%" height="0.8rem" />
       <Skeleton type="text" width="85%" height="0.8rem" />

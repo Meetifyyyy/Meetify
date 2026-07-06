@@ -37,7 +37,13 @@ export default function MessagesLayout() {
     }
   }, [conversationId]);
 
-  const activeConv = conversations.find((c) => c.id === activeChatId) || null;
+  const activeConv = conversations.find((c) => {
+    if (!c || activeChatId == null) return false;
+    const cleanAid = String(activeChatId).replace(/^(act_)+/, '');
+    const cleanCid = String(c.id).replace(/^(act_)+/, '');
+    const cleanActId = c.activityId ? String(c.activityId).replace(/^(act_)+/, '') : null;
+    return cleanCid === cleanAid || cleanActId === cleanAid;
+  }) || null;
 
   const handleSelectChat = (id) => {
     setActiveChatId(id);
@@ -51,8 +57,8 @@ export default function MessagesLayout() {
     goBack('/messages', { replace: true });
   };
 
-  const handleSend = (convId, text, replyTo = null) => {
-    sendDirectMessage(convId, text, replyTo);
+  const handleSend = (convId, text, replyTo = null, mentions = []) => {
+    sendDirectMessage(convId, text, replyTo, null, mentions);
   };
 
   const handleReact = (convId, messageIndex, reaction) => {

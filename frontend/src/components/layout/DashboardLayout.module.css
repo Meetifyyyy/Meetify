@@ -21,18 +21,6 @@
   padding: 1rem 1rem 0;
 }
 
-@keyframes dashboardFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 @media (max-width: 1100px) {
 
   .dashboard,

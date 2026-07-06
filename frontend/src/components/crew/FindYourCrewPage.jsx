@@ -1,58 +1,57 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
-import CrewHeader from './CrewHeader';
+import PageLayout from '../layout/PageLayout';
+import PageHeader from '../layout/PageHeader';
 import CrewCard from './CrewCard';
+import CrewCardSkeleton from './CrewCardSkeleton';
 import CreateActivityModal from './CreateActivityModal';
 import CrewRightPanel from './CrewRightPanel';
 import { filterActivities } from './crewData';
-import InstantMatchupCard from './InstantMatchupCard';
-import InstantMatchFlow from './InstantMatchFlow';
 import styles from './FindYourCrewPage.module.css';
 
 export default function FindYourCrewPage() {
   const { crewActivities, addCrewActivity, currentUser, savedActivities } = useData();
   const navigate = useNavigate();
   const location = useLocation();
-  const [loading, setLoading] = useState(!crewActivities || crewActivities.length === 0);
+  const loading = !crewActivities || crewActivities.length === 0;
   
   const [selectedTab, setSelectedTab] = useState(location.state?.selectedTab || 'For You');
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isInstantMatchOpen, setIsInstantMatchOpen] = useState(false);
   const [initialActivityData, setInitialActivityData] = useState(null);
   const [visibleCount, setVisibleCount] = useState(3);
-
-  useEffect(() => {
-    if (crewActivities && crewActivities.length > 0) {
-      setLoading(false);
-    } else {
-      const timer = setTimeout(() => setLoading(false), 600);
-      return () => clearTimeout(timer);
-    }
-  }, [crewActivities]);
 
   const filteredActivities = useMemo(() => {
     if (!crewActivities) return [];
     
-    const now = new Date();
-    // Filter out past activities
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Filter out past activities based on date (ignoring time so today's aren't filtered out)
     let activities = crewActivities.filter(a => {
       if (!a.date) return true;
-      return new Date(a.date) > now;
+      const activityDate = new Date(a.date);
+      activityDate.setHours(0, 0, 0, 0);
+      return activityDate >= today;
     });
 
     // Filter by tab
     if (selectedTab === 'For You') {
-      activities = activities.slice(0, 10);
+      if (!searchQuery) {
+        activities = activities.slice(0, 10);
+      }
     } else if (selectedTab === 'My Activities') {
       activities = activities.filter(a => 
         a.participants && a.participants.includes(currentUser?.id)
-      ).sort((a, b) => new Date(a.dateLabel + ' 2024') - new Date(b.dateLabel + ' 2024'));
+      ).sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
     } else if (selectedTab === 'Saved') {
       activities = activities.filter(a => savedActivities?.includes(a.id));
     } else if (selectedTab === 'Popular') {
-      activities = [...activities].sort((a, b) => b.slotsFilled - a.slotsFilled).slice(0, 10);
+      activities = [...activities].sort((a, b) => b.slotsFilled - a.slotsFilled);
+      if (!searchQuery) {
+        activities = activities.slice(0, 10);
+      }
     }
 
     return filterActivities(activities, { search: searchQuery });
@@ -64,33 +63,50 @@ export default function FindYourCrewPage() {
 
   return (
     <>
-      <main className="centre centre-wide animate-in">
+      <PageLayout>
         <div className={styles.page}>
-          
-          <CrewHeader 
-            selectedTab={selectedTab} 
-            onTabChange={setSelectedTab}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            onCreateActivity={() => {
-              setInitialActivityData(null);
-              setIsCreateModalOpen(true);
+          <PageHeader
+            title="Crew"
+            subtitle="Discover activities and people to do them with."
+            backPath="/home"
+            searchProps={{
+              value: searchQuery,
+              onChange: (e) => setSearchQuery(e.target.value),
+              placeholder: 'Search activities, sports, hangouts...',
             }}
+            actions={
+              <button
+                type="button"
+                className={styles.createIconBtn}
+                onClick={() => {
+                  setInitialActivityData(null);
+                  setIsCreateModalOpen(true);
+                }}
+                aria-label="Create Activity"
+                title="Create Activity"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </button>
+            }
+            tabs={['For You', 'Popular', 'My Activities', 'Saved']}
+            activeTab={selectedTab}
+            onTabChange={setSelectedTab}
+            tabVariant="underline"
           />
 
           <div className={styles.layout}>
             <div className={styles.content}>
               {loading ? (
                 <div className={styles.list}>
-                  {[1, 2, 3].map(i => (
-                    <div key={i} style={{ height: '140px', borderRadius: '16px', backgroundColor: 'var(--color-border-light)', animation: 'skeletonPulse 1.5s infinite' }} />
-                  ))}
+                  <CrewCardSkeleton />
+                  <CrewCardSkeleton />
+                  <CrewCardSkeleton />
                 </div>
               ) : (
                 <>
-                  {selectedTab === 'For You' && (
-                    <InstantMatchupCard onFindMatch={() => setIsInstantMatchOpen(true)} />
-                  )}
                   
                   <section className={styles.listSection}>
                     {selectedTab !== 'For You' && (
@@ -145,7 +161,7 @@ export default function FindYourCrewPage() {
           </div>
           
         </div>
-      </main>
+      </PageLayout>
 
       <CreateActivityModal 
         isOpen={isCreateModalOpen} 
@@ -154,20 +170,10 @@ export default function FindYourCrewPage() {
           setInitialActivityData(null);
         }} 
         initialData={initialActivityData}
-        onSuccess={(newActivity) => {
+        onPublish={(newActivity) => {
           addCrewActivity(newActivity);
           setIsCreateModalOpen(false);
           setInitialActivityData(null);
-        }}
-      />
-      
-      <InstantMatchFlow 
-        isOpen={isInstantMatchOpen} 
-        onClose={() => setIsInstantMatchOpen(false)} 
-        onCreateActivity={(data) => {
-          setInitialActivityData(data);
-          setIsInstantMatchOpen(false);
-          setIsCreateModalOpen(true);
         }}
       />
     </>

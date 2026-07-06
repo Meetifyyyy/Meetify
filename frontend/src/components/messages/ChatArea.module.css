@@ -337,6 +337,13 @@
   text-align: right;
 }
 
+.msgBubbleContainerMe .msgTimeLabel {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
 .msgReactionsBadge {
   display: flex;
   align-items: center;
@@ -612,8 +619,6 @@
   font-size: 0.95rem;
   background: var(--color-bg-white);
   padding: 0.75rem 1.25rem;
-  border-radius: 100px;
-  border: 1px solid var(--color-border);
   align-self: center;
 }
 
@@ -950,6 +955,10 @@
   }
 
   @media (max-width: 768px) {
+    .msgChatUser {
+      gap: 0.5rem;
+    }
+
     .msgChatBackBtn {
       display: flex !important;
       align-items: center;
@@ -958,7 +967,7 @@
       border: none;
       color: var(--color-text-main);
       cursor: pointer;
-      margin-right: 0.6rem;
+      margin-right: 0;
       padding: 0.35rem;
       border-radius: 50%;
       transition: background 0.2s;
@@ -1004,16 +1013,20 @@
     }
 
     .msgChatInputWrap {
-      padding: 0.6rem 0 60px;
+      padding: 0.6rem 1rem;
+      margin-bottom: 60px;
+      border-radius: 0;
+      border-top: 1px solid var(--color-border-light);
     }
 
     .msgChatHeader {
-      height: auto;
-      padding: 0 0 1rem 0;
+      height: 64px;
+      padding: 0 1rem;
+      border-bottom: 1px solid var(--color-border-light);
     }
 
     .msgChatBody {
-      padding: 1rem 0;
+      padding: 1rem;
     }
   }
 
@@ -1030,7 +1043,7 @@
     justify-content: center;
     text-align: center;
     max-width: 320px;
-    animation: fadeIn 0.4s ease-out;
+    animation: none !important;
   }
 
   .msgNoChatIcon {
@@ -1727,4 +1740,113 @@
 
 .profileShareCard:hover .profileShareBtn svg {
   transform: translateX(2px);
-}
+}
+
+.msgLinkPreview {
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+  font-size: 0.8rem;
+  max-width: 320px;
+  text-align: left;
+}
+
+.msgBubbleMe .msgLinkPreview {
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.msgBubbleThem .msgLinkPreview {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--color-border-light);
+  color: var(--color-text-main);
+}
+
+.msgLinkPreview:hover {
+  opacity: 0.9;
+}
+
+.msgLinkPreview:active {
+  transform: scale(0.995);
+  opacity: 0.8;
+  transition: transform 0.05s ease, opacity 0.05s ease;
+}
+
+.msgLinkPreviewImg {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.msgLinkPreviewBody {
+  padding: 0.4rem 0.6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.msgLinkPreviewSite {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.7;
+  font-weight: 600;
+}
+
+.msgBubbleThem .msgLinkPreviewSite {
+  color: var(--color-text-muted);
+}
+
+.msgBubbleMe .msgLinkPreviewSite {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.msgLinkPreviewTitle {
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.25;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.msgLinkPreviewDesc {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  line-height: 1.3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.msgBubbleThem .msgLinkPreviewDesc {
+  color: var(--color-text-muted);
+}
+
+.msgBubbleMe .msgLinkPreviewDesc {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.msgHeaderOnlineDot {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background-color: var(--color-success);
+  border: 2.5px solid var(--color-bg-white);
+}
+
+
+

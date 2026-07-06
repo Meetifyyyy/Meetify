@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, memo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { isImageUrl } from '../../utils/avatar';
 import DefaultAvatar from '../common/DefaultAvatar';
+import MentionInput from '../common/mentions/MentionInput';
 import styles from './PostComposer.module.css';
 
 const EMOJI_GROUPS = [
@@ -14,7 +15,7 @@ const EMOJI_GROUPS = [
 
 function PostComposer({ onSubmit }) {
   const { initial, currentUser } = useAuth();
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState({ text: '', mentions: [] });
   const [media, setMedia] = useState(null);
   const [showEmoji, setShowEmoji] = useState(false);
   const [showPoll, setShowPoll] = useState(false);
@@ -38,20 +39,21 @@ function PostComposer({ onSubmit }) {
   }, [showEmoji]);
 
   const handlePost = () => {
-    const text = value.trim();
+    const text = (typeof value === 'string' ? value : (value?.text || '')).trim();
+    const mentions = value?.mentions || [];
     if (showPoll) {
       const opts = pollOptions.map((o) => o.trim()).filter(Boolean);
       if (!text && opts.length < 2 && !media) return;
-      onSubmit(text, { question: text || 'Poll', options: opts, multiSelect: pollMulti }, media);
-      setValue('');
+      onSubmit(text, { question: text || 'Poll', options: opts, multiSelect: pollMulti }, media, mentions);
+      setValue({ text: '', mentions: [] });
       setMedia(null);
       setPollOptions(['', '']);
       setPollMulti(false);
       setShowPoll(false);
     } else {
       if (!text && !media) return;
-      onSubmit(text, null, media);
-      setValue('');
+      onSubmit(text, null, media, mentions);
+      setValue({ text: '', mentions: [] });
       setMedia(null);
     }
   };
@@ -78,7 +80,11 @@ function PostComposer({ onSubmit }) {
   };
 
   const insertEmoji = (emoji) => {
-    setValue((v) => v + emoji);
+    setValue((v) => {
+      const currentText = typeof v === 'string' ? v : (v?.text || '');
+      const currentMentions = v?.mentions || [];
+      return { text: currentText + emoji, mentions: currentMentions };
+    });
     inputRef.current?.focus();
   };
 
@@ -123,15 +129,17 @@ function PostComposer({ onSubmit }) {
               <DefaultAvatar />
             )}
           </div>
-          <input
-            ref={inputRef}
-            type="text"
-            className={styles.composerInput}
-            placeholder={showPoll ? "Ask a question?" : "What's on your mind?"}
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter' && !showPoll) handlePost(); }}
-          />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <MentionInput
+              inputRef={inputRef}
+              className={styles.composerInput}
+              placeholder={showPoll ? "Ask a question?" : "What's on your mind?"}
+              value={value}
+              onChange={(val) => setValue(val)}
+              onSubmit={() => { if (!showPoll) handlePost(); }}
+              singleLine={false}
+            />
+          </div>
           <button
             ref={emojiBtnRef}
             className={`${styles.composerEmojiBtn}${showEmoji ? ` ${styles.active}` : ''}`}
@@ -141,7 +149,7 @@ function PostComposer({ onSubmit }) {
                 setPollOptions(['', '']);
                 setPollMulti(false);
                 setShowPoll(false);
-                setValue('');
+                setValue({ text: '', mentions: [] });
               }
               setShowEmoji(!showEmoji);
             }}

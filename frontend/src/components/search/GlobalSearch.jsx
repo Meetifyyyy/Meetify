@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
-import logo from '../../assets/images/logo.png';
+import logo from '../../assets/images/meetify logo.png';
 import styles from './GlobalSearch.module.css';
 
 export default function GlobalSearch({ variant = 'header', isActive = false, autoFocus = false }) {
@@ -135,14 +135,14 @@ export default function GlobalSearch({ variant = 'header', isActive = false, aut
 
   return (
     <div ref={containerRef} className={`${styles.container} ${variant === 'bottomNav' ? styles.bottomNavContainer : ''} ${isActive ? styles.active : ''}`}>
-      <div className={`${styles.searchBox} ${variant === 'bottomNav' ? styles.bottomNavSearchBox : ''} ${variant === 'mobileSearchPage' ? styles.mobileSearchPageBox : ''} ${showDropdown ? styles.searchBoxOpen : ''}`}>
+      <div className={`${styles.searchBox} ${variant === 'bottomNav' ? styles.bottomNavSearchBox : ''} ${(variant === 'mobileSearchPage' || variant === 'pageHeader') ? styles.mobileSearchPageBox : ''} ${showDropdown ? styles.searchBoxOpen : ''}`}>
         {variant === 'bottomNav' ? (
            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={styles.bottomNavIcon}>
              <circle cx="11" cy="11" r="8" />
              <line x1="21" y1="21" x2="16.65" y2="16.65" />
            </svg>
-        ) : variant === 'mobileSearchPage' ? (
-           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={styles.mobileSearchPageIcon}>
+        ) : (variant === 'mobileSearchPage' || variant === 'pageHeader') ? (
+           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={styles.mobileSearchPageIcon}>
              <circle cx="11" cy="11" r="8" />
              <line x1="21" y1="21" x2="16.65" y2="16.65" />
            </svg>
@@ -152,7 +152,7 @@ export default function GlobalSearch({ variant = 'header', isActive = false, aut
         <input
           ref={inputRef}
           type="text"
-          className={`${styles.input} ${variant === 'bottomNav' ? styles.bottomNavInput : ''} ${variant === 'mobileSearchPage' ? styles.mobileSearchPageInput : ''} ${showDropdown ? styles.dropdownOpen : ''}`}
+          className={`${styles.input} ${variant === 'bottomNav' ? styles.bottomNavInput : ''} ${(variant === 'mobileSearchPage' || variant === 'pageHeader') ? styles.mobileSearchPageInput : ''}`}
           placeholder="Search..."
           value={query}
           onChange={handleSearchChange}

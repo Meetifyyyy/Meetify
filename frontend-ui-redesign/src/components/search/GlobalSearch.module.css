@@ -12,18 +12,18 @@
 
 .searchIcon {
   position: absolute;
-  left: 14px;
-  width: 20px;
-  height: 20px;
+  left: 12px;
+  width: 30px;
+  height: 30px;
   pointer-events: none;
-  opacity: 0.8;
+  opacity: 0.95;
   object-fit: contain;
   z-index: 10;
 }
 
 .input {
   width: 100%;
-  padding: 10px 16px 10px 40px;
+  padding: 10px 16px 10px 50px;
   border-radius: var(--radius-xl);
   border: 1px solid rgba(0, 0, 0, 0.1);
   background: rgba(255, 255, 255, 0.6);

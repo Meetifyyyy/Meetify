@@ -6,6 +6,7 @@ import { useNotifications } from '../../context/NotificationContext';
 import { showToast } from '../../utils/toast';
 import { isImageUrl } from '../../utils/avatar';
 import DefaultAvatar from '../common/DefaultAvatar';
+import { canSeeOnlineStatus } from '../../utils/presence';
 import styles from './RightPanel.module.css';
 
 export default function RightPanel({ children, className = '' }) {
@@ -39,8 +40,8 @@ export function NotificationsActivity() {
             const targetUsername = actor?.username || (actor?.displayName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
             const followingUser = isFollowing(targetUsername);
 
-            // Format time ago for shorter output (e.g., "5m" instead of "5m ago")
-            const timeStr = timeAgo(n.createdAt).replace(' ago', '').replace('Yesterday', '1D').replace('just now', 'now');
+            // Format time ago using standard helper
+            const timeStr = timeAgo(n.createdAt);
 
             return (
               <div key={n.id} className={styles.friendItem} style={{ borderBottom: 'none', alignItems: 'center' }}>
@@ -98,16 +99,21 @@ export function OnlineFriends() {
 
   const friends = Object.values(users)
     .filter(u => u.id !== currentUser.id)
-    .slice(0, 6)
-    .map((u) => ({
-      id: u.id,
-      name: u.displayName,
-      username: u.username,
-      avatar: u.avatar,
-      avatarUrl: u.avatarUrl,
-      status: u.recentlyActive ? 'Online' : 'Offline',
-      online: !!u.recentlyActive
-    }));
+    .map((u) => {
+      const canSee = canSeeOnlineStatus(currentUser, u);
+      const online = canSee ? !!u.isOnline : false;
+      return {
+        id: u.id,
+        name: u.displayName,
+        username: u.username,
+        avatar: u.avatar,
+        avatarUrl: u.avatarUrl,
+        status: online ? 'Online' : 'Offline',
+        online
+      };
+    })
+    .filter(f => f.online)
+    .slice(0, 6);
 
   if (friends.length === 0) return null;
 
@@ -247,7 +253,7 @@ export function UniversityEvents({ events, title = 'Ongoing Events', onViewAll }
 }
 
 export function UniversityMembers({ members, title = 'Members', onViewAll }) {
-  const { currentUser, startConversation } = useData();
+  const { currentUser, startConversation, users } = useData();
   const { isFollowing, toggleFollow } = useFollow();
   const navigate = useNavigate();
   if (!members || members.length === 0) return null;
@@ -261,6 +267,9 @@ export function UniversityMembers({ members, title = 'Members', onViewAll }) {
         const targetUsername = m.username || m.name.toLowerCase().replace(/[^a-z0-9]/g, '');
         const isFollowingUser = isFollowing(targetUsername);
         const isSelf = targetUsername === currentUser?.username;
+        const targetUser = Object.values(users).find(u => u.username === targetUsername);
+        const canSee = targetUser ? canSeeOnlineStatus(currentUser, targetUser) : true;
+        const isOnline = canSee ? (targetUser ? targetUser.isOnline : m.online) : false;
         return (
           <div key={i} className={styles.friendItem}>
             <div className={styles.friendAvatar} style={{ cursor: 'pointer', background: isImageUrl(m.avatar) ? 'none' : (m.admin ? 'linear-gradient(135deg, #1D4ED8, #3B82F6)' : undefined) }} onClick={() => navigate(`/profile/${targetUsername}`)}>
@@ -273,8 +282,8 @@ export function UniversityMembers({ members, title = 'Members', onViewAll }) {
             <div className={styles.friendInfo} style={{ cursor: 'pointer' }} onClick={() => navigate(`/profile/${targetUsername}`)}>
               <div className={styles.friendName}>{m.name} {m.admin && '👑'}</div>
               <div className={styles.memberBranch}>{m.branch} • {m.year}</div>
-              <div className={`${styles.friendStatus}${m.online ? ` ${styles.online}` : ''}`}>
-                {m.online ? 'Online' : 'Offline'}
+              <div className={`${styles.friendStatus}${isOnline ? ` ${styles.online}` : ''}`}>
+                {isOnline ? 'Online' : 'Offline'}
               </div>
             </div>
             {!isSelf && (

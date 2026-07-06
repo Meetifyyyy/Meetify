@@ -16,7 +16,7 @@ function NotificationSkeleton() {
   return (
     <div className={styles.item} style={{ pointerEvents: 'none', background: 'var(--color-bg-white)' }}>
       <div className={styles.avatar} style={{ background: 'transparent' }}>
-        <Skeleton type="circle" width="48px" height="48px" />
+        <Skeleton type="circle" width="40px" height="40px" />
       </div>
       <div className={styles.content} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <Skeleton type="text" width="60%" height="1.1rem" style={{ marginBottom: '0.4rem' }} />
@@ -33,13 +33,41 @@ export default function NotificationsRoute() {
   const [activeTab, setActiveTab] = useState('all');
   const { currentUser } = useAuth();
   const { notifications, markAsRead, markAllRead, clearAll, timeAgo, dismissNotification } = useNotifications();
-  const { getUserById, crewActivities, joinCrewActivity, declineCrewInvitation, acceptJoinRequest } = useData();
+  const { getUserById, crewActivities, joinCrewActivity, declineCrewInvitation, acceptJoinRequest, rejectJoinRequest } = useData();
   const navigate = useNavigate();
   const goBack = useSmartBack();
 
   const invitations = crewActivities ? crewActivities.filter(a => 
     a.invitedUsers?.includes(currentUser?.id)
   ) : [];
+
+  const [readInvitations, setReadInvitations] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('read_invitations') || '[]');
+    } catch {
+      return [];
+    }
+  });
+
+  const markAllInvitationsRead = () => {
+    const allIds = invitations.map(inv => inv.id);
+    const updated = [...new Set([...readInvitations, ...allIds])];
+    setReadInvitations(updated);
+    localStorage.setItem('read_invitations', JSON.stringify(updated));
+  };
+
+  const clearAllInvitations = () => {
+    invitations.forEach(inv => declineCrewInvitation(inv.id));
+  };
+
+  const handleInvClick = (inv) => {
+    if (!readInvitations.includes(inv.id)) {
+      const updated = [...readInvitations, inv.id];
+      setReadInvitations(updated);
+      localStorage.setItem('read_invitations', JSON.stringify(updated));
+    }
+    navigate(`/crew/${inv.id}`, { state: { activity: inv } });
+  };
 
   const { isLoading, data: loadedNotifications, error, retry } = useSimulatedFetch(notifications, 800);
 
@@ -49,6 +77,13 @@ export default function NotificationsRoute() {
     switch (notif.type) {
       case 'follow':
         if (notif.targetUsername) navigate(`/profile/${notif.targetUsername}`);
+        break;
+      case 'mention':
+        if (notif.postId) navigate(`/post/${notif.postId}`);
+        else if (notif.convId) navigate(`/messages/${notif.convId}`);
+        else if (notif.activityId) navigate(`/crew/${notif.activityId}?discussion=1`);
+        else if (notif.communityId) navigate(`/communities/${notif.communityId}`);
+        else navigate('/home');
         break;
       case 'like':
       case 'comment':
@@ -60,6 +95,9 @@ export default function NotificationsRoute() {
       case 'crew_join':
       case 'activity_discussion':
         if (notif.activityId) navigate(`/crew/${notif.activityId}?discussion=1`);
+        break;
+      case 'ACTIVITY_JOIN_REQUEST':
+        // Don't navigate — the Accept/Reject buttons are inline on the notification
         break;
       default:
         navigate('/home');
@@ -131,7 +169,7 @@ export default function NotificationsRoute() {
             </p>
           </div>
           <div className={styles.headerRight}>
-            {activeTab === 'all' && (
+            {activeTab === 'all' ? (
               <>
                 {notifications.some(n => !n.read) && (
                   <button className={styles.actionBtn} onClick={() => markAllRead()}>
@@ -140,6 +178,19 @@ export default function NotificationsRoute() {
                 )}
                 {notifications.length > 0 && (
                   <button className={styles.actionBtn} onClick={() => clearAll()}>
+                    Clear all
+                  </button>
+                )}
+              </>
+            ) : (
+              <>
+                {invitations.some(inv => !readInvitations.includes(inv.id)) && (
+                  <button className={styles.actionBtn} onClick={() => markAllInvitationsRead()}>
+                    Mark all read
+                  </button>
+                )}
+                {invitations.length > 0 && (
+                  <button className={styles.actionBtn} onClick={() => clearAllInvitations()}>
                     Clear all
                   </button>
                 )}
@@ -191,7 +242,7 @@ export default function NotificationsRoute() {
             ) : (
               <div className={styles.groupItems}>
                 {invitations.map(inv => (
-                  <div key={inv.id} className={`${styles.item} ${styles.unread}`} onClick={() => navigate(`/crew/${inv.id}`, { state: { activity: inv } })}>
+                  <div key={inv.id} className={`${styles.invitationItem} ${!readInvitations.includes(inv.id) ? styles.unread : ''}`} onClick={() => handleInvClick(inv)}>
                     <div className={styles.avatar}>
                       {isImageUrl(inv.hostAvatar) ? (
                         <img src={inv.hostAvatar} alt={inv.hostName || "Host"} />
@@ -200,31 +251,31 @@ export default function NotificationsRoute() {
                       )}
                     </div>
                     <div className={styles.content}>
-                      <span 
-                        className={styles.actorName}
-                        onClick={(e) => { e.stopPropagation(); navigate(`/profile/${getUserById(inv.hostId)?.username || inv.hostId}`); }}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        {inv.hostName}
-                      </span>
-                      <span className={styles.actionText}>invited you to <strong>{inv.title}</strong></span>
-                    </div>
-                    <div className={styles.invitationActions}>
-                      <button 
-                        className={styles.acceptBtn}
-                        onClick={(e) => { e.stopPropagation(); joinCrewActivity(inv.id); }}
-                      >
-                        Accept
-                      </button>
-                      <button 
-                        className={styles.closeBtn}
-                        onClick={(e) => { e.stopPropagation(); declineCrewInvitation(inv.id); }}
-                      >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                          <line x1="18" y1="6" x2="6" y2="18"></line>
-                          <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                      </button>
+                      <div>
+                        <span 
+                          className={styles.actorName}
+                          onClick={(e) => { e.stopPropagation(); navigate(`/profile/${getUserById(inv.hostId)?.username || inv.hostId}`); }}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          {inv.hostName}
+                        </span>
+                        {' '}
+                        <span className={styles.actionText}>invited you to <strong>{inv.title}</strong></span>
+                      </div>
+                      <div className={styles.invitationActions}>
+                        <button 
+                          className={styles.acceptBtn}
+                          onClick={(e) => { e.stopPropagation(); joinCrewActivity(inv.id); }}
+                        >
+                          Accept
+                        </button>
+                        <button 
+                          className={styles.declineBtn}
+                          onClick={(e) => { e.stopPropagation(); declineCrewInvitation(inv.id); }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -281,24 +332,26 @@ export default function NotificationsRoute() {
                           </div>
 
                           <div className={styles.content}>
-                          <span 
-                            className={styles.actorName}
-                            onClick={(e) => {
-                              if (actor.username) {
-                                e.stopPropagation();
-                                navigate(`/profile/${actor.username}`);
-                              }
-                            }}
-                            style={{ cursor: actor.username ? 'pointer' : 'default' }}
-                          >
-                            {actor.name}
-                          </span>
-                          {' '}
-                          <span className={styles.text}>{notif.text}</span>
-                            {' '}
-                            <span className={styles.time}>{timeStr}</span>
+                            <div className={styles.textRow}>
+                              <span 
+                                className={styles.actorName}
+                                onClick={(e) => {
+                                  if (actor.username) {
+                                    e.stopPropagation();
+                                    navigate(`/profile/${actor.username}`);
+                                  }
+                                }}
+                                style={{ cursor: actor.username ? 'pointer' : 'default' }}
+                              >
+                                {actor.name}
+                              </span>
+                              {' '}
+                              <span className={styles.text}>{notif.text}</span>
+                              {' '}
+                              <span className={styles.time}>• {timeStr}</span>
+                            </div>
                             {notif.type === 'ACTIVITY_JOIN_REQUEST' && (
-                              <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                              <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                                 <button 
                                   style={{ padding: '6px 16px', background: 'var(--color-primary)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold' }}
                                   onClick={(e) => {
@@ -313,6 +366,7 @@ export default function NotificationsRoute() {
                                   style={{ padding: '6px 16px', background: 'transparent', color: 'var(--color-text)', border: '1px solid var(--color-border)', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold' }}
                                   onClick={(e) => {
                                     e.stopPropagation();
+                                    rejectJoinRequest(notif.activityId, notif.actorId);
                                     dismissNotification(notif.id);
                                   }}
                                 >

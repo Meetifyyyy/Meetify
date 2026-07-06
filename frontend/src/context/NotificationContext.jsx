@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { timeAgo } from '../utils/time';
 
@@ -53,12 +53,34 @@ function createSeedNotifications() {
       createdAt: now - 2 * 24 * 60 * 60 * 1000, // 2d ago
       read: true,
     },
+    {
+      id: 'seed_6',
+      type: 'mention',
+      subType: 'post',
+      actorId: 'u2',
+      postId: 'post_1',
+      text: 'mentioned you in a post.',
+      createdAt: now - 30 * 60 * 1000, // 30m ago
+      read: false,
+    },
   ];
 }
 
 export function NotificationProvider({ children }) {
   const { currentUser } = useAuth();
-  const [notifications, setNotifications] = useState(() => createSeedNotifications());
+  const [notifications, setNotifications] = useState(() => {
+    try {
+      const saved = localStorage.getItem('meetifyy_notifications');
+      return saved ? JSON.parse(saved) : createSeedNotifications();
+    } catch {
+      return createSeedNotifications();
+    }
+  });
+
+  // Persist notifications to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('meetifyy_notifications', JSON.stringify(notifications));
+  }, [notifications]);
 
   const addNotification = useCallback((type, payload = {}) => {
     // Don't notify yourself
@@ -67,11 +89,13 @@ export function NotificationProvider({ children }) {
     const notification = {
       id: `notif_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
       type,
+      subType: payload.subType || null,
       actorId: payload.actorId || currentUser?.id,
       targetUsername: payload.targetUsername || null,
       postId: payload.postId || null,
       communityId: payload.communityId || null,
       activityId: payload.activityId || null,
+      convId: payload.convId || null,
       text: payload.text || '',
       createdAt: Date.now(),
       read: false,

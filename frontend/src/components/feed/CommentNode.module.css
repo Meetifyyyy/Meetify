@@ -163,16 +163,21 @@
 }
 
 .actionBtnLiked {
+  color: var(--color-text-muted);
+}
+
+.actionBtnLiked svg {
   color: var(--color-primary);
+  stroke: var(--color-primary);
 }
 
 .inlineComposerContainer {
   margin-top: 0.75rem;
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--color-bg-soft);
   border-radius: var(--radius-lg);
   padding: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow:(--shadow-sm);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -224,17 +229,17 @@
   font-weight: 600;
   font-family: var(--font-family-sans);
   transition: all var(--transition-fast);
+  color: #FFFFFF;
 }
 
 .submitBtnActive {
   background: #0066FF;
-  color: var(--color-text-inverse);
   cursor: pointer;
 }
 
 .submitBtnDisabled {
   background: rgba(0, 102, 255, 0.5);
-  color: var(--color-text-inverse);
+  color: rgba(255, 255, 255, 0.4);
   cursor: not-allowed;
 }
 

@@ -116,7 +116,7 @@
 }
 
 .replyBtn {
-  color: var(--color-text-inverse);
+  color: #FFFFFF;
   border: none;
   padding: 0.4rem 1.25rem;
   border-radius: 100px;
@@ -132,6 +132,7 @@
 
 .replyBtnDisabled {
   background: rgba(var(--color-primary-rgb), 0.15);
+  color: rgba(255, 255, 255, 0.4);
   cursor: not-allowed;
 }
 

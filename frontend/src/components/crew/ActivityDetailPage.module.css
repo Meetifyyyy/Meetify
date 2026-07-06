@@ -153,6 +153,11 @@
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 1.25rem;
+  transition: opacity 0.2s ease;
+}
+
+.hostRow:hover {
+  opacity: 0.75;
 }
 
 .avatar {
@@ -264,6 +269,29 @@
   cursor: not-allowed;
 }
 
+.endBtn {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1.5px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-sans);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.endBtn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
 .saveBtn {
   width: 48px;
   height: 48px;
@@ -288,6 +316,27 @@
 .saveBtn.savedIcon {
   color: var(--color-primary);
   fill: var(--color-primary);
+}
+
+.chatIconBtn {
+  width: 48px;
+  height: 48px;
+  background: var(--color-primary, #2563eb);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.2);
+}
+
+.chatIconBtn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
 }
 
 /* ============================================================

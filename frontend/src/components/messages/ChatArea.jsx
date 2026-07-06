@@ -1,15 +1,19 @@
-import { useState, useEffect, useRef, Suspense, lazy } from 'react';
+import { useState, useEffect, useRef, Suspense, lazy, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import data from '@emoji-mart/data';
 import { isImageUrl } from '../../utils/avatar';
 import DefaultAvatar from '../common/DefaultAvatar';
 import GroupSettingsModal from './GroupSettingsModal';
 import ActivityChatDetailsModal from './ActivityChatDetailsModal';
+import ConfirmModal from '../common/ConfirmModal';
 import { useSimulatedFetch } from '../../hooks/useSimulatedFetch';
 import Skeleton from '../common/Skeleton';
 import { ErrorState } from '../common/StateViews';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
+import MentionInput from '../common/mentions/MentionInput';
+import RichText from '../common/mentions/RichText';
+import { canSeeOnlineStatus, canSeeLastSeen, formatLastSeen } from '../../utils/presence';
 import styles from './ChatArea.module.css';
 
 const Picker = lazy(() => import('@emoji-mart/react'));
@@ -17,15 +21,62 @@ const Picker = lazy(() => import('@emoji-mart/react'));
 export default function ChatArea({ conversation, onSendMessage, onReactMessage, onClearChat, onBlockUser, onJoinGroup, onBack, showChatOnMobile }) {
   const navigate = useNavigate();
   const { initial, currentUser } = useAuth();
-  const { users, crewActivities } = useData();
+  const { users, crewActivities, endCrewActivity, leaveGroup } = useData();
   const { isLoading, data: loadedMessages, error, retry } = useSimulatedFetch(conversation?.messages || [], 800, [conversation?.id]);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState({ text: '', mentions: [] });
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [replyingTo, setReplyingTo] = useState(null);
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  
+  const getReadStatusIcon = (msg) => {
+    let status = msg.status;
+    if (!status) {
+      status = 'read';
+    }
+    const meUser = users[currentUser];
+    const targetUser = Object.values(users).find(u => u.username === conversation.username || u.id === conversation.userId);
+    const bothHaveReadReceipts = (meUser?.settings?.privacy?.readReceipts !== false) && (targetUser?.settings?.privacy?.readReceipts !== false);
+    
+    const isRead = status === 'read' && bothHaveReadReceipts;
+    const isDelivered = status === 'read' || status === 'delivered';
+    
+    const isTransparent = ((msg.inviteData?.type === 'activityShare' || msg.inviteData?.type === 'postShare' || msg.inviteData?.type === 'profileShare' || msg.inviteData?.type === 'collegeShare') && !msg.text);
+    
+    let strokeColor = 'rgba(255, 255, 255, 0.6)';
+    if (isTransparent) {
+      strokeColor = 'rgba(0, 0, 0, 0.4)';
+    }
+    
+    let readColor = '#38bdf8';
+    if (isTransparent) {
+      readColor = 'var(--color-primary)';
+    }
+
+    if (isRead) {
+      return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={readColor} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }} title="Read">
+          <path d="M18 6L7 17l-5-5" />
+          <path d="M22 6L11 17l-2.5-2.5" />
+        </svg>
+      );
+    } else if (isDelivered) {
+      return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }} title="Delivered">
+          <path d="M18 6L7 17l-5-5" />
+          <path d="M22 6L11 17l-2.5-2.5" />
+        </svg>
+      );
+    } else {
+      return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }} title="Sent">
+          <path d="M18 6L7 17l-5-5" />
+        </svg>
+      );
+    }
+  };
   
   // Voice Call States
   const [isCalling, setIsCalling] = useState(false);
@@ -35,6 +86,26 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
   const [isMutedNotifications, setIsMutedNotifications] = useState(false);
   const [showGroupSettings, setShowGroupSettings] = useState(false);
   const [showActivityDetails, setShowActivityDetails] = useState(false);
+  const [showEndConfirm, setShowEndConfirm] = useState(false);
+
+  const currentActivity = useMemo(() => {
+    if (!conversation?.isActivityChat || !conversation?.activityId) return null;
+    return crewActivities?.find(a => a.id === conversation.activityId);
+  }, [conversation, crewActivities]);
+
+  const isActivityHost = currentActivity?.hostId === currentUser?.id;
+
+  const handleEndActivityFromChat = () => {
+    setShowEndConfirm(true);
+  };
+
+  const confirmEndActivityFromChat = async () => {
+    setShowEndConfirm(false);
+    if (currentActivity) {
+      await endCrewActivity(currentActivity.id);
+      if (onBack) onBack();
+    }
+  };
 
   const bodyRef = useRef(null);
   const timerRef = useRef(null);
@@ -83,10 +154,11 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
   };
 
   const handleSend = () => {
-    const text = inputValue.trim();
+    const text = (typeof inputValue === 'string' ? inputValue : (inputValue?.text || '')).trim();
+    const mentions = inputValue?.mentions || [];
     if (!text || conversation.blocked) return;
-    onSendMessage(conversation.id, text, replyingTo);
-    setInputValue('');
+    onSendMessage(conversation.id, text, replyingTo, mentions);
+    setInputValue({ text: '', mentions: [] });
     setShowEmojiPicker(false);
     setReplyingTo(null);
     setIsTyping(true);
@@ -185,12 +257,19 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
 
       <div className={styles.msgChatHeader}>
         <div 
-          className={`${styles.msgChatUser} ${(conversation.isGroup || conversation.isActivityChat) ? styles.msgChatUserClickable : ''}`}
+          className={`${styles.msgChatUser} ${styles.msgChatUserClickable}`}
           onClick={() => {
             if (conversation.isActivityChat) {
               setShowActivityDetails(true);
             } else if (conversation.isGroup) {
               setShowGroupSettings(true);
+            } else {
+              const username = conversation.username || Object.values(users).find(u => u.displayName === conversation.name || u.name === conversation.name)?.username;
+              if (username) {
+                navigate(`/profile/${username}`);
+              } else if (conversation.name) {
+                navigate(`/profile/${conversation.name.toLowerCase().replace(/\s+/g, '')}`);
+              }
             }
           }}
         >
@@ -202,11 +281,18 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
               </svg>
             </button>
           )}
-          <div className={styles.msgChatAvatar} style={{ background: isImageUrl(conversation.avatar) ? 'none' : conversation.color }}>
+          <div className={styles.msgChatAvatar} style={{ position: 'relative', overflow: 'visible', background: isImageUrl(conversation.avatar) ? 'none' : conversation.color }}>
             {isImageUrl(conversation.avatar) ? (
-              <img src={conversation.avatar} alt={conversation.name} className={styles.msgChatAvatarImg} />
+              <img src={conversation.avatar} alt={conversation.name} className={styles.msgChatAvatarImg} style={{ borderRadius: '50%', width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
               <DefaultAvatar />
+            )}
+            {!conversation.isGroup && !conversation.isActivityChat && (() => {
+              const targetUser = Object.values(users).find(u => u.username === conversation.username || u.id === conversation.userId);
+              const canSee = targetUser ? canSeeOnlineStatus(currentUser, targetUser) : true;
+              return canSee && targetUser?.isOnline;
+            })() && (
+              <span className={styles.msgHeaderOnlineDot} />
             )}
           </div>
           <div>
@@ -216,7 +302,29 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                 <span className={styles.msgBlockedBadge}>Blocked</span>
               )}
             </div>
-            <div className={styles.msgChatStatus}>{conversation.online ? 'Online' : 'Offline'}</div>
+            <div className={styles.msgChatStatus} style={conversation.isActivityChat ? { color: 'var(--color-text-muted)' } : {}}>
+              {conversation.isActivityChat ? (
+                (() => {
+                  const hostObj = currentActivity?.hostId ? Object.values(users).find(u => u.id === currentActivity.hostId) : null;
+                  const uName = hostObj?.username || conversation.hostUsername || 'host';
+                  return `by ${uName}`;
+                })()
+              ) : (
+                (() => {
+                  const targetUser = Object.values(users).find(u => u.username === conversation.username || u.id === conversation.userId);
+                  const canSeeOnline = targetUser ? canSeeOnlineStatus(currentUser, targetUser) : true;
+                  const canSeeSeen = targetUser ? canSeeLastSeen(currentUser, targetUser) : true;
+                  
+                  if (canSeeOnline && targetUser?.isOnline) {
+                    return 'Online';
+                  } else if (canSeeSeen && targetUser?.lastActive) {
+                    return `Last seen ${formatLastSeen(targetUser.lastActive)}`;
+                  } else {
+                    return 'Offline';
+                  }
+                })()
+              )}
+            </div>
           </div>
         </div>
         <div className={styles.msgChatActions} onClick={(e) => e.stopPropagation()}>
@@ -264,15 +372,28 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                   {isMutedNotifications ? 'Unmute Alerts' : 'Mute Alerts'}
                 </button>
                 {conversation.isActivityChat ? (
-                  <button 
-                    className={styles.msgDropdownItem} 
-                    onClick={() => { setShowActivityDetails(true); setShowMoreMenu(false); }}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" />
-                    </svg>
-                    Group Info
-                  </button>
+                  <>
+                    <button 
+                      className={styles.msgDropdownItem} 
+                      onClick={() => { setShowActivityDetails(true); setShowMoreMenu(false); }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" />
+                      </svg>
+                      Group Info
+                    </button>
+                    {isActivityHost && (
+                      <button 
+                        className={`${styles.msgDropdownItem} ${styles.msgDropdownItemDanger}`} 
+                        onClick={() => { setShowMoreMenu(false); handleEndActivityFromChat(); }}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" />
+                        </svg>
+                        End Activity
+                      </button>
+                    )}
+                  </>
                 ) : (
                   <>
                     <button 
@@ -336,7 +457,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
-            <span>This is a temporary chat. Messages are end-to-end encrypted and the chat will be automatically deleted 4 hours after the activity finishes.</span>
+            <span>This is a temporary chat. Messages are end-to-end encrypted and once the activity ends, this group will be deleted.</span>
           </div>
         )}
         {isLoading && (
@@ -447,7 +568,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                         {msg.senderName || 'Member'}
                       </div>
                     )}
-                    <div className={`${styles.msgBubble} ${msg.from === 'me' ? styles.msgBubbleMe : styles.msgBubbleThem} ${((msg.inviteData?.type === 'activityShare' || msg.inviteData?.type === 'postShare' || msg.inviteData?.type === 'profileShare') && !msg.text) ? styles.msgBubbleTransparent : ''}`}>
+                    <div className={`${styles.msgBubble} ${msg.from === 'me' ? styles.msgBubbleMe : styles.msgBubbleThem} ${((msg.inviteData?.type === 'activityShare' || msg.inviteData?.type === 'postShare' || msg.inviteData?.type === 'profileShare' || msg.inviteData?.type === 'collegeShare') && !msg.text) ? styles.msgBubbleTransparent : ''}`}>
                       <div className={styles.msgText}>
                       {searchQuery && hasQuery ? (
                         (() => {
@@ -462,8 +583,32 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                           );
                         })()
                       ) : (
-                        msg.text
+                        <RichText content={msg.text} mentions={msg.mentions} urlLimit={40} />
                       )}
+
+                      {msg.linkPreview && (
+                        <a
+                          href={msg.linkPreview.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.msgLinkPreview}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {msg.linkPreview.image && (
+                            <img src={msg.linkPreview.image} alt="" className={styles.msgLinkPreviewImg} />
+                          )}
+                          <div className={styles.msgLinkPreviewBody}>
+                            {msg.linkPreview.site && (
+                              <span className={styles.msgLinkPreviewSite}>{msg.linkPreview.site}</span>
+                            )}
+                            <span className={styles.msgLinkPreviewTitle}>{msg.linkPreview.title}</span>
+                            {msg.linkPreview.description && (
+                              <span className={styles.msgLinkPreviewDesc}>{msg.linkPreview.description}</span>
+                            )}
+                          </div>
+                        </a>
+                      )}
+
                       
                       {msg.inviteData && msg.inviteData.type === 'activityShare' ? (
                         (() => {
@@ -558,7 +703,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
 
                             <div className={styles.postShareBody}>
                               {msg.inviteData.post.text && (
-                                <p className={styles.postShareText}>{msg.inviteData.post.text}</p>
+                                <p className={styles.postShareText}><RichText content={msg.inviteData.post.text} mentions={msg.inviteData.post.mentions} /></p>
                               )}
                               {msg.inviteData.post.pollQuestion && (
                                 <div className={styles.postSharePollQuestion}>
@@ -616,6 +761,43 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                             </button>
                           </div>
                         </div>
+                      ) : msg.inviteData && msg.inviteData.type === 'collegeShare' ? (
+                        <div className={styles.profileShareCard} onClick={() => navigate('/colleges/' + msg.inviteData.college.id)}>
+                          <div className={styles.profileShareLeft}>
+                            <div className={styles.profileShareHeader}>
+                              <span className={styles.profileShareBadge} style={{ background: 'linear-gradient(135deg, #1D4ED8, #3B82F6)', color: 'white' }}>College</span>
+                            </div>
+                            
+                            <div className={styles.profileShareInfo}>
+                              {isImageUrl(msg.inviteData.college.avatar) ? (
+                                <img src={msg.inviteData.college.avatar} alt={msg.inviteData.college.name} className={styles.profileShareAvatar} style={{ borderRadius: '8px', objectFit: 'contain', background: '#f8fafc', padding: '4px' }} />
+                              ) : (
+                                <div className={styles.profileShareAvatar} style={{ background: msg.inviteData.college.color || 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 800, fontSize: '1.2rem', borderRadius: '8px' }}>
+                                  {msg.inviteData.college.name?.charAt(0) || 'C'}
+                                </div>
+                              )}
+                              <div className={styles.profileShareDetails}>
+                                <div className={styles.profileShareName}>{msg.inviteData.college.name}</div>
+                                <div className={styles.profileShareUsername}>Official Space</div>
+                              </div>
+                            </div>
+
+                            {msg.inviteData.college.desc && (
+                              <p className={styles.profileShareBio}>{msg.inviteData.college.desc}</p>
+                            )}
+
+                            <div className={styles.profileShareStats}>
+                              <span className={styles.profileShareStat}><strong>{msg.inviteData.college.members?.toLocaleString() || 0}</strong> Members</span>
+                            </div>
+                          </div>
+
+                          <div className={styles.profileShareRight}>
+                            <button className={styles.profileShareBtn}>
+                              View Space
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            </button>
+                          </div>
+                        </div>
                       ) : msg.inviteData ? (
                         <div className={styles.msgInviteCard}>
                           <div className={styles.msgInviteIcon}>
@@ -639,7 +821,10 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                         </div>
                       ) : null}
                     </div>
-                    <div className={styles.msgTimeLabel}>{msg.time}</div>
+                    <div className={styles.msgTimeLabel}>
+                      {msg.time}
+                      {msg.from === 'me' && !conversation.isGroup && !conversation.isActivityChat && getReadStatusIcon(msg)}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -684,7 +869,11 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
             <Suspense fallback={<div style={{ padding: '1rem', background: 'var(--color-bg-white)', borderRadius: '12px', border: '1px solid #e4e4e7', fontSize: '0.85rem' }}>Loading Emojis...</div>}>
               <Picker 
                 data={data} 
-                onEmojiSelect={(emoji) => setInputValue((prev) => prev + emoji.native)} 
+                onEmojiSelect={(emoji) => setInputValue((prev) => {
+                  const currentText = typeof prev === 'string' ? prev : (prev?.text || '');
+                  const currentMentions = prev?.mentions || [];
+                  return { text: currentText + emoji.native, mentions: currentMentions };
+                })} 
                 theme="light"
               />
             </Suspense>
@@ -702,14 +891,17 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                 <circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" y1="9" x2="9" y2="9" /><line x1="15" y1="9" x2="15" y2="9" />
               </svg>
             </button>
-            <input
-              type="text"
-              className={styles.msgInput}
-              placeholder="Type a message..."
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') handleSend(); }}
-            />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <MentionInput
+                className={styles.msgInput}
+                placeholder="Type a message..."
+                value={inputValue}
+                onChange={setInputValue}
+                onSubmit={handleSend}
+                singleLine={true}
+                communityId={conversation?.isGroup || conversation?.isActivityChat ? conversation?.id : null}
+              />
+            </div>
             <button className={styles.msgSendBtn} onClick={handleSend}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
@@ -724,6 +916,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
           conversation={conversation}
           onClose={() => setShowGroupSettings(false)}
           onLeaveGroup={() => {
+            if (leaveGroup) leaveGroup(conversation.id);
             setShowGroupSettings(false);
             onBack();
           }}
@@ -734,8 +927,21 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
         <ActivityChatDetailsModal 
           conversation={conversation} 
           onClose={() => setShowActivityDetails(false)} 
+          onEndActivity={() => {
+            setShowActivityDetails(false);
+            if (onBack) onBack();
+          }}
         />
       )}
+
+      <ConfirmModal
+        title="End Activity"
+        desc="Are you sure you want to end this activity? This will also delete the group chat."
+        visible={showEndConfirm}
+        onCancel={() => setShowEndConfirm(false)}
+        onConfirm={confirmEndActivityFromChat}
+        confirmText="End Activity"
+      />
     </div>
   );
 }

@@ -19,7 +19,7 @@
   border: 1px solid var(--color-border-light);
   border-radius: var(--radius-lg);
   padding: 1rem;
-  box-shadow:(--shadow-sm);
+  box-shadow: var(--shadow-sm);
 }
 
 .navCard {
@@ -91,6 +91,7 @@
   color: var(--color-text-muted);
   position: relative;
   transition: all 0.2s ease;
+  border-radius: var(--radius-md);
 }
 
 .sidebarLink:hover {
@@ -187,7 +188,7 @@
   border: 1px solid var(--color-border-light);
   border-radius: var(--radius-lg);
   padding: 0.75rem;
-  box-shadow:(--shadow-sm);
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -225,7 +226,7 @@
   border-radius: 50%;
   border: 2px solid white;
   overflow: hidden;
-  box-shadow:(--shadow-sm);
+  box-shadow: var(--shadow-sm);
 }
 
 .invitationHost img {
@@ -325,7 +326,21 @@
   color: inherit;
 }
 
+.communitiesListContainer {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  overflow: hidden;
+  transition: grid-template-rows 0.25s ease-out, opacity 0.2s ease-out;
+}
+
+.communitiesListContainer.open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
 .communitiesList {
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;

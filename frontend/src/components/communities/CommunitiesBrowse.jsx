@@ -11,6 +11,7 @@ import CommunityCard from './CommunityCard';
 import CommunityCardSkeleton from './CommunityCardSkeleton';
 import CommunityGrid from './CommunityGrid';
 import CreateCommunityModal from './CreateCommunityModal';
+import PageHeader from '../layout/PageHeader';
 import styles from './CommunitiesBrowse.module.css';
 
 export default function CommunitiesBrowse({ onOpenCommunity }) {
@@ -72,129 +73,85 @@ export default function CommunitiesBrowse({ onOpenCommunity }) {
 
   return (
     <div className={styles.browse}>
-      <div className={styles.header}>
-        <div className={styles.headerLeft}>
-          <div className={styles.titleRow}>
-            <div className={styles.titleGroup}>
-              <button 
-                className={styles.backBtn}
-                onClick={() => goBack('/home')}
-                aria-label="Go back"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="19" y1="12" x2="5" y2="12"></line>
-                  <polyline points="12 19 5 12 12 5"></polyline>
-                </svg>
-              </button>
-              <h1 className={styles.title}>Communities</h1>
-            </div>
-          </div>
-          <p className={styles.subtitle}>
-            Find your people. Join conversations that matter.
-          </p>
-        </div>
-        <div className={styles.headerRight}>
-          <button 
-            className={styles.createTextBtn}
-            onClick={() => setShowCreate(true)}
-          >
-            Create Community
-          </button>
-        </div>
-      </div>
-
-      <div className={styles.searchRow}>
-        <div className={styles.searchBox}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={styles.searchIcon}>
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <input 
-            type="text" 
-            className={styles.searchInput} 
-            placeholder="Search communities..." 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery && setSearchQuery(e.target.value)} 
-          />
-        </div>
-        <button 
-          className={styles.createIconBtn} 
-          onClick={() => setShowCreate(true)}
-          aria-label="Create Community"
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-        </button>
-      </div>
-
-      {myCommunities.length > 0 && (
-        <section className={styles.gridSection}>
-          <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>My Communities</h2>
-            {!showAllMyComms && myCommunities.length > 4 && (
-              <button className={styles.viewAllBtn} onClick={() => setShowAllMyComms(true)}>View all</button>
-            )}
-          </div>
-          {showAllMyComms ? (
-            <CommunityGrid>
-              {myCommunities.map((c) => (
-                <div key={c.id} className={styles.myCommCardExpanded} onClick={() => onOpenCommunity(c.id)}>
-                  <div className={styles.myCommAvatar}>
-                    {isImageUrl(c.avatar) ? (
-                      <img src={c.avatar} alt={c.name} />
-                    ) : (
-                      <DefaultAvatar />
-                    )}
-                  </div>
-                  <div className={styles.myCommInfo}>
-                    <h4 className={styles.myCommName}>{c.name}</h4>
-                    <p className={styles.myCommDesc}>{c.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </CommunityGrid>
-          ) : (
-            <div className={styles.myCommsRow}>
-              {myCommunities.map((c) => (
-                <div key={c.id} className={styles.myCommCard} onClick={() => onOpenCommunity(c.id)}>
-                  <div className={styles.myCommAvatar}>
-                    {isImageUrl(c.avatar) ? (
-                      <img src={c.avatar} alt={c.name} />
-                    ) : (
-                      <DefaultAvatar />
-                    )}
-                  </div>
-                  <div className={styles.myCommInfo}>
-                    <h4 className={styles.myCommName}>{c.name}</h4>
-                    <p className={styles.myCommDesc}>{c.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-      )}
-
-      <nav className={styles.catNav}>
-        {categoriesList.map((cat) => (
+      <PageHeader
+        title="Communities"
+        subtitle="Find your people. Join conversations that matter."
+        backPath="/home"
+        searchProps={{
+          value: searchQuery,
+          onChange: (e) => setSearchQuery && setSearchQuery(e.target.value),
+          placeholder: 'Search communities...',
+        }}
+        actions={
           <button
-            key={cat.id}
-            className={`${styles.catPill}${activeCategory === cat.id ? ` ${styles.catPillActive}` : ''}`}
-            onClick={() => setActiveCategory(cat.id)}
+            type="button"
+            className={styles.createIconBtn}
+            onClick={() => setShowCreate(true)}
+            aria-label="Create Community"
+            title="Create Community"
           >
-            {cat.label}
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
           </button>
-        ))}
-      </nav>
+        }
+        tabs={categoriesList}
+        activeTab={activeCategory}
+        onTabChange={setActiveCategory}
+        tabVariant="pills"
+      />
 
       <div className={styles.content}>
+        {myCommunities.length > 0 && (
+          <section className={styles.gridSection}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>My Communities</h2>
+              {!showAllMyComms && myCommunities.length > 4 && (
+                <button type="button" className={styles.viewAllBtn} onClick={() => setShowAllMyComms(true)}>View all</button>
+              )}
+            </div>
+            {showAllMyComms ? (
+              <CommunityGrid>
+                {myCommunities.map((c) => (
+                  <div key={c.id} className={styles.myCommCardExpanded} onClick={() => onOpenCommunity(c.id)}>
+                    <div className={styles.myCommAvatar}>
+                      {isImageUrl(c.avatar) ? (
+                        <img src={c.avatar} alt={c.name} />
+                      ) : (
+                        <DefaultAvatar />
+                      )}
+                    </div>
+                    <div className={styles.myCommInfo}>
+                      <h4 className={styles.myCommName}>{c.name}</h4>
+                      <p className={styles.myCommDesc}>{c.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </CommunityGrid>
+            ) : (
+              <div className={styles.myCommsRow}>
+                {myCommunities.map((c) => (
+                  <div key={c.id} className={styles.myCommCard} onClick={() => onOpenCommunity(c.id)}>
+                    <div className={styles.myCommAvatar}>
+                      {isImageUrl(c.avatar) ? (
+                        <img src={c.avatar} alt={c.name} />
+                      ) : (
+                        <DefaultAvatar />
+                      )}
+                    </div>
+                    <div className={styles.myCommInfo}>
+                      <h4 className={styles.myCommName}>{c.name}</h4>
+                      <p className={styles.myCommDesc}>{c.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
           {isLoading && (
             <section className={styles.gridSection}>
-              <div className={styles.sectionHeader}>
-                <h2 className={styles.sectionTitle}>Loading...</h2>
-              </div>
               <CommunityGrid>
                 <CommunityCardSkeleton />
                 <CommunityCardSkeleton />

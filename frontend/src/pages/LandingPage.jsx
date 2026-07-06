@@ -13,7 +13,7 @@ import {
   FileText,
 } from 'lucide-react';
 import Background from '../components/common/Background';
-import logo from '../assets/images/logo.png';
+import logo from '../assets/images/meetify logo.png';
 import pexelsStudents from '../assets/images/pexels-students.jpg';
 import styles from './LandingPage.module.css';
 
@@ -151,9 +151,6 @@ export default function LandingPage() {
               <button className={styles.heroBtnPrimary} onClick={() => navigate('/signup')}>
                 Try it now <ArrowRight size={16} />
               </button>
-            <button className={styles.heroBtnOutline} onClick={() => navigate('/login')}>
-              Log in
-            </button>
             </motion.div>
           </div>
 

@@ -464,150 +464,199 @@ export const initialUsers = {
 };
 
 export const initialPosts = [
-  { 
-    id: 'f_main_1', 
-    authorId: 'u1', 
-    time: '2 hours ago', 
-    text: 'Just finished an amazing hackathon! Built a real-time collab tool with 3 new friends I met here. Meetifyy is the best place to find your tribe 🚀', 
-    likes: 24, 
-    comments: 8,
+  {
+    id: 'f_main_1',
+    authorId: 'u1',
+    time: '2 hours ago',
+    text: "Just wrapped our 48-hour hackathon with @marcusrivera and @priyasharma 🚀 We built an AI-powered study assistant that generates flashcards from your lecture notes in real time. Couldn't have shipped it without this crew!",
+    mentions: [
+      { userId: 'u2', username: 'marcusrivera', start: 40, end: 53 },
+      { userId: 'u3', username: 'priyasharma', start: 58, end: 71 }
+    ],
+    media: { type: 'image', url: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=900&h=550&fit=crop' },
+    poll: {
+      question: 'Which feature should we ship next?',
+      options: ['Voice-interactive tutor', 'Figma plugin', 'Auto flashcard generation', 'Spaced repetition scheduler'],
+      votes: [18, 9, 34, 22],
+      selectedUsers: {}
+    },
+    likes: 142,
+    comments: 18,
     replies: [
       {
-        id: 'r1',
+        id: 'r_1_1',
         authorId: 'u4',
         time: '1 hour ago',
-        text: 'Totally agree with this! The transition to glassmorphism is making things look so much cleaner.',
-        likes: 5,
+        text: 'This is genuinely impressive @alicechen — the flashcard idea is going to be huge for exam season.',
+        mentions: [{ userId: 'u1', username: 'alicechen', start: 28, end: 38 }],
+        likes: 11,
         isLikedByMe: false,
         replies: [
           {
-            id: 'r1_1',
-            authorId: 'u5',
-            time: '45 mins ago',
-            text: 'I think neumorphism still has its place, especially for hardware-like interfaces, but glassmorphism is definitely more modern.',
-            likes: 2,
+            id: 'r_1_1_1',
+            authorId: 'u2',
+            time: '45 min ago',
+            text: 'Agreed with @alexq — we should push this to Product Hunt next week!',
+            mentions: [{ userId: 'u4', username: 'alexq', start: 12, end: 18 }],
+            likes: 4,
             isLikedByMe: false,
             replies: []
           }
         ]
       },
       {
-        id: 'r3',
-        authorId: 'u6',
-        time: '20 mins ago',
-        text: 'Can you share the Figma file? Would love to see how you set up the layer blurs!',
-        likes: 8,
+        id: 'r_1_2',
+        authorId: 'u5',
+        time: '30 min ago',
+        text: 'Voted for spaced repetition — that is the missing piece in every study app I have tried.',
+        mentions: [],
+        likes: 6,
         isLikedByMe: false,
         replies: []
       }
     ]
   },
-  { 
-    id: 'f_main_2', 
-    authorId: 'u2', 
-    time: '5 hours ago', 
-    text: "Looking for a UI/UX designer to join my startup project. We're building a mental-wellness app. DM me if interested! ✨", 
-    likes: 18, 
-    comments: 12,
-    replies: []
-  },
-  { 
-    id: 'f_main_3', 
-    authorId: 'u3', 
-    time: 'Yesterday', 
-    text: 'Hosting a virtual coffee chat this Saturday at 4PM EST. Topic: "Breaking into AI/ML as a self-taught dev." All welcome — link in bio! ☕', 
-    likes: 42, 
-    comments: 15,
-    replies: []
-  },
-  { 
-    id: 'f_main_4', 
-    authorId: 'u4', 
-    time: '2 days ago', 
-    text: 'Just deployed my first portfolio built entirely with React and Three.js! The 3D interactions are so much fun to build. Check it out guys! 🌍', 
-    likes: 89, 
-    comments: 24,
-    replies: []
-  },
-  { 
-    id: 'f_main_5', 
-    authorId: 'u7', 
-    time: '3 days ago', 
-    text: 'Is anyone here participating in the Global Game Jam next month? I need a 3D artist to complete our team!', 
-    likes: 12, 
-    comments: 5,
-    replies: []
-  },
-  { 
-    id: 'f_main_6', 
-    authorId: 'u1', 
-    time: '4 days ago', 
-    text: 'Experimenting with some new WebGL shaders today. The math is hurting my brain but the visual results are so worth it! 🧠✨', 
-    likes: 112, 
-    comments: 18,
-    replies: []
-  },
-  { 
-    id: 'f_main_7', 
-    authorId: 'u1', 
-    time: '1 week ago', 
-    text: 'Hot take: Next.js app router is actually really good once you get past the initial learning curve and stop trying to use it like the pages router.', 
-    likes: 340, 
-    comments: 89,
-    replies: []
-  },
-  { 
-    id: 'f_main_8', 
-    authorId: 'u2', 
-    time: '2 weeks ago', 
-    text: 'Accessibility isn\'t a feature you add at the end of a project. It\'s a foundation you build upon. Start with semantic HTML!', 
-    likes: 245, 
+  {
+    id: 'f_main_2',
+    authorId: 'u2',
+    time: '5 hours ago',
+    text: "New video drop 🎬 Here is a quick demo of the WebGL fluid simulation shader @alexq and I spent the last two weekends on. The vortex dynamics are finally looking buttery smooth. Full open-source release next week — cc @chrisb for the architecture review!",
+    mentions: [
+      { userId: 'u4', username: 'alexq', start: 74, end: 80 },
+      { userId: 'u5', username: 'chrisb', start: 226, end: 232 }
+    ],
+    media: { type: 'video', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' },
+    likes: 203,
     comments: 31,
     replies: []
   },
-  { 
-    id: 'f_main_9', 
-    authorId: 'u1', 
-    time: '3 weeks ago', 
-    text: 'Can we agree that standardizing design tokens is the best thing to happen to frontend development in the last 5 years?', 
-    likes: 840, 
-    comments: 112,
+  {
+    id: 'f_main_3',
+    authorId: 'u3',
+    time: 'Yesterday',
+    text: "Design systems deep-dive this Saturday 4 PM EST with @chrisb as our special guest — he will walk through his atomic token architecture that scales from mobile to desktop without a single override. Drop your questions below 👇",
+    mentions: [
+      { userId: 'u5', username: 'chrisb', start: 53, end: 59 }
+    ],
+    media: { type: 'image', url: 'https://images.unsplash.com/photo-1558655146-d09347e92766?w=900&h=500&fit=crop' },
+    poll: {
+      question: 'Which token format does your team use?',
+      options: ['W3C Design Tokens (JSON)', 'Tailwind config', 'CSS Custom Properties', 'Style Dictionary'],
+      votes: [41, 28, 62, 17],
+      selectedUsers: {}
+    },
+    likes: 89,
+    comments: 22,
     replies: []
   },
-  { 
-    id: 'f_main_10', 
-    authorId: 'u1', 
-    time: '1 month ago', 
-    text: 'Just read an amazing article on CSS Grid subgrid. It solves so many complex layout problems we used to need Javascript for.', 
-    likes: 120, 
-    comments: 24,
+  {
+    id: 'f_main_4',
+    authorId: 'u4',
+    time: '2 days ago',
+    text: "Big news 🎮 Our mobile game engine just passed 60 FPS on a mid-range Android device with full skeletal animation running. Shoutout to @alicechen for the physics integration and @sarahj for profiling the render thread bottlenecks.",
+    mentions: [
+      { userId: 'u1', username: 'alicechen', start: 135, end: 145 },
+      { userId: 'u8', username: 'sarahj', start: 151, end: 158 }
+    ],
+    media: { type: 'video', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
+    linkPreview: {
+      url: 'https://github.com/',
+      site: 'github.com',
+      title: 'Mobile Game Engine — open beta out now',
+      description: 'A lightweight, cross-platform 2D/3D game engine built in C++ with Kotlin bindings for Android.',
+      image: 'https://images.unsplash.com/photo-1556438064-2d7646166914?w=300&h=160&fit=crop'
+    },
+    likes: 317,
+    comments: 44,
     replies: []
   },
-  { 
-    id: 'f_main_11', 
-    authorId: 'u1', 
-    time: '1 month ago', 
-    text: 'Imposter syndrome never really goes away, you just get better at recognizing it and telling it to shut up. Keep building, everyone.', 
-    likes: 924, 
-    comments: 65,
+  {
+    id: 'f_main_5',
+    authorId: 'u1',
+    time: '2 days ago',
+    text: "AI code review is now part of my daily workflow thanks to @johnsonw's recommendation 🧠 Dropped my bug rate by ~40% in the first week. Here is the article that started it all — highly recommend reading it with your morning coffee ☕",
+    mentions: [
+      { userId: 'u6', username: 'johnsonw', start: 57, end: 66 }
+    ],
+    linkPreview: {
+      url: 'https://martinfowler.com/',
+      site: 'martinfowler.com',
+      title: 'Patterns of AI-Assisted Code Review',
+      description: 'How to integrate large language models into your pull-request workflow without losing the human touch.',
+      image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=300&h=160&fit=crop'
+    },
+    poll: {
+      question: 'Do you use AI coding assistants daily?',
+      options: ['Yes, for everything', 'Just debugging & boilerplate', 'Occasionally', 'Not yet'],
+      votes: [112, 58, 34, 14],
+      selectedUsers: {}
+    },
+    likes: 241,
+    comments: 37,
     replies: []
   },
-  { 
-    id: 'f_main_12', 
-    authorId: 'u1', 
-    time: '2 months ago', 
-    text: 'Who else is excited for the new React compiler? Memoization out of the box sounds like a dream come true.', 
-    likes: 450, 
-    comments: 89,
+  {
+    id: 'f_main_6',
+    authorId: 'u7',
+    time: '3 days ago',
+    text: "Global Game Jam is 6 weeks away and I am looking for a team! I handle 3D environments and VFX. @sarahj — your distributed-systems background could be wild for the networking layer if you are in 👀",
+    mentions: [
+      { userId: 'u8', username: 'sarahj', start: 95, end: 102 }
+    ],
+    media: { type: 'video', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4' },
+    likes: 54,
+    comments: 12,
     replies: []
   },
-  { 
-    id: 'f_main_13', 
-    authorId: 'u1', 
-    time: '2 months ago', 
-    text: 'Finished migrating a legacy project to Vite today. Build times went from 45 seconds to 2 seconds. Incredible.', 
-    likes: 310, 
-    comments: 15,
+  {
+    id: 'f_main_7',
+    authorId: 'u5',
+    time: '4 days ago',
+    text: "Gave a talk at the Startup Hub last night on component-driven architecture. Slides and recording are live — link below. Huge thanks to @marcusrivera for moderating and keeping the Q&A civilised 😄",
+    mentions: [
+      { userId: 'u2', username: 'marcusrivera', start: 137, end: 150 }
+    ],
+    media: { type: 'image', url: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=900&h=500&fit=crop' },
+    linkPreview: {
+      url: 'https://speakerdeck.com/',
+      site: 'speakerdeck.com',
+      title: 'Component-Driven Architecture at Scale — Slides',
+      description: '46 slides covering atomic design, token pipelines, and micro-frontend orchestration from a real production system.',
+      image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=300&h=160&fit=crop'
+    },
+    likes: 178,
+    comments: 28,
     replies: []
   },
+  {
+    id: 'f_main_8',
+    authorId: 'u6',
+    time: '5 days ago',
+    text: "Hot take 🌶️ Most junior devs would grow faster by reading 10 carefully chosen blog posts than by grinding LeetCode for a month. Here is my reading list — @alicechen and @priyasharma both vouched for most of these. What would you add?",
+    mentions: [
+      { userId: 'u1', username: 'alicechen', start: 161, end: 171 },
+      { userId: 'u3', username: 'priyasharma', start: 176, end: 188 }
+    ],
+    poll: {
+      question: 'Best way to level up as a junior dev?',
+      options: ['Build side projects', 'LeetCode grind', 'Read engineering blogs', 'Contribute to open source'],
+      votes: [198, 74, 112, 89],
+      selectedUsers: {}
+    },
+    likes: 412,
+    comments: 63,
+    replies: [
+      {
+        id: 'r_8_1',
+        authorId: 'u3',
+        time: '4 days ago',
+        text: "Can confirm — \"A Philosophy of Software Design\" changed how I write code more than any LeetCode problem ever did.",
+        mentions: [],
+        likes: 34,
+        isLikedByMe: false,
+        replies: []
+      }
+    ]
+  }
 ];
+

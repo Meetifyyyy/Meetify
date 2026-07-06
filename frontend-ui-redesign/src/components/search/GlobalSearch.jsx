@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
-import logo from '../../assets/images/logo.webp';
+import logo from '../../assets/images/meetify logo.png';
 import styles from './GlobalSearch.module.css';
 
 export default function GlobalSearch({ variant = 'header', isActive = false, autoFocus = false }) {

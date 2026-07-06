@@ -28,19 +28,27 @@ html {
   overflow-x: hidden;
 }
 
+/* Unused global header styling removed to prevent conflicts with Header.module.css */
 header {
-  padding: 0.75rem 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-  background: var(--color-bg-main);
-  border-bottom: 1px solid var(--color-border-light);
-  transition: var(--transition-theme);
+  box-sizing: border-box;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+input:focus,
+input:focus-visible,
+textarea:focus,
+textarea:focus-visible,
+[contenteditable="true"]:focus,
+[contenteditable="true"]:focus-visible {
+  outline: none !important;
 }
 
 .logo {
-  height: 32px;
+  height: 40px;
   width: auto;
   display: block;
   border-radius: var(--radius-sm);
@@ -192,7 +200,7 @@ nav a.active {
   }
 
   .logo {
-    height: 28px;
+    height: 34px;
   }
 
   .header-search {
@@ -202,9 +210,7 @@ nav a.active {
     flex-basis: 100%;
   }
 
-  .header--messages .header-search {
-    display: none !important;
-  }
+/* Remove mobile hidden search rule from global.css. Handled within CSS modules */
 }
 
 @media (max-width: 480px) {
@@ -213,61 +219,7 @@ nav a.active {
   }
 }
 
-/* ---------- Bottom Navigation ---------- */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background: var(--color-bg-white);
-  border-top: 1px solid var(--color-border-light);
-  display: none;
-  justify-content: space-around;
-  align-items: center;
-  z-index: 100;
-  padding: 0 1rem;
-  transition: var(--transition-theme);
-}
-
-.bottom-nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.2rem;
-  background: none;
-  border: none;
-  color: var(--color-text-light);
-  font-family: 'Inter', sans-serif;
-  font-size: 0.65rem;
-  font-weight: 500;
-  cursor: pointer;
-  width: 56px;
-  height: 100%;
-  transition: all 0.2s;
-  padding: 4px 0;
-}
-
-.bottom-nav-item svg {
-  stroke: currentColor;
-  stroke-width: 2px;
-}
-
-.bottom-nav-item:hover {
-  color: var(--color-text-muted);
-}
-
-.bottom-nav-item.active {
-  color: var(--color-primary);
-  font-weight: 600;
-}
-
-@media (max-width: 768px) {
-  .bottom-nav {
-    display: flex;
-  }
-}
+/* Unused bottom-nav styles removed since the app uses CSS module styles instead */
 
 .hover-underline:hover {
   text-decoration: underline;
@@ -290,6 +242,12 @@ nav a.active {
   pointer-events: none;
   z-index: 9999;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (max-width: 768px) {
+  .custom-toast {
+    bottom: calc(52px + 1rem); /* 52px is the height of BottomNav.module.css bottomNav */
+  }
 }
 
 .custom-toast.show {
@@ -431,8 +389,19 @@ nav a.active {
 }
 
 
+@keyframes fadeInSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .animate-in {
-  /* transitions removed */
+  animation: none !important;
 }
 
 @keyframes skeletonPulse {
@@ -503,81 +472,13 @@ button:active {
   scrollbar-color: var(--color-border-dark) transparent;
 }
 
-/* ---------- Instant Match FAB ---------- */
-.instant-match-fab {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 999;
-  width: 58px;
-  height: 58px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary, #7C3AED));
-  border: none;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, box-shadow 0.2s ease;
-}
-
-.instant-match-fab::before {
-  content: '';
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  border: 2px solid var(--color-primary);
-  animation: fabRipple 2.5s ease-out infinite;
-  pointer-events: none;
-}
-
-.instant-match-fab::after {
-  content: '';
-  position: absolute;
-  inset: -12px;
-  border-radius: 50%;
-  border: 1.5px solid var(--color-primary);
-  animation: fabRipple 2.5s ease-out 0.8s infinite;
-  pointer-events: none;
-}
-
-@keyframes fabRipple {
+@keyframes spin {
   0% {
-    transform: scale(0.8);
-    opacity: 0.5;
+    transform: rotate(0deg);
   }
-
   100% {
-    transform: scale(1.4);
-    opacity: 0;
+    transform: rotate(360deg);
   }
 }
 
-.instant-match-fab--hidden {
-  transform: translateX(140px);
-  opacity: 0;
-  pointer-events: none;
-}
 
-.instant-match-fab:hover {
-  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.3);
-}
-
-.instant-match-fab:not(.instant-match-fab--hidden):hover {
-  transform: scale(1.08);
-}
-
-.instant-match-fab:active {
-  transform: scale(0.94);
-}
-
-@media (max-width: 768px) {
-  .instant-match-fab {
-    bottom: 60px;
-    right: 16px;
-    width: 52px;
-    height: 52px;
-  }
-}

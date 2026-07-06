@@ -80,7 +80,7 @@
   --bg-gradient-mid: #121212;
   --bg-gradient-edge: #000000;
 
-  --bg-glass: #202020;
+  --bg-glass: rgba(32, 32, 32, 0.75);
   --border-glass: 1px solid rgba(255, 255, 255, 0.1);
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);

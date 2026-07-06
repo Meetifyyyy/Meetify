@@ -14,8 +14,8 @@ export default function GroupSettingsModal({ conversation, onClose, onLeaveGroup
 
   const [confirmModal, setConfirmModal] = useState({ visible: false, targetUserId: null });
 
-  const isAdmin = currentUser?.id === conversation.adminId;
-  const memberIds = conversation.members || [];
+  const isAdmin = currentUser?.id === conversation.adminId || currentUser?.id === conversation.hostId;
+  const memberIds = conversation.members || conversation.participants || [];
 
   const formattedDate = conversation.createdAt 
     ? new Date(conversation.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
@@ -153,7 +153,7 @@ export default function GroupSettingsModal({ conversation, onClose, onLeaveGroup
               <div className={styles.sectionTitle}>Members ({memberIds.length})</div>
               <div className={styles.memberList}>
                 {memberIds.map(uid => {
-                  const isMemberAdmin = uid === conversation.adminId;
+                  const isMemberAdmin = uid === conversation.adminId || uid === conversation.hostId;
                   const isMe = uid === currentUser?.id;
                   
                   const userObj = Object.values(users).find(u => u.id === uid) || { 

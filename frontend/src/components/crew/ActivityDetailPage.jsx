@@ -1,12 +1,14 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { useNotifications } from '../../context/NotificationContext';
 import { useSmartBack } from '../../hooks/useSmartBack';
 import { isImageUrl } from '../../utils/avatar';
 import { getRelativeDateLabel } from '../../utils/time';
 import DefaultAvatar from '../common/DefaultAvatar';
+import ConfirmModal from '../common/ConfirmModal';
 import ShareActivityModal from './ShareActivityModal';
+import ActivityJoinedModal from './ActivityJoinedModal';
 import styles from './ActivityDetailPage.module.css';
 
 /* ── Icon helpers ──────────────────────────────────────────── */
@@ -109,8 +111,9 @@ export default function ActivityDetailPage() {
   const location = useLocation();
   const goBack = useSmartBack();
 
-  const { crewActivities, savedActivities, toggleSaveActivity, currentUser } = useData();
+  const { crewActivities, savedActivities, toggleSaveActivity, currentUser, joinCrewActivity, requestToJoinActivity, endCrewActivity } = useData();
   const { addNotification } = useNotifications();
+  const navigate = useNavigate();
   const discussionRef = useRef(null);
   const commentInputRef = useRef(null);
 
@@ -130,6 +133,8 @@ export default function ActivityDetailPage() {
   const [hasJoined, setHasJoined] = useState(false);
   const [hasRequested, setHasRequested] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showEndConfirm, setShowEndConfirm] = useState(false);
+  const [showJoinedModal, setShowJoinedModal] = useState(false);
   const isSaved = savedActivities?.includes(activity?.id);
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([
@@ -156,13 +161,29 @@ export default function ActivityDetailPage() {
 
   const spotsLeft = slotsNeeded - slotsFilled;
   const isFull = spotsLeft <= 0;
+  const isHost = activity.hostId === currentUser?.id;
+  const isJoined = activity.participants?.includes(currentUser?.id) || hasJoined;
+  const isRequested = activity.pendingRequests?.includes(currentUser?.id) || hasRequested;
 
-  const handleJoin = () => {
+  const handleJoin = async () => {
     if (participationType === 'open') {
+      await joinCrewActivity(activity.id);
       setHasJoined(true);
+      setShowJoinedModal(true);
     } else {
+      await requestToJoinActivity(activity.id);
       setHasRequested(true);
     }
+  };
+
+  const handleEndActivity = () => {
+    setShowEndConfirm(true);
+  };
+
+  const confirmEndActivity = async () => {
+    setShowEndConfirm(false);
+    await endCrewActivity(activity.id);
+    navigate('/crew');
   };
 
   const handleSave = () => {
@@ -220,7 +241,11 @@ export default function ActivityDetailPage() {
 
             <h1 className={styles.title}>{title}</h1>
 
-            <div className={styles.hostRow}>
+            <div 
+              className={styles.hostRow} 
+              onClick={(e) => { e.stopPropagation(); navigate(`/profile/${activity.hostUsername}`); }}
+              style={{ cursor: 'pointer' }}
+            >
               {isImageUrl(hostAvatar) ? (
                 <img src={hostAvatar} alt={hostName} className={styles.avatar} />
               ) : (
@@ -234,17 +259,37 @@ export default function ActivityDetailPage() {
 
             {/* CTA Buttons */}
             <div className={styles.actionRow}>
-              {hasJoined ? (
+              {isHost ? (
+                <button className={styles.endBtn} onClick={handleEndActivity}>
+                  End Activity
+                </button>
+              ) : isJoined ? (
                 <button className={styles.joinedBtn} disabled>
                   <IconCheck /> Joined
                 </button>
-              ) : hasRequested ? (
+              ) : isRequested ? (
                 <button className={styles.requestedBtn} disabled>
                   <IconCheck /> Request Sent
                 </button>
               ) : (
                 <button className={styles.joinBtn} onClick={handleJoin} disabled={isFull}>
                   {isFull ? 'Activity Full' : participationType === 'open' ? 'Join Activity' : 'Request to Join'}
+                </button>
+              )}
+
+              {(isHost || isJoined) && (
+                <button
+                  className={styles.chatIconBtn}
+                  onClick={() => {
+                    const chatId = String(activity.id).startsWith('act_') ? activity.id : `act_${activity.id}`;
+                    navigate(`/messages/${chatId}`);
+                  }}
+                  aria-label="Open Group Chat"
+                  title="Open Group Chat"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                  </svg>
                 </button>
               )}
 
@@ -328,6 +373,21 @@ export default function ActivityDetailPage() {
         <ShareActivityModal
           isOpen={showShareModal}
           onClose={() => setShowShareModal(false)}
+          activity={activity}
+        />
+
+        <ConfirmModal
+          title="End Activity"
+          desc="Are you sure you want to end this activity? This will also delete the group chat."
+          visible={showEndConfirm}
+          onCancel={() => setShowEndConfirm(false)}
+          onConfirm={confirmEndActivity}
+          confirmText="End Activity"
+        />
+
+        <ActivityJoinedModal
+          isOpen={showJoinedModal}
+          onClose={() => setShowJoinedModal(false)}
           activity={activity}
         />
       </div>

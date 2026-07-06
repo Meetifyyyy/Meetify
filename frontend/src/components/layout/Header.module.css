@@ -1,6 +1,6 @@
 .header {
   position: relative;
-  z-index: 50;
+  z-index: 500;
   padding: 0 2rem;
   height: 60px;
   display: flex;
@@ -44,9 +44,9 @@
 }
 
 :global([data-theme="dark"]) .brand {
-  background: none;
-  -webkit-text-fill-color: #FFFFFF;
-  color: #FFFFFF;
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .nav {
@@ -54,7 +54,8 @@
   align-items: center;
   justify-content: flex-end;
   gap: 1.25rem;
-  flex: 0 0 280px;
+  flex: 0 0 auto;
+  margin-left: auto;
 }
 
 .nav a {
@@ -114,10 +115,11 @@
 }
 
 .headerSearch {
-  flex: 1;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
   max-width: 380px;
-  margin: 0 1.5rem;
-  position: relative;
   display: flex;
   align-items: center;
 }
@@ -162,6 +164,10 @@
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--color-text-main);
+}
+
+.mobileSearchIcon {
+  display: none;
 }
 
 .notifIcon {
@@ -375,6 +381,26 @@
 
   .headerSearch, .themeToggleBtn {
     display: none;
+  }
+
+  .mobileSearchIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    color: var(--color-icon-base);
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-white);
+    cursor: pointer;
+    margin-right: 0.5rem;
+    padding: 0;
+    transition: all var(--transition-fast);
+  }
+
+  .mobileSearchIcon:hover {
+    background: var(--color-bg-soft);
   }
 
   .collegeBtn {

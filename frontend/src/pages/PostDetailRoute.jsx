@@ -1,10 +1,9 @@
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useSmartBack } from '../hooks/useSmartBack';
 import { useData } from '../context/DataContext';
-import { useSimulatedFetch } from '../hooks/useSimulatedFetch';
-import { EmptyState, ErrorState } from '../components/common/StateViews';
+import { useFollow } from '../context/FollowContext';
+import { EmptyState } from '../components/common/StateViews';
 import PostView from '../components/feed/PostView';
-import PostSkeleton from '../components/feed/PostSkeleton';
 import RightPanel from '../components/layout/RightPanel';
 import rightPanelStyles from '../components/layout/RightPanel.module.css';
 import { isImageUrl } from '../utils/avatar';
@@ -15,66 +14,20 @@ export default function PostDetailRoute() {
   const goBack = useSmartBack();
   const location = useLocation();
   const { id } = useParams();
-  const { getUserById, getPostById, communities } = useData();
+  const { getUserById, getPostById, communities, currentUser } = useData();
+  const { isFollowing, toggleFollow } = useFollow();
 
   const handleBack = () => {
     goBack('/home');
   };
 
   // Always prefer live state from DataContext; use location.state only for context hints
-  const fetchedPost = getPostById(id) || location.state?.post;
-  
-  const { isLoading, data: post, error, retry } = useSimulatedFetch(fetchedPost, 800, [id]);
+  const post = getPostById(id) || location.state?.post || null;
 
   const sourceContext = location.state?.sourceContext || (post?.communityId ? 'community' : 'feed');
   const communityId = location.state?.communityId || post?.communityId;
 
-  if (isLoading) {
-    return (
-      <>
-        <main className="centre" style={{ marginTop: '1rem' }}>
-          <button 
-            className="back-btn" 
-            onClick={handleBack}
-            style={{ 
-              marginBottom: '1rem', 
-              display: 'inline-flex', 
-              alignItems: 'center', 
-              gap: '0.5rem', 
-              background: 'none', 
-              border: 'none', 
-              color: 'var(--color-text-muted)', 
-              cursor: 'pointer',
-              fontWeight: 600
-            }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="19" y1="12" x2="5" y2="12"></line>
-              <polyline points="12 19 5 12 12 5"></polyline>
-            </svg>
-            Back
-          </button>
-          <PostSkeleton />
-        </main>
-        <RightPanel>
-          <div className={rightPanelStyles.panelCard} style={{ opacity: 0.5 }}>
-            <div style={{ height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'var(--color-text-muted)' }}>
-              Loading context...
-            </div>
-          </div>
-        </RightPanel>
-      </>
-    );
-  }
-
-  if (error) {
-    return (
-      <main className="centre">
-        <ErrorState onRetry={retry} />
-      </main>
-    );
-  }
-
+  // Only show empty state if we truly have no post data at all (e.g. direct URL navigation to invalid ID)
   if (!post) {
     return (
       <main className="centre">
@@ -154,6 +107,9 @@ export default function PostDetailRoute() {
         communities: []
       };
 
+      const isSelf = currentUser && author.id === currentUser.id;
+      const isFollowingUser = isFollowing(author.username);
+
       return (
         <RightPanel>
           <div className={rightPanelStyles.panelCard} style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
@@ -185,12 +141,41 @@ export default function PostDetailRoute() {
               </p>
 
               {/* Action Buttons */}
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
-                <button style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.65rem', borderRadius: 'var(--radius-full)', border: 'none', background: 'var(--color-primary)', color: 'var(--color-bg-white)', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-family-sans)', transition: 'opacity 0.2s' }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                  Follow
-                </button>
-              </div>
+              {!isSelf && (
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <button 
+                    onClick={() => toggleFollow(author.username)}
+                    style={{ 
+                      flex: 1, 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      gap: '0.5rem', 
+                      padding: '0.65rem', 
+                      borderRadius: 'var(--radius-full)', 
+                      border: 'none', 
+                      background: isFollowingUser ? 'rgba(var(--color-primary-rgb), 0.15)' : 'var(--color-primary)', 
+                      color: isFollowingUser ? 'var(--color-primary)' : '#FFFFFF', 
+                      fontWeight: 600, 
+                      cursor: 'pointer', 
+                      fontFamily: 'var(--font-family-sans)', 
+                      transition: 'all 0.2s' 
+                    }}
+                  >
+                    {isFollowingUser ? (
+                      <>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        Following
+                      </>
+                    ) : (
+                      <>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Follow
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
 
               {/* Stats */}
               <div style={{ display: 'flex', gap: '2.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid var(--color-border-light)' }}>
@@ -218,7 +203,7 @@ export default function PostDetailRoute() {
                       onClick={() => commId && navigate(`/communities/${commId}`)}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                        <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'linear-gradient(135deg, #22C55E, #10B981)', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'var(--color-bg-white)', fontSize: '0.8rem', fontWeight: 700 }}>
+                        <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'linear-gradient(135deg, #22C55E, #10B981)', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#FFFFFF', fontSize: '0.8rem', fontWeight: 700 }}>
                           {commName.charAt(0)}
                         </div>
                         <div>

@@ -12,7 +12,7 @@ import styles from './Header.module.css';
 
 export default function Header({ variant = 'dashboard' }) {
   const { initial, logout, currentUser } = useAuth();
-  const { searchQuery, setSearchQuery, communities } = useData();
+  const { searchQuery, setSearchQuery, communities, resetDataState } = useData();
   const { unreadCount } = useNotifications();
   const { theme, toggleTheme } = useTheme();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -35,6 +35,7 @@ export default function Header({ variant = 'dashboard' }) {
   }, []);
 
   const handleLogout = () => {
+    resetDataState();
     logout();
     navigate('/');
   };
@@ -127,7 +128,7 @@ export default function Header({ variant = 'dashboard' }) {
                   minWidth: 16,
                   height: 16,
                   padding: '0 4px',
-                  background: 'var(--color-primary)',
+                  background: 'var(--color-danger)',
                   borderRadius: 8,
                   border: '2px solid var(--color-bg-white)',
                   display: 'flex',

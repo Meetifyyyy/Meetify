@@ -1,4 +1,4 @@
-import { useCallback, memo } from 'react';
+import { useCallback, memo, useState, useMemo } from 'react';
 import { useData } from '../../context/DataContext';
 import { useSimulatedFetch } from '../../hooks/useSimulatedFetch';
 import { EmptyState, ErrorState } from '../common/StateViews';
@@ -7,26 +7,43 @@ import Post from './Post';
 import PostSkeleton from './PostSkeleton';
 import styles from './Feed.module.css';
 
-function Feed({ onPostClick }) {
-  const { posts, addPost, searchQuery, getUserById, communities } = useData();
+const PAGE_SIZE = 20;
 
-  const filteredPosts = posts.filter((p) => {
-    if (!searchQuery) return true;
-    const author = getUserById(p.authorId);
-    return (
-      p.text?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      author?.displayName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      author?.username?.toLowerCase().includes(searchQuery.toLowerCase())
+function Feed({ onPostClick }) {
+  const { posts, addPost, searchQuery, getUserById, communities, currentUser } = useData();
+  const [page, setPage] = useState(1);
+
+  const filteredPosts = useMemo(() => {
+    const joinedCommunityIds = new Set(
+      Object.values(communities)
+        .filter(c => c.joined)
+        .map(c => c.id)
     );
-  });
+
+    return posts.filter((p) => {
+      if (p.communityId && !joinedCommunityIds.has(p.communityId)) return false;
+
+      if (searchQuery) {
+        const author = getUserById(p.authorId);
+        return (
+          p.text?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          author?.displayName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          author?.username?.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+      return true;
+    });
+  }, [posts, communities, currentUser, searchQuery, getUserById]);
 
   const { isLoading, data, error, retry } = useSimulatedFetch(filteredPosts, 800);
 
-  // Stable reference so PostComposer (React.memo) doesn't re-render when
-  // unrelated DataContext slices change
-  const handleNewPost = useCallback((text, pollData, mediaData) => {
+  const paginatedData = useMemo(() => (data || []).slice(0, page * PAGE_SIZE), [data, page]);
+  const hasMore = data ? paginatedData.length < data.length : false;
+
+  const handleNewPost = useCallback((text, pollData, mediaData, mentions) => {
     if (pollData || text || mediaData) {
-      addPost(text, pollData, null, mediaData);
+      addPost(text, pollData, null, mediaData, mentions);
+      setPage(1);
     }
   }, [addPost]);
 
@@ -59,14 +76,39 @@ function Feed({ onPostClick }) {
         />
       )}
 
-      {!isLoading && !error && data && data.length > 0 && data.map((p) => {
+      {!isLoading && !error && paginatedData.length > 0 && paginatedData.map((p) => {
         const cTag = p.communityId ? communities[p.communityId] : null;
         return (
           <Post key={p.id} postData={p} communityTag={cTag} onClick={() => onPostClick && onPostClick(p, 'feed')} />
         );
       })}
+
+      {!isLoading && !error && hasMore && (
+        <button
+          onClick={() => setPage(prev => prev + 1)}
+          style={{
+            display: 'block',
+            width: '100%',
+            padding: '0.85rem',
+            background: 'var(--color-bg-white)',
+            border: '1px solid var(--color-border-light)',
+            borderRadius: 'var(--radius-lg)',
+            color: 'var(--color-primary)',
+            fontWeight: 600,
+            fontSize: '0.9rem',
+            cursor: 'pointer',
+            marginTop: '0.5rem',
+            transition: 'background 0.2s',
+          }}
+          onMouseOver={e => e.currentTarget.style.background = 'var(--color-bg-soft)'}
+          onMouseOut={e => e.currentTarget.style.background = 'var(--color-bg-white)'}
+        >
+          Load more
+        </button>
+      )}
     </div>
   );
 }
 
 export default memo(Feed);
+

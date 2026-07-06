@@ -1,9 +1,11 @@
 import React, { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './CrewRightPanel.module.css';
 import { useData } from '../../context/DataContext';
 
 export default function CrewRightPanel({ onCreateActivity, onViewAll }) {
   const { crewActivities, currentUser } = useData();
+  const navigate = useNavigate();
 
   const myActivities = useMemo(() => {
     if (!currentUser) return [];
@@ -77,7 +79,15 @@ export default function CrewRightPanel({ onCreateActivity, onViewAll }) {
             <p className={styles.emptyText}>No upcoming activities yet. Join one to get started!</p>
           ) : (
             myActivities.slice(0, 2).map(activity => (
-              <div key={activity.id} className={styles.activityItem}>
+              <div 
+                key={activity.id} 
+                className={styles.activityItem}
+                onClick={() => {
+                  const chatId = String(activity.id).startsWith('act_') ? activity.id : `act_${activity.id}`;
+                  navigate(`/messages/${chatId}`);
+                }}
+                style={{ cursor: 'pointer' }}
+              >
                 <div className={styles.activityIcon}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>

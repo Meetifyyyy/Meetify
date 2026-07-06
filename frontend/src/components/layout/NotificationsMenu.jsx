@@ -42,11 +42,16 @@ const TYPE_ICONS = {
       <circle cx="12" cy="10" r="1" /><circle cx="16" cy="10" r="1" /><circle cx="8" cy="10" r="1" />
     </svg>
   ),
+  mention: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="4" /><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8" />
+    </svg>
+  ),
 };
 
 export default function NotificationsMenu({ isOpen, onClose }) {
   const { notifications, markAsRead, markAllRead, dismissNotification, clearAll, unreadCount, timeAgo } = useNotifications();
-  const { getUserById, acceptJoinRequest } = useData();
+  const { getUserById, acceptJoinRequest, rejectJoinRequest } = useData();
   const navigate = useNavigate();
 
   const handleClick = (notif) => {
@@ -55,6 +60,13 @@ export default function NotificationsMenu({ isOpen, onClose }) {
     switch (notif.type) {
       case 'follow':
         if (notif.targetUsername) navigate(`/profile/${notif.targetUsername}`);
+        break;
+      case 'mention':
+        if (notif.postId) navigate(`/post/${notif.postId}`);
+        else if (notif.convId) navigate(`/messages/${notif.convId}`);
+        else if (notif.activityId) navigate(`/crew/${notif.activityId}?discussion=1`);
+        else if (notif.communityId) navigate(`/communities/${notif.communityId}`);
+        else navigate('/home');
         break;
       case 'like':
       case 'comment':
@@ -156,7 +168,11 @@ export default function NotificationsMenu({ isOpen, onClose }) {
                       </button>
                       <button 
                         style={{ padding: '4px 12px', background: 'transparent', color: 'var(--color-text)', border: '1px solid var(--color-border)', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem' }}
-                        onClick={(e) => handleDismiss(e, notif.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          rejectJoinRequest(notif.activityId, notif.actorId);
+                          dismissNotification(notif.id);
+                        }}
                       >
                         Reject
                       </button>

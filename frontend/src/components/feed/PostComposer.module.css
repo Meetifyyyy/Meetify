@@ -129,7 +129,7 @@
 
 .composerIconBtn.active {
   color: var(--color-primary);
-  background: rgba(var(--color-primary-rgb), 0.15);
+  background: none;
 }
 
 .composerSendBtn {
@@ -481,5 +481,8 @@
   .postComposer {
     padding: 1rem 1.25rem;
     border-radius: var(--radius-lg);
+  }
+  .emojiPicker {
+    max-height: 200px;
   }
 }

@@ -4,12 +4,14 @@ import { useData } from '../../context/DataContext';
 import { showToast } from '../../utils/toast';
 import { isImageUrl } from '../../utils/avatar';
 import DefaultAvatar from '../common/DefaultAvatar';
+import MentionInput from '../common/mentions/MentionInput';
+import RichText from '../common/mentions/RichText';
 import { timeAgo } from '../../utils/time';
 import styles from './CommentNode.module.css';
 
 export default function CommentNode({ postId, comment, onReplySubmit, level = 0, isLastInThread = false }) {
   const [isReplying, setIsReplying] = useState(false);
-  const [replyText, setReplyText] = useState('');
+  const [replyContent, setReplyContent] = useState({ text: '', mentions: [] });
   const [showMenu, setShowMenu] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,21 +27,21 @@ export default function CommentNode({ postId, comment, onReplySubmit, level = 0,
 
   const handleReplyClick = () => {
     setIsReplying(!isReplying);
-    setReplyText(''); // Clear input when toggling
+    setReplyContent({ text: '', mentions: [] }); // Clear input when toggling
   };
 
   const handleCancelReply = () => {
     setIsReplying(false);
-    setReplyText('');
+    setReplyContent({ text: '', mentions: [] });
   };
 
   const handleSubmit = async () => {
-    if (!replyText.trim() || isSubmitting) return;
+    if (!replyContent.text.trim() || isSubmitting) return;
     setIsSubmitting(true);
-    await onReplySubmit(comment.id, replyText);
+    await onReplySubmit(comment.id, replyContent.text, replyContent.mentions);
     setIsSubmitting(false);
     setIsReplying(false);
-    setReplyText('');
+    setReplyContent({ text: '', mentions: [] });
   };
 
   const handleLike = () => {
@@ -81,6 +83,8 @@ export default function CommentNode({ postId, comment, onReplySubmit, level = 0,
                 )}
               </button>
               <div className={styles.commentMeta}>
+                <span className={styles.handle}>@{author.username}</span>
+                <span className={styles.metaDot}>·</span>
                 <span className={styles.time}>{comment.createdAt ? timeAgo(comment.createdAt) : comment.time}</span>
               </div>
             </div>
@@ -132,14 +136,14 @@ export default function CommentNode({ postId, comment, onReplySubmit, level = 0,
             </div>
           </div>
           <div className={styles.replyText}>
-            {comment.text}
+            <RichText content={comment.text} mentions={comment.mentions} urlLimit={30} />
           </div>
           <div className={styles.replyActionsRow}>
             <button 
               onClick={handleLike}
               className={`${styles.actionBtn} ${isLikedByMe ? styles.actionBtnLiked : ''}`}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill={isLikedByMe ? 'var(--color-primary)' : 'none'} stroke="currentColor" strokeWidth="2.5"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" /></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill={isLikedByMe ? 'var(--color-primary)' : 'none'} stroke={isLikedByMe ? 'var(--color-primary)' : 'currentColor'} strokeWidth="2.5"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" /></svg>
               {likes}
             </button>
             <button 
@@ -154,18 +158,16 @@ export default function CommentNode({ postId, comment, onReplySubmit, level = 0,
           {/* Inline Reply Composer */}
           {isReplying && (
             <div className={styles.inlineComposerContainer}>
-              <textarea 
-                placeholder={`Reply to @${author.username}`}
-                value={replyText}
-                onChange={(e) => {
-                  setReplyText(e.target.value);
-                  e.target.style.height = 'auto';
-                  e.target.style.height = (e.target.scrollHeight) + 'px';
-                }}
-                rows={1}
-                className={styles.inlineTextarea}
-                autoFocus
-              />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <MentionInput 
+                  placeholder={`Reply to @${author.username}`}
+                  value={replyContent}
+                  onChange={setReplyContent}
+                  onSubmit={handleSubmit}
+                  className={styles.inlineTextarea}
+                  singleLine={false}
+                />
+              </div>
               <div className={styles.inlineActions}>
                 <button 
                   onClick={handleCancelReply}
@@ -175,8 +177,8 @@ export default function CommentNode({ postId, comment, onReplySubmit, level = 0,
                 </button>
                 <button 
                   onClick={handleSubmit}
-                  disabled={!replyText.trim() || isSubmitting} 
-                  className={`${styles.submitBtn} ${replyText.trim() && !isSubmitting ? styles.submitBtnActive : styles.submitBtnDisabled}`}
+                  disabled={!replyContent.text.trim() || isSubmitting} 
+                  className={`${styles.submitBtn} ${replyContent.text.trim() && !isSubmitting ? styles.submitBtnActive : styles.submitBtnDisabled}`}
                 >
                   {isSubmitting ? '...' : 'Comment'}
                 </button>

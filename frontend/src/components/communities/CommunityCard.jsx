@@ -78,7 +78,7 @@ export default function CommunityCard({ comm, onClick }) {
           {isImageUrl(comm.avatar) ? (
             <img src={comm.avatar} alt={comm.name} className={styles.cardAvatarImg} />
           ) : (
-            <DefaultAvatar />
+            comm.name ? comm.name.charAt(0).toUpperCase() : ''
           )}
         </div>
         <h3 className={styles.cardTitle}>{comm.name}</h3>

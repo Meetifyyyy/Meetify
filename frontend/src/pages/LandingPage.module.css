@@ -29,7 +29,7 @@
 .brandLeft:hover { opacity: 0.75; }
 
 .logo {
-  height: 28px;
+  height: 38px;
   width: auto;
   display: block;
   border-radius: var(--radius-sm);
@@ -578,7 +578,7 @@
 }
 
 .footerLogo {
-  height: 26px;
+  height: 36px;
   width: auto;
   border-radius: 6px;
 }
@@ -836,7 +836,7 @@
   }
 
   .logo {
-    height: 24px;
+    height: 30px;
   }
 
   .themeBtn {

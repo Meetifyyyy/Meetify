@@ -154,8 +154,11 @@
 .largeInput::placeholder {
   color: var(--color-text-light);
 }
-.largeInput:focus {
+.largeInput:focus,
+.largeInput:focus-visible {
   border-bottom-color: var(--color-primary, var(--color-primary));
+  outline: none;
+  box-shadow: none;
 }
 
 .feedbackText {

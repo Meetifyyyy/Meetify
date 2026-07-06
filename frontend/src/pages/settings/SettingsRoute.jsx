@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { showToast } from '../../utils/toast';
@@ -11,6 +11,72 @@ function ChevronRight() {
       stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="9 18 15 12 9 6" />
     </svg>
+  );
+}
+
+function CustomSelect({ value, onChange, options, disabled }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
+
+  const selectedOption = options.find(o => o.value === value) || options[0];
+
+  return (
+    <div className={`${styles.customSelectContainer} ${disabled ? styles.disabledSelect : ''}`} ref={containerRef}>
+      <button 
+        type="button"
+        className={styles.selectButton} 
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        disabled={disabled}
+      >
+        <span className={styles.selectValue}>{selectedOption?.label}</span>
+        <svg 
+          width="16" 
+          height="16" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2.5" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
+          className={`${styles.selectChevron} ${isOpen ? styles.selectChevronOpen : ''}`}
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div className={styles.selectDropdown}>
+          {options.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              className={`${styles.selectOption} ${opt.value === value ? styles.selectOptionActive : ''}`}
+              onClick={() => {
+                onChange(opt.value);
+                setIsOpen(false);
+              }}
+            >
+              {opt.label}
+              {opt.value === value && (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -36,10 +102,17 @@ export default function SettingsRoute() {
   });
   const [socialErrors, setSocialErrors] = useState({});
 
-  // Privacy & notifications state
-  const [emailNotifs, setEmailNotifs] = useState(true);
-  const [pushNotifs, setPushNotifs] = useState(false);
-  const [privateProfile, setPrivateProfile] = useState(false);
+  // Privacy & notifications state — initialized from user object
+  const [emailNotifs, setEmailNotifs] = useState(currentUser?.preferences?.emailNotifs ?? true);
+  const [pushNotifs, setPushNotifs] = useState(currentUser?.preferences?.pushNotifs ?? false);
+  const [privateProfile, setPrivateProfile] = useState(currentUser?.preferences?.privateProfile ?? false);
+
+  // Presence settings
+  const [showOnlineStatus, setShowOnlineStatus] = useState(currentUser?.preferences?.showOnlineStatus ?? true);
+  const [showLastSeen, setShowLastSeen] = useState(currentUser?.preferences?.showLastSeen ?? true);
+  const [whoCanSeeOnline, setWhoCanSeeOnline] = useState(currentUser?.preferences?.whoCanSeeOnline || 'everyone');
+  const [whoCanSeeLastSeen, setWhoCanSeeLastSeen] = useState(currentUser?.preferences?.whoCanSeeLastSeen || 'everyone');
+  const [readReceipts, setReadReceipts] = useState(currentUser?.preferences?.readReceipts ?? true);
   const validateSocialLinks = () => {
     const errors = {};
     if (socialLinks.instagram && !socialLinks.instagram.includes('instagram.com/')) {
@@ -68,6 +141,22 @@ export default function SettingsRoute() {
         return;
       }
       updateProfile({ socialLinks });
+      showToast('Saved');
+    } else if (activePanel === 'privacy') {
+      // Persist preferences to the user object so they survive refresh
+      updateProfile({
+        preferences: {
+          ...(currentUser?.preferences || {}),
+          emailNotifs,
+          pushNotifs,
+          privateProfile,
+          showOnlineStatus,
+          showLastSeen,
+          whoCanSeeOnline,
+          whoCanSeeLastSeen,
+          readReceipts,
+        }
+      });
       showToast('Saved');
     } else {
       showToast('Saved');
@@ -251,6 +340,7 @@ export default function SettingsRoute() {
       {/* ── Privacy & Notifications panel ── */}
       {activePanel === 'privacy' && (
         <div className={`${styles.body} animate-in`}>
+          <div className={styles.sectionLabel}>Profile Visibility</div>
           <div className={styles.group}>
             <div className={styles.toggleRow}>
               <div className={styles.toggleInfo}>
@@ -262,7 +352,90 @@ export default function SettingsRoute() {
                 <span className={styles.slider} />
               </label>
             </div>
-            <div className={styles.divider} />
+          </div>
+
+          <div className={styles.sectionLabel}>Online Status &amp; Presence</div>
+          <div className={styles.group} style={{ overflow: 'visible' }}>
+            <div className={styles.toggleRow}>
+              <div className={styles.toggleInfo}>
+                <span className={styles.rowLabel}>Show Online Status</span>
+                <span className={styles.toggleDesc}>Allow other users to see when you're online.</span>
+              </div>
+              <label className={styles.toggle}>
+                <input type="checkbox" checked={showOnlineStatus} onChange={e => setShowOnlineStatus(e.target.checked)} />
+                <span className={styles.slider} />
+              </label>
+            </div>
+            
+            <div className={styles.divider} style={{ marginLeft: 16 }} />
+
+            <div className={`${styles.selectRow} ${!showOnlineStatus ? styles.disabledRow : ''}`}>
+              <div className={styles.toggleInfo}>
+                <span className={styles.rowLabel}>Who Can See My Online Status</span>
+                <span className={styles.toggleDesc}>Manage visibility rules for your online state</span>
+              </div>
+              <CustomSelect 
+                value={whoCanSeeOnline}
+                onChange={setWhoCanSeeOnline}
+                options={[
+                  { value: 'everyone', label: 'Everyone' },
+                  { value: 'following', label: 'People I Follow' },
+                  { value: 'mutual', label: 'Mutual Connections' },
+                  { value: 'nobody', label: 'Nobody' }
+                ]}
+                disabled={!showOnlineStatus}
+              />
+            </div>
+
+            <div className={styles.divider} style={{ marginLeft: 16 }} />
+
+            <div className={styles.toggleRow}>
+              <div className={styles.toggleInfo}>
+                <span className={styles.rowLabel}>Show Last Seen</span>
+                <span className={styles.toggleDesc}>Allow others to see when you were last active.</span>
+              </div>
+              <label className={styles.toggle}>
+                <input type="checkbox" checked={showLastSeen} onChange={e => setShowLastSeen(e.target.checked)} />
+                <span className={styles.slider} />
+              </label>
+            </div>
+
+            <div className={styles.divider} style={{ marginLeft: 16 }} />
+
+            <div className={`${styles.selectRow} ${!showLastSeen ? styles.disabledRow : ''}`}>
+              <div className={styles.toggleInfo}>
+                <span className={styles.rowLabel}>Who Can See My Last Seen</span>
+                <span className={styles.toggleDesc}>Manage visibility rules for your last active time</span>
+              </div>
+              <CustomSelect 
+                value={whoCanSeeLastSeen}
+                onChange={setWhoCanSeeLastSeen}
+                options={[
+                  { value: 'everyone', label: 'Everyone' },
+                  { value: 'following', label: 'People I Follow' },
+                  { value: 'mutual', label: 'Mutual Connections' },
+                  { value: 'nobody', label: 'Nobody' }
+                ]}
+                disabled={!showLastSeen}
+              />
+            </div>
+
+            <div className={styles.divider} style={{ marginLeft: 16 }} />
+
+            <div className={styles.toggleRow}>
+              <div className={styles.toggleInfo}>
+                <span className={styles.rowLabel}>Read Receipts</span>
+                <span className={styles.toggleDesc}>Allow others to know when you've read their messages.</span>
+              </div>
+              <label className={styles.toggle}>
+                <input type="checkbox" checked={readReceipts} onChange={e => setReadReceipts(e.target.checked)} />
+                <span className={styles.slider} />
+              </label>
+            </div>
+          </div>
+
+          <div className={styles.sectionLabel}>Notifications</div>
+          <div className={styles.group}>
             <div className={styles.toggleRow}>
               <div className={styles.toggleInfo}>
                 <span className={styles.rowLabel}>Email Notifications</span>
@@ -273,7 +446,7 @@ export default function SettingsRoute() {
                 <span className={styles.slider} />
               </label>
             </div>
-            <div className={styles.divider} />
+            <div className={styles.divider} style={{ marginLeft: 16 }} />
             <div className={styles.toggleRow}>
               <div className={styles.toggleInfo}>
                 <span className={styles.rowLabel}>Push Notifications</span>

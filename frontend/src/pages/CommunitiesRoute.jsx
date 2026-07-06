@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import PageLayout from '../components/layout/PageLayout';
 import CommunitiesBrowse from '../components/communities/CommunitiesBrowse';
 
 export default function CommunitiesRoute() {
@@ -9,8 +10,8 @@ export default function CommunitiesRoute() {
   };
 
   return (
-    <main className="centre centre-wide animate-in">
+    <PageLayout>
       <CommunitiesBrowse onOpenCommunity={handleOpenCommunity} />
-    </main>
+    </PageLayout>
   );
 }

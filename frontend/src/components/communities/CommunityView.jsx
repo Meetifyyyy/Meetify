@@ -82,7 +82,7 @@ function HeroSection({ comm, joined, onToggleJoin, onCreatePost, userCommunities
               {isImageUrl(comm.avatar) ? (
                 <img src={comm.avatar} alt={comm.name} className={styles.heroAvatarImg} />
               ) : (
-                <DefaultAvatar />
+                comm.name ? comm.name.charAt(0).toUpperCase() : ''
               )}
               {isAdmin && (
                 <>

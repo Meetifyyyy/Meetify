@@ -130,7 +130,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1rem 1.25rem;
+  padding: 0.75rem 1.25rem;
   cursor: pointer;
   transition: background var(--transition-fast);
   border-bottom: 1px solid var(--color-border-light);
@@ -141,6 +141,25 @@
 }
 
 .item:hover {
+  background: var(--color-bg-elevated);
+}
+
+.invitationItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.15rem 1.25rem;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  border-bottom: 1px solid var(--color-border-light);
+  position: relative;
+}
+
+.invitationItem:last-child {
+  border-bottom: none;
+}
+
+.invitationItem:hover {
   background: var(--color-bg-elevated);
 }
 
@@ -159,6 +178,10 @@
   height: 5px;
   background-color: var(--color-primary);
   border-radius: 50%;
+}
+
+.invitationItem.unread::after {
+  top: 2.2rem;
 }
 
 .avatar {
@@ -180,10 +203,21 @@
 
 .content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
   font-family: var(--font-family-sans);
   font-size: 0.85rem;
   line-height: 1.35;
   color: var(--color-text-muted);
+  word-break: break-word;
+}
+
+.textRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .actorName {
@@ -221,41 +255,48 @@
 
 .invitationActions {
   display: flex;
-  gap: 0.5rem;
-  margin-left: auto;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0.25rem;
 }
 
 .acceptBtn {
   background: var(--color-primary);
   color: #FFFFFF;
   border: none;
-  padding: 0.4rem 1rem;
+  padding: 0.4rem 1.15rem;
   border-radius: var(--radius-full);
   font-weight: 600;
   font-size: 0.8rem;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .acceptBtn:hover {
-  opacity: 0.9;
+  background: var(--color-primary-hover, #1d4ed8);
+  transform: translateY(-1px);
 }
 
+.declineBtn,
 .closeBtn {
-  background: var(--color-border-light);
+  background: transparent;
   color: var(--color-text-main);
-  border: none;
-  padding: 0.4rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border: 1px solid var(--color-border);
+  padding: 0.4rem 1.15rem;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.8rem;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  white-space: nowrap;
 }
 
+.declineBtn:hover,
 .closeBtn:hover {
-  background: var(--color-border);
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-danger, #ef4444);
+  border-color: rgba(239, 68, 68, 0.4);
 }
 
 .empty {

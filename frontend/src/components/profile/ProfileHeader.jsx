@@ -181,7 +181,7 @@ export default function ProfileHeader({ profileUsername, onViewFollowers, onView
         <div className={styles.profileStats}>
           <div className={styles.stat} style={{ cursor: 'default' }}>
             <div className={styles.statValue}>{postsCount}</div>
-            <div className={styles.statLabel}>Post</div>
+            <div className={styles.statLabel}>Posts</div>
           </div>
           <div className={styles.stat} onClick={onViewFollowers} style={{ cursor: 'pointer' }}>
             <div className={styles.statValue}>{followersCount}</div>

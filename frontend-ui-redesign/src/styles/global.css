@@ -38,7 +38,7 @@ header {
 }
 
 .logo {
-  height: 32px;
+  height: 40px;
   width: auto;
   display: block;
   border-radius: var(--radius-sm);
@@ -181,7 +181,7 @@ nav a.active {
 
 @media (max-width: 768px) {
   header { padding: 0.6rem 1rem; flex-wrap: wrap; gap: 0.5rem; }
-  .logo { height: 28px; }
+  .logo { height: 34px; }
   .header-search { order: 3; max-width: 100%; margin: 0; flex-basis: 100%; }
   .header--messages .header-search { display: none !important; }
 }

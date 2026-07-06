@@ -94,9 +94,9 @@ export default function LoginPage() {
               Log in <ArrowRight className={styles.btnIcon} />
             </button>
             
-            <div style={{ marginTop: '2.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.95rem', fontWeight: 500, color: '#6b7280' }}>
-              <Link to="/forgot-password" style={{ color: '#6366f1', textDecoration: 'none' }}>Forgot password?</Link>
-              <div>Don't have an account? <Link to="/signup" style={{ color: '#6366f1', textDecoration: 'none' }}>Sign up</Link></div>
+            <div style={{ marginTop: '2.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.95rem', fontWeight: 500, color: 'var(--color-text-muted)' }}>
+              <Link to="/forgot-password" style={{ color: 'var(--color-primary)', textDecoration: 'none' }} className="hover-underline">Forgot password?</Link>
+              <div>Don't have an account? <Link to="/signup" style={{ color: 'var(--color-primary)', textDecoration: 'none' }} className="hover-underline">Sign up</Link></div>
             </div>
 
           </form>

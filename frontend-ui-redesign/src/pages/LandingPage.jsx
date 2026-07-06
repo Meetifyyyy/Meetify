@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/images/logo.webp';
+import logo from '../assets/images/meetify logo.png';
 import heroIllustration from '../assets/images/hero-illustration.webp';
-import heroBg from '../assets/images/download.png';
+import heroBg from '../assets/images/download.jpg';
 import '../styles/landing.css';
 
 /* ─── tiny hook: reveal on scroll ─── */

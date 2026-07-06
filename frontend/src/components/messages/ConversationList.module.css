@@ -173,33 +173,40 @@
 .convItem {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1.25rem;
+  gap: 0.85rem;
+  padding: 0.85rem 1rem;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
-  border-left: 3px solid transparent;
+  margin: 0.35rem 0.6rem;
+  border-radius: 12px;
+  background: transparent;
+  box-sizing: border-box;
 }
 
 .convItem:hover {
-  background: var(--color-bg-main);
+  background: var(--color-bg-soft);
 }
 
 .convItemActive {
-  background: var(--color-bg-main);
-  border-left-color: var(--color-primary);
+  background: rgba(37, 99, 235, 0.08);
+}
+
+:global([data-theme="dark"]) .convItemActive {
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .convAvatar {
-  width: 42px;
-  height: 42px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-family-display);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: var(--color-text-inverse);
   flex-shrink: 0;
   position: relative;
@@ -210,32 +217,112 @@
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .convOnlineDot {
   position: absolute;
-  bottom: -1px;
-  right: -1px;
+  bottom: 1px;
+  right: 1px;
   width: 11px;
   height: 11px;
   border-radius: 50%;
   background: var(--color-success);
-  border: 2.5px solid var(--color-bg-white);
+  border: 2px solid var(--color-bg-white);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .convInfo {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
-.convName {
-  font-family: var(--font-family-display);
-  font-weight: 600;
-  font-size: 0.88rem;
-  color: var(--color-text-main);
+.convNameRow {
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  width: 100%;
+}
+
+.convNameText {
+  font-family: var(--font-family-display);
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--color-text-main);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 130px;
+}
+
+.convNameTextUnread {
+  font-weight: 700;
+}
+
+.convTags {
+  display: flex;
+  gap: 4px;
+}
+
+.tagActivity {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb), 0.12);
+  padding: 1px 4px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.tagGroup {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--color-success);
+  background: rgba(16, 185, 129, 0.12);
+  padding: 1px 4px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.convPreview {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.convPreviewUnread {
+  color: var(--color-text-main);
+  font-weight: 600;
+}
+
+.convMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.convTime {
+  font-size: 0.72rem;
+  color: var(--color-text-light);
+  font-variant-numeric: tabular-nums;
+}
+
+.convTimeUnread {
+  color: var(--color-primary);
+  font-weight: 600;
 }
 
 .convBadge {
@@ -244,30 +331,14 @@
   justify-content: center;
   min-width: 18px;
   height: 18px;
-  border-radius: 9px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  border-radius: 50%;
+  background: var(--color-primary);
   color: #FFFFFF;
   font-size: 0.65rem;
   font-weight: 700;
-  padding: 0 5px;
+  padding: 0 4px;
   font-family: var(--font-family-display);
-}
-
-.convPreview {
-  font-size: 0.78rem;
-  color: var(--color-text-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-top: 2px;
-}
-
-.convTime {
-  font-size: 0.68rem;
-  color: var(--color-text-light);
-  flex-shrink: 0;
-  align-self: flex-start;
-  padding-top: 2px;
+  box-shadow: 0 2px 6px rgba(var(--color-primary-rgb), 0.2);
 }
 
 .contextMenu {
@@ -309,12 +380,40 @@
   background: rgba(239, 68, 68, 0.08);
 }
 
+.mobileHeaderWrapper {
+  display: none;
+}
+
+.desktopHeaderWrapper {
+  display: block;
+}
+
 @media (max-width: 768px) {
+  .mobileHeaderWrapper {
+    display: block;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .desktopHeaderWrapper {
+    display: none;
+  }
+
+  .msgNewBtn {
+    border-radius: 50% !important;
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    box-shadow: 0 4px 10px rgba(var(--color-primary-rgb, 37, 99, 235), 0.25) !important;
+  }
+
   .msgConvList {
     width: 100% !important;
     flex: 1;
     min-height: 0;
     border-right: none;
+    padding: 0.5rem 0.75rem 0;
+    box-sizing: border-box;
   }
 
   .hideOnMobile {
@@ -345,10 +444,11 @@
   }
 
   .tabsRow {
-    padding: 0.5rem 0.5rem;
+    padding: 0.5rem 0;
   }
 
   .convItem {
     padding: 0.75rem 0.75rem;
+    margin: 0.35rem 0;
   }
 }

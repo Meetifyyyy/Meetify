@@ -131,3 +131,10 @@
   min-width: 2.5rem;
   text-align: right;
 }
+
+@media (max-width: 768px) {
+  .overlay {
+    align-items: flex-end;
+    padding-bottom: calc(60px + 1.5rem);
+  }
+}

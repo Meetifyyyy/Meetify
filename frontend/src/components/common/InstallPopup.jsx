@@ -25,6 +25,18 @@ export default function InstallPopup() {
     // Already inside the installed app — no popup needed
     if (isStandalone) return;
 
+    // Track app opens (once per session) to show popup at interval of 5
+    const hasIncremented = sessionStorage.getItem('meetify_session_incremented');
+    let opens = parseInt(localStorage.getItem('meetify_app_opens') || '0', 10);
+    if (!hasIncremented) {
+      opens += 1;
+      localStorage.setItem('meetify_app_opens', opens.toString());
+      sessionStorage.setItem('meetify_session_incremented', 'true');
+    }
+
+    // Only show at an interval of 5
+    if (opens % 5 !== 0) return;
+
     // Listen for the appinstalled event to reliably track installation
     const onInstalled = () => {
       localStorage.setItem('meetify_installed', 'true');

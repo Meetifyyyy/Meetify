@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useData } from '../../context/DataContext';
 import { useNavigate } from 'react-router-dom';
 import Post from '../feed/Post';
-import PostSkeleton from '../feed/PostSkeleton';
 import styles from './ProfileActivity.module.css';
 
 export default function ProfileActivity({ profileUsername }) {
@@ -14,16 +13,6 @@ export default function ProfileActivity({ profileUsername }) {
   const isOwnProfile = profileUser.id === currentUser.id;
 
   const posts = getUserPosts(profileUser.id);
-  
-  const [initialLoading, setInitialLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate loading to prevent layout shift
-    const timer = setTimeout(() => {
-      setInitialLoading(false);
-    }, 600);
-    return () => clearTimeout(timer);
-  }, [targetUsername]);
 
   const handlePostClick = (post) => {
     navigate(`/post/${post.id}`, { state: { post, sourceContext: 'profile' } });
@@ -32,12 +21,7 @@ export default function ProfileActivity({ profileUsername }) {
   return (
     <div className={styles.profileSection}>
       <h2 className={styles.sectionTitle}>Recent Activity</h2>
-      {initialLoading ? (
-        <>
-          <PostSkeleton />
-          <PostSkeleton />
-        </>
-      ) : posts.length === 0 ? (
+      {posts.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '3rem 1rem', background: 'var(--color-bg-white)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border-light)' }}>
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '1rem', color: 'var(--color-text-muted)' }}>
             <path d="M12 20h9" />

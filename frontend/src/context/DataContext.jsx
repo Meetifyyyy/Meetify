@@ -5,6 +5,8 @@ import { initialMessages } from '../data/messages';
 import { generateCrewActivities } from '../components/crew/crewData';
 import { useAuth } from './AuthContext';
 import { parseTimeString } from '../utils/time';
+import { getLinkPreview } from '../utils/linkPreview';
+import { canSeeOnlineStatus } from '../utils/presence';
 
 const DataContext = createContext(null);
 
@@ -21,6 +23,12 @@ export function DataProvider({ children }) {
           const u = parsed[username];
           if (!u.followingList) u.followingList = [];
           if (!u.followersList) u.followersList = [];
+          if (u.isOnline === undefined) {
+            u.isOnline = !!u.recentlyActive;
+          }
+          if (u.lastActive === undefined) {
+            u.lastActive = u.isOnline ? Date.now() : Date.now() - 4 * 60 * 60 * 1000;
+          }
         });
         return parsed;
       } catch (e) {
@@ -32,6 +40,12 @@ export function DataProvider({ children }) {
       const u = initialized[username];
       if (!u.followingList) u.followingList = [];
       if (!u.followersList) u.followersList = [];
+      if (u.isOnline === undefined) {
+        u.isOnline = !!u.recentlyActive;
+      }
+      if (u.lastActive === undefined) {
+        u.lastActive = u.isOnline ? Date.now() : Date.now() - 4 * 60 * 60 * 1000;
+      }
     });
     return initialized;
   });
@@ -42,6 +56,14 @@ export function DataProvider({ children }) {
       createdAt: item.createdAt || parseTimeString(item.time),
       replies: item.replies ? mapWithTimestamps(item.replies) : undefined
     }));
+
+    // Bump this version whenever initialPosts is replaced so cached data is evicted
+    const POSTS_SEED_VERSION = '3';
+    const storedVersion = localStorage.getItem('meetifyy_posts_seed_v');
+    if (storedVersion !== POSTS_SEED_VERSION) {
+      localStorage.removeItem('meetifyy_posts');
+      localStorage.setItem('meetifyy_posts_seed_v', POSTS_SEED_VERSION);
+    }
 
     const saved = localStorage.getItem('meetifyy_posts');
     if (saved) {
@@ -68,6 +90,13 @@ export function DataProvider({ children }) {
   });
 
   const [communitiesState, setCommunitiesState] = useState(() => {
+    const COMMUNITIES_SEED_VERSION = '2';
+    const storedVersion = localStorage.getItem('meetifyy_communities_seed_v');
+    if (storedVersion !== COMMUNITIES_SEED_VERSION) {
+      localStorage.removeItem('meetifyy_communities');
+      localStorage.setItem('meetifyy_communities_seed_v', COMMUNITIES_SEED_VERSION);
+    }
+
     const saved = localStorage.getItem('meetifyy_communities');
     if (saved) {
       try {
@@ -108,13 +137,37 @@ export function DataProvider({ children }) {
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [reportedPosts, setReportedPosts] = useState(() => {
+    try {
+      const saved = localStorage.getItem('meetifyy_reported_posts');
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
+
   // Persist states to localStorage when changed
   useEffect(() => {
     localStorage.setItem('meetifyy_users', JSON.stringify(users));
   }, [users]);
 
   useEffect(() => {
-    localStorage.setItem('meetifyy_posts', JSON.stringify(posts));
+    try {
+      // Strip base64 data-URL media before persisting — they can be tens of MBs
+      // and will silently blow the localStorage 5 MB quota.
+      // External https:// URLs are kept as-is.
+      const serializable = posts.map(p => {
+        if (!p.media) return p;
+        const url = typeof p.media === 'string' ? p.media : p.media?.url;
+        if (url && url.startsWith('data:')) {
+          // Drop the blob — it only lives in this session anyway
+          return { ...p, media: null };
+        }
+        return p;
+      });
+      localStorage.setItem('meetifyy_posts', JSON.stringify(serializable));
+    } catch (e) {
+      // Quota exceeded — not fatal, posts still work in-memory this session
+      console.warn('Could not persist posts to localStorage:', e);
+    }
   }, [posts]);
 
   useEffect(() => {
@@ -132,6 +185,200 @@ export function DataProvider({ children }) {
   useEffect(() => {
     localStorage.setItem('meetifyy_saved_activities', JSON.stringify(savedActivities));
   }, [savedActivities]);
+
+  useEffect(() => {
+    localStorage.setItem('meetifyy_reported_posts', JSON.stringify(reportedPosts));
+  }, [reportedPosts]);
+
+  // Real-time current user presence tracking & multi-tab coordination
+  useEffect(() => {
+    if (!currentUser || !currentUser.username) return;
+
+    const username = currentUser.username;
+    let idleTimer = null;
+    let saveDebounceTimer = null;
+    const IDLE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+
+    const broadcastChannel = typeof BroadcastChannel !== 'undefined' 
+      ? new BroadcastChannel('meetify_presence_channel') 
+      : null;
+
+    const tabId = Math.random().toString(36).substring(2, 11);
+    const activeTabs = new Set([tabId]);
+
+    const setOnline = (online, forceWrite = false) => {
+      setUsers(prev => {
+        const u = prev[username];
+        if (!u) return prev;
+        if (u.isOnline === online && !forceWrite) return prev;
+
+        const updatedUser = {
+          ...u,
+          isOnline: online,
+          lastActive: Date.now()
+        };
+
+        if (broadcastChannel) {
+          broadcastChannel.postMessage({
+            type: 'PRESENCE_CHANGE',
+            username,
+            isOnline: online,
+            lastActive: updatedUser.lastActive,
+            tabId
+          });
+        }
+
+        return {
+          ...prev,
+          [username]: updatedUser
+        };
+      });
+    };
+
+    const handleUserActivity = () => {
+      setOnline(true);
+
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        setOnline(false);
+      }, IDLE_TIMEOUT);
+
+      if (!saveDebounceTimer) {
+        saveDebounceTimer = setTimeout(() => {
+          setOnline(true, true);
+          saveDebounceTimer = null;
+        }, 60 * 1000);
+      }
+    };
+
+    setOnline(true);
+    handleUserActivity();
+
+    const activityEvents = ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'];
+    const onActivity = () => handleUserActivity();
+
+    activityEvents.forEach(evt => {
+      window.addEventListener(evt, onActivity);
+    });
+
+    const handleNetworkOnline = () => setOnline(true);
+    const handleNetworkOffline = () => setOnline(false);
+    window.addEventListener('online', handleNetworkOnline);
+    window.addEventListener('offline', handleNetworkOffline);
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        setOnline(true);
+        handleUserActivity();
+      } else {
+        if (broadcastChannel) {
+          broadcastChannel.postMessage({ type: 'TAB_HIDDEN', tabId });
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    if (broadcastChannel) {
+      broadcastChannel.postMessage({ type: 'TAB_PING', tabId });
+
+      broadcastChannel.onmessage = (event) => {
+        const msg = event.data;
+        if (!msg) return;
+
+        if (msg.type === 'TAB_PING') {
+          broadcastChannel.postMessage({ type: 'TAB_PONG', tabId: msg.tabId, senderTabId: tabId });
+        } else if (msg.type === 'TAB_PONG' && msg.tabId === tabId) {
+          activeTabs.add(msg.senderTabId);
+        } else if (msg.type === 'PRESENCE_CHANGE') {
+          if (msg.username !== username) {
+            setUsers(prev => {
+              const u = prev[msg.username];
+              if (!u) return prev;
+              if (u.isOnline === msg.isOnline && u.lastActive === msg.lastActive) return prev;
+              return {
+                ...prev,
+                [msg.username]: {
+                  ...u,
+                  isOnline: msg.isOnline,
+                  lastActive: msg.lastActive
+                }
+              };
+            });
+          }
+        } else if (msg.type === 'TAB_HIDDEN') {
+          activeTabs.delete(msg.tabId);
+          if (activeTabs.size === 0 && document.visibilityState !== 'visible') {
+            setOnline(false);
+          }
+        } else if (msg.type === 'PROFILE_UPDATED' && msg.username !== username) {
+          setUsers(prev => ({
+            ...prev,
+            [msg.username]: msg.user
+          }));
+        }
+      };
+    }
+
+    return () => {
+      if (idleTimer) clearTimeout(idleTimer);
+      if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+      
+      activityEvents.forEach(evt => {
+        window.removeEventListener(evt, onActivity);
+      });
+      window.removeEventListener('online', handleNetworkOnline);
+      window.removeEventListener('offline', handleNetworkOffline);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+
+      if (broadcastChannel) {
+        broadcastChannel.postMessage({ type: 'TAB_HIDDEN', tabId });
+        broadcastChannel.close();
+      }
+    };
+  }, [currentUser]);
+
+  // Simulation of other users' presence toggles to simulate real-time updates
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const interval = setInterval(() => {
+      setUsers(prev => {
+        const usernames = Object.keys(prev).filter(name => name !== currentUser.username);
+        if (usernames.length === 0) return prev;
+
+        const randomName = usernames[Math.floor(Math.random() * usernames.length)];
+        const user = prev[randomName];
+        if (!user) return prev;
+
+        const showOnline = user.preferences?.showOnlineStatus ?? true;
+        if (!showOnline) return prev;
+
+        const nextOnline = !user.isOnline;
+        const updated = {
+          ...user,
+          isOnline: nextOnline,
+          lastActive: nextOnline ? Date.now() : Date.now() - Math.floor(Math.random() * 30 * 60 * 1000)
+        };
+
+        return {
+          ...prev,
+          [randomName]: updated
+        };
+      });
+    }, 45000);
+
+    return () => clearInterval(interval);
+  }, [currentUser]);
+
+  // Clean up expired temporary group chats on load
+  useEffect(() => {
+    const now = Date.now();
+    setConversations(prev => {
+      const filtered = prev.filter(c => !c.isTemporary || !c.expiresAt || c.expiresAt > now);
+      return filtered.length !== prev.length ? filtered : prev;
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Dynamic seed: Ensure the current user has some crew invitations if they are logged in
   useEffect(() => {
@@ -172,7 +419,7 @@ export function DataProvider({ children }) {
 
       crewActivities.forEach(act => {
         if (act.participants?.includes(currentUser.id) || act.hostId === currentUser.id) {
-          const actChatId = `act_${act.id}`;
+          const actChatId = String(act.id).startsWith('act_') ? String(act.id) : `act_${act.id}`;
           const existing = newConvs.find(c => c.id === actChatId);
           
           if (!existing) {
@@ -245,12 +492,24 @@ export function DataProvider({ children }) {
           delete comp2.followingList;
           delete comp2.followersList;
           if (stableStringify(comp1) !== stableStringify(comp2)) {
+            const updated = {
+              ...existing,
+              ...currentUser
+            };
+            const broadcastChannel = typeof BroadcastChannel !== 'undefined' 
+              ? new BroadcastChannel('meetify_presence_channel') 
+              : null;
+            if (broadcastChannel) {
+              broadcastChannel.postMessage({
+                type: 'PROFILE_UPDATED',
+                username: currentUser.username,
+                user: updated
+              });
+              broadcastChannel.close();
+            }
             return {
               ...prev,
-              [currentUser.username]: {
-                ...existing,
-                ...currentUser
-              }
+              [currentUser.username]: updated
             };
           }
         }
@@ -345,8 +604,12 @@ export function DataProvider({ children }) {
     });
   }, [currentUser, notify]);
 
-  const addPost = useCallback(async (text, poll, communityId = null, media = null) => {
+  const addPost = useCallback(async (text, poll, communityId = null, media = null, mentions = []) => {
     await new Promise(resolve => setTimeout(resolve, 600));
+
+    const validMentions = (Array.isArray(mentions) ? mentions : []).filter(m => 
+      m && typeof m.start === 'number' && typeof m.end === 'number' && m.username
+    );
 
     const newPost = {
       id: `post_${Date.now()}`,
@@ -355,11 +618,13 @@ export function DataProvider({ children }) {
       time: 'just now',
       text,
       media,
+      mentions: validMentions,
       poll: poll ? {
         ...poll,
         votes: poll.options.map(() => 0),
         selectedUsers: {}
       } : undefined,
+      linkPreview: getLinkPreview(text) || undefined,
       likedBy: [],
       likes: 0,
       comments: 0,
@@ -372,25 +637,46 @@ export function DataProvider({ children }) {
     }
 
     setPosts(prev => [newPost, ...prev]);
-  }, [currentUser, users]);
+
+    const uniqueUsers = new Set();
+    validMentions.forEach(m => {
+      if (m.username && m.username !== currentUser.username) {
+        uniqueUsers.add(m.username);
+      }
+    });
+    uniqueUsers.forEach(uname => {
+      notify('mention', { actorId: currentUser.id, targetUsername: uname, text: 'mentioned you in a post.', postId: newPost.id, subType: 'post' });
+    });
+  }, [currentUser, users, notify]);
 
   const deletePost = useCallback(async (postId) => {
     await new Promise(resolve => setTimeout(resolve, 400));
     setPosts(prev => prev.filter(p => p.id !== postId));
   }, []);
 
-  const editPost = useCallback(async (postId, newText) => {
+  const editPost = useCallback(async (postId, newText, mentions = []) => {
     await new Promise(resolve => setTimeout(resolve, 300));
+    const validMentions = (Array.isArray(mentions) ? mentions : []).filter(m => 
+      m && typeof m.start === 'number' && typeof m.end === 'number' && m.username
+    );
     setPosts(prev => prev.map(p => {
       if (p.id === postId) {
-        return { ...p, text: newText };
+        return { 
+          ...p, 
+          text: newText, 
+          mentions: validMentions,
+          linkPreview: getLinkPreview(newText) || undefined
+        };
       }
       return p;
     }));
   }, []);
 
-  const addComment = useCallback(async (postId, text, parentCommentId = null) => {
+  const addComment = useCallback(async (postId, text, parentCommentId = null, mentions = []) => {
     await new Promise(resolve => setTimeout(resolve, 600));
+    const validMentions = (Array.isArray(mentions) ? mentions : []).filter(m => 
+      m && typeof m.start === 'number' && typeof m.end === 'number' && m.username
+    );
     setPosts(prev => prev.map(p => {
       if (p.id !== postId) return p;
 
@@ -405,11 +691,22 @@ export function DataProvider({ children }) {
         createdAt: Date.now(),
         time: 'just now',
         text,
+        mentions: validMentions,
         likedBy: [],
         likes: 0,
         isLikedByMe: false,
         replies: []
       };
+
+      const uniqueUsers = new Set();
+      validMentions.forEach(m => {
+        if (m.username && m.username !== currentUser.username) {
+          uniqueUsers.add(m.username);
+        }
+      });
+      uniqueUsers.forEach(uname => {
+        notify('mention', { actorId: currentUser.id, targetUsername: uname, text: 'mentioned you in a comment.', postId, subType: 'comment' });
+      });
 
       if (!parentCommentId) {
         return {
@@ -491,31 +788,32 @@ export function DataProvider({ children }) {
     setPosts(prev => prev.map(p => {
       if (p.id !== postId) return p;
 
-      let removed = false;
+      // Count total nodes removed (comment + all its nested replies)
+      let removedCount = 0;
+      const countDescendants = (node) => {
+        let n = 1; // the node itself
+        (node.replies || []).forEach(r => { n += countDescendants(r); });
+        return n;
+      };
+
       const filterNode = (nodes) => {
         const filtered = nodes.filter(node => {
           if (node.id === commentId) {
-            removed = true;
+            removedCount += countDescendants(node);
             return false;
           }
           return true;
         });
-
-        return filtered.map(node => {
-          if (node.replies && node.replies.length > 0) {
-            return {
-              ...node,
-              replies: filterNode(node.replies)
-            };
-          }
-          return node;
-        });
+        return filtered.map(node => ({
+          ...node,
+          replies: node.replies && node.replies.length > 0 ? filterNode(node.replies) : node.replies
+        }));
       };
 
       const newReplies = filterNode(p.replies || []);
       return {
         ...p,
-        comments: removed ? Math.max(0, p.comments - 1) : p.comments,
+        comments: Math.max(0, p.comments - removedCount),
         replies: newReplies
       };
     }));
@@ -525,20 +823,24 @@ export function DataProvider({ children }) {
     await new Promise(resolve => setTimeout(resolve, 300));
     setPosts(prev => prev.map(p => {
       if (p.id !== postId || !p.poll) return p;
-      
+
       const currentSelected = p.poll.selectedUsers?.[currentUser.id] || [];
       if (currentSelected.length > 0) return p;
 
-      const nextVotes = [...(p.poll.votes || p.poll.options.map(() => 0))];
+      // Guard: ensure votes array always matches options length to avoid NaN
+      const baseVotes = Array.from({ length: p.poll.options.length }, (_, i) => {
+        const v = (p.poll.votes || [])[i];
+        return (typeof v === 'number' && !isNaN(v)) ? v : 0;
+      });
       optionIndices.forEach(idx => {
-        nextVotes[idx] += 1;
+        if (idx >= 0 && idx < baseVotes.length) baseVotes[idx] += 1;
       });
 
       return {
         ...p,
         poll: {
           ...p.poll,
-          votes: nextVotes,
+          votes: baseVotes,
           selectedUsers: {
             ...(p.poll.selectedUsers || {}),
             [currentUser.id]: optionIndices
@@ -656,8 +958,13 @@ export function DataProvider({ children }) {
     setCommunitiesState(prev => {
       const comm = prev[communityId];
       if (!comm) return prev;
-      
+
+      const kickedMember = (comm.memberList || []).find(m => m.id === userIdToKick);
       const newMemberList = (comm.memberList || []).filter(m => m.id !== userIdToKick);
+      // Also remove their avatar from the avatar strip
+      const newMemberAvatars = kickedMember
+        ? (comm.memberAvatars || []).filter(a => a !== kickedMember.avatar)
+        : (comm.memberAvatars || []);
       const newBannedUsers = {
         ...(comm.bannedUsers || {}),
         [userIdToKick]: Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days from now
@@ -665,9 +972,10 @@ export function DataProvider({ children }) {
 
       return {
         ...prev,
-        [communityId]: { 
-          ...comm, 
+        [communityId]: {
+          ...comm,
           memberList: newMemberList,
+          memberAvatars: newMemberAvatars,
           bannedUsers: newBannedUsers,
           members: Math.max(0, comm.members - 1)
         }
@@ -736,37 +1044,87 @@ export function DataProvider({ children }) {
     });
   }, [currentUser, notify]);
 
-  const sendDirectMessage = useCallback(async (convId, text, replyTo = null, inviteData = null) => {
+  const sendDirectMessage = useCallback(async (convId, text, replyTo = null, inviteData = null, mentions = []) => {
     await new Promise(resolve => setTimeout(resolve, 300));
     const now = new Date();
     const timeStr = now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
+
+    const validMentions = (Array.isArray(mentions) ? mentions : []).filter(m => 
+      m && typeof m.start === 'number' && typeof m.end === 'number' && m.username
+    );
 
     setConversations((prev) => {
       const convIndex = prev.findIndex(c => c.id === convId);
       if (convIndex === -1) return prev;
       
+      const conv = prev[convIndex];
+      const targetUser = Object.values(users).find(u => u.username === conv.username || u.id === conv.userId);
+      const isOnline = targetUser ? !!targetUser.isOnline : false;
+      const initialStatus = isOnline ? 'delivered' : 'sent';
+
       const updatedConv = {
-        ...prev[convIndex],
+        ...conv,
         messages: [
-          ...prev[convIndex].messages,
+          ...conv.messages,
           { 
             from: 'me', 
             text, 
             time: timeStr, 
+            status: initialStatus,
             replyTo: replyTo ? { text: replyTo.text, from: replyTo.from } : null,
-            inviteData: inviteData || null
+            inviteData: inviteData || null,
+            mentions: validMentions,
+            linkPreview: getLinkPreview(text) || undefined
           }
         ],
         lastMsg: text,
         time: 'now',
+        timestamp: Date.now()
       };
       
       const newConvs = [...prev];
       newConvs.splice(convIndex, 1);
       newConvs.unshift(updatedConv); // Move to top
+
+      // Trigger read receipt transition if online and settings allow
+      const meUser = users[currentUser?.username];
+      const bothHaveReadReceipts = (meUser?.settings?.privacy?.readReceipts !== false) && (targetUser?.settings?.privacy?.readReceipts !== false);
+
+      if (isOnline && bothHaveReadReceipts) {
+        setTimeout(() => {
+          setConversations(current => current.map(c => {
+            if (c.id !== convId) return c;
+            const msgs = c.messages.map((m, idx) => {
+              if (idx === c.messages.length - 1 && m.from === 'me' && m.status !== 'read') {
+                return { ...m, status: 'read' };
+              }
+              return m;
+            });
+            return { ...c, messages: msgs };
+          }));
+        }, 2000);
+      }
+
+      // Notify mentioned users ONLY if this is a group and they are in the group
+      const participants = conv.participants || [];
+      const isGroup = conv.isGroup || participants.length > 2 || (conv.name && conv.name.includes('Group'));
+      if (isGroup) {
+        const uniqueUsers = new Set();
+        validMentions.forEach(m => {
+          if (m.username && m.username !== currentUser?.username) {
+            if (participants.some(p => (typeof p === 'string' ? p : p.username) === m.username)) {
+              uniqueUsers.add(m.username);
+            }
+          }
+        });
+        uniqueUsers.forEach(uname => {
+          notify('mention', { actorId: currentUser?.id, targetUsername: uname, text: 'mentioned you in a group chat.', convId, subType: 'chat' });
+        });
+      }
+
       return newConvs;
     });
-  }, []);
+  }, [currentUser, notify, users]);
 
   const reactToMessage = useCallback(async (convId, messageIndex, reaction) => {
     setConversations((prev) =>
@@ -859,7 +1217,7 @@ export function DataProvider({ children }) {
 
     // Manage activity conversation
     setConversations(prev => {
-      const activityChatId = `act_${activityId}`;
+      const activityChatId = String(activityId).startsWith('act_') ? String(activityId) : `act_${activityId}`;
       const existingConv = prev.find(c => c.id === activityChatId);
       
       if (existingConv) {
@@ -869,18 +1227,20 @@ export function DataProvider({ children }) {
           return prev.map(c => c.id === activityChatId ? {
             ...c,
             participants: [...(c.participants || []), currentUser?.id],
-            messages: [...(c.messages || []), sysMsg]
+            messages: [...(c.messages || []), sysMsg],
+            lastMsg: `@${currentUser?.username || 'someone'} has joined`,
+            time: 'Just now',
+            timestamp: Date.now()
           } : c);
         }
         return prev;
       } else {
-        // Find activity title to name the chat
-        const act = crewActivities.find(a => a.id === activityId);
-        const title = act ? act.title : 'Activity Chat';
+        // Read title from crewActivities via setCrewActivities prev — avoid stale closure
+        // by searching within the conversations prev list for a name hint, or using activityId
         const sysMsg = { id: Date.now(), type: 'system', text: `@${currentUser?.username || 'someone'} has joined`, time: 'Just now' };
         const newConv = {
           id: activityChatId,
-          name: title,
+          name: `Activity Chat (${activityId})`, // will be enriched by enrichedConversations memo
           isActivityChat: true,
           activityId: activityId,
           color: 'var(--color-primary)',
@@ -895,7 +1255,56 @@ export function DataProvider({ children }) {
       }
     });
 
-  }, [currentUser, notify, crewActivities]);
+  }, [currentUser, notify]);
+
+  const acceptJoinRequest = useCallback((activityId, requesterId) => {
+    // 1. Remove from pendingRequests and add to participants
+    setCrewActivities(prev => prev.map(a => {
+      if (a.id === activityId) {
+        return {
+          ...a,
+          pendingRequests: (a.pendingRequests || []).filter(id => id !== requesterId),
+          participants: [...(a.participants || []), requesterId],
+          slotsFilled: (a.slotsFilled || 0) + 1
+        };
+      }
+      return a;
+    }));
+
+    // 2. Add to group chat and send system message
+    const activityChatId = String(activityId).startsWith('act_') ? String(activityId) : `act_${activityId}`;
+    setConversations(prev => {
+      const existing = prev.find(c => c.id === activityChatId);
+      if (existing) {
+        const requester = Object.values(users).find(u => u.id === requesterId);
+        const reqName = requester ? requester.username : 'someone';
+        const sysMsg = { id: Date.now(), type: 'system', text: `@${reqName} has joined`, time: 'Just now' };
+        
+        return prev.map(c => c.id === activityChatId ? {
+          ...c,
+          participants: [...(c.participants || []), requesterId],
+          messages: [...(c.messages || []), sysMsg],
+          lastMsg: `@${reqName} has joined`,
+          time: 'Just now',
+          timestamp: Date.now()
+        } : c);
+      }
+      return prev; // If it doesn't exist, we don't worry about it here
+    });
+
+  }, [users]);
+
+  const rejectJoinRequest = useCallback((activityId, requesterId) => {
+    setCrewActivities(prev => prev.map(a => {
+      if (a.id === activityId) {
+        return {
+          ...a,
+          pendingRequests: (a.pendingRequests || []).filter(id => id !== requesterId)
+        };
+      }
+      return a;
+    }));
+  }, []);
 
   const requestToJoinActivity = useCallback((activityId) => {
     setCrewActivities(prev => prev.map(a => {
@@ -917,42 +1326,21 @@ export function DataProvider({ children }) {
         targetUsername: activity.hostId, // Using targetUsername for routing if needed, but actorId is what NotificationContext checks for the sender
         text: `requested to join your activity "${activity.title}".`,
       });
-    }
-  }, [currentUser, notify, crewActivities]);
 
-  const acceptJoinRequest = useCallback((activityId, requesterId) => {
-    // 1. Remove from pendingRequests and add to participants
-    setCrewActivities(prev => prev.map(a => {
-      if (a.id === activityId) {
-        return {
-          ...a,
-          pendingRequests: (a.pendingRequests || []).filter(id => id !== requesterId),
-          participants: [...(a.participants || []), requesterId],
-          slotsFilled: (a.slotsFilled || 0) + 1
-        };
-      }
-      return a;
-    }));
-
-    // 2. Add to group chat and send system message
-    const activityChatId = `act_${activityId}`;
-    setConversations(prev => {
-      const existing = prev.find(c => c.id === activityChatId);
-      if (existing) {
-        const requester = Object.values(users).find(u => u.id === requesterId);
-        const reqName = requester ? requester.username : 'someone';
-        const sysMsg = { id: Date.now(), type: 'system', text: `@${reqName} has joined`, time: 'Just now' };
+      // Simulation: Mock host accepts the current user's request after 6 seconds
+      setTimeout(() => {
+        acceptJoinRequest(activityId, currentUser?.id);
         
-        return prev.map(c => c.id === activityChatId ? {
-          ...c,
-          participants: [...(c.participants || []), requesterId],
-          messages: [...(c.messages || []), sysMsg]
-        } : c);
-      }
-      return prev; // If it doesn't exist, we don't worry about it here
-    });
-
-  }, [users]);
+        // Notify current user about approval
+        notify('crew_join', {
+          activityId,
+          actorId: activity.hostId,
+          targetUsername: currentUser?.username,
+          text: `accepted your request to join "${activity.title}".`,
+        });
+      }, 6000);
+    }
+  }, [currentUser, notify, crewActivities, acceptJoinRequest]);
 
   const declineCrewInvitation = useCallback(async (activityId) => {
     await new Promise(resolve => setTimeout(resolve, 300));
@@ -969,7 +1357,7 @@ export function DataProvider({ children }) {
     setCrewActivities(prev => [newActivity, ...prev]);
 
     // Create a temporary group chat for this activity
-    const activityChatId = `act_${newActivity.id}`;
+    const activityChatId = String(newActivity.id).startsWith('act_') ? String(newActivity.id) : `act_${newActivity.id}`;
     const newConv = {
       id: activityChatId,
       name: newActivity.title,
@@ -984,7 +1372,88 @@ export function DataProvider({ children }) {
       participants: [currentUser?.id]
     };
     setConversations(prev => [newConv, ...prev]);
-  }, [currentUser]);
+
+    // Simulation: If created activity is approval-based, mock a join request from another user after 5 seconds
+    if (newActivity.participationType === 'approval') {
+      setTimeout(() => {
+        const mockUsersList = Object.values(users).filter(u => u.id !== currentUser?.id);
+        const randomUser = mockUsersList[Math.floor(Math.random() * mockUsersList.length)];
+        if (randomUser) {
+          // Add to pendingRequests
+          setCrewActivities(prev => prev.map(a => {
+            if (a.id === newActivity.id) {
+              return {
+                ...a,
+                pendingRequests: [...(a.pendingRequests || []), randomUser.id]
+              };
+            }
+            return a;
+          }));
+
+          // Notify the host (current user)
+          notify('ACTIVITY_JOIN_REQUEST', {
+            activityId: newActivity.id,
+            actorId: randomUser.id,
+            targetUsername: currentUser?.username,
+            text: `requested to join your activity "${newActivity.title}".`,
+          });
+        }
+      }, 5000);
+    } else if (newActivity.participationType === 'open') {
+      // Simulation: If created activity is open, a mock user joins directly after 5 seconds
+      setTimeout(() => {
+        const mockUsersList = Object.values(users).filter(u => u.id !== currentUser?.id);
+        const randomUser = mockUsersList[Math.floor(Math.random() * mockUsersList.length)];
+        if (randomUser) {
+          // Add to participants & increase slotsFilled
+          setCrewActivities(prev => prev.map(a => {
+            if (a.id === newActivity.id) {
+              return {
+                ...a,
+                slotsFilled: Math.min(a.slotsFilled + 1, a.slotsNeeded),
+                participants: [...(a.participants || []), randomUser.id]
+              };
+            }
+            return a;
+          }));
+
+          // Notify the host (current user)
+          notify('crew_join', {
+            activityId: newActivity.id,
+            actorId: randomUser.id,
+            targetUsername: currentUser?.username,
+            text: `joined your activity "${newActivity.title}".`,
+          });
+
+          // Add to group chat and send system message
+          const activityChatId = String(newActivity.id).startsWith('act_') ? String(newActivity.id) : `act_${newActivity.id}`;
+          setConversations(prev => {
+            const existing = prev.find(c => c.id === activityChatId);
+            if (existing) {
+              const sysMsg = { id: Date.now(), type: 'system', text: `@${randomUser.username} has joined`, time: 'Just now' };
+              return prev.map(c => c.id === activityChatId ? {
+                ...c,
+                participants: [...(c.participants || []), randomUser.id],
+                messages: [...(c.messages || []), sysMsg],
+                lastMsg: `@${randomUser.username} has joined`,
+                time: 'Just now',
+                timestamp: Date.now()
+              } : c);
+            }
+            return prev;
+          });
+        }
+      }, 5000);
+    }
+  }, [currentUser, users, notify]);
+
+  const endCrewActivity = useCallback(async (activityId) => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    setCrewActivities(prev => prev.filter(a => a.id !== activityId));
+    const targetId = String(activityId).startsWith('act_') ? String(activityId) : `act_${activityId}`;
+    setConversations(prev => prev.filter(c => c.id !== targetId && c.activityId !== activityId));
+    setSavedActivities(prev => prev.filter(id => id !== activityId));
+  }, []);
 
   const createGroupConversation = useCallback(async (groupName, userIds) => {
     await new Promise(resolve => setTimeout(resolve, 300));
@@ -1033,59 +1502,6 @@ export function DataProvider({ children }) {
     return newId;
   }, [currentUser, users, startConversation, sendDirectMessage]);
 
-  const startInstantMatch = useCallback(async (preferences) => {
-    // Mocking the match search with a delay
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    let allUsers = Object.values(users).filter(u => u.id !== currentUser?.id);
-    let matchedActivities = [];
-    
-    if (preferences.activity) {
-      const query = preferences.activity.toLowerCase();
-      allUsers = allUsers.map(u => {
-        let score = 0;
-        if (u.interests && u.interests.some(i => i.toLowerCase().includes(query))) score += 5;
-        if (u.skills && u.skills.some(s => s.toLowerCase().includes(query))) score += 3;
-        if (u.bio && u.bio.toLowerCase().includes(query)) score += 1;
-        return { ...u, matchScore: score };
-      });
-      allUsers.sort((a, b) => b.matchScore - a.matchScore);
-      
-      // Intelligent search for similar activities
-      const allActivities = crewActivities.filter(a => a.hostId !== currentUser?.id && !(a.participants || []).includes(currentUser?.id));
-      const scoredActivities = allActivities.map(a => {
-        let score = 0;
-        if (a.title && a.title.toLowerCase().includes(query)) score += 5;
-        if (a.category && a.category.toLowerCase().includes(query)) score += 4;
-        if (a.tags && a.tags.some(t => t.toLowerCase().includes(query))) score += 3;
-        if (a.description && a.description.toLowerCase().includes(query)) score += 2;
-        return { ...a, matchScore: score };
-      });
-      
-      matchedActivities = scoredActivities.filter(a => a.matchScore > 0).sort((a, b) => b.matchScore - a.matchScore).slice(0, 3);
-      
-      if (matchedActivities.length === 0 && allActivities.length > 0) {
-        // Fallback: Suggest some popular activities if no direct match found
-        matchedActivities = [...allActivities].sort((a, b) => b.slotsFilled - a.slotsFilled).slice(0, 2);
-      }
-    }
-    
-    let numPeople = 3;
-    if (preferences.people === '1 Person') numPeople = 1;
-    else if (preferences.people === 'Small Group (4-8)') numPeople = 5;
-    else if (preferences.people === 'Doesn\'t Matter') numPeople = 4;
-
-    const matchedUsers = allUsers.slice(0, numPeople);
-      
-    return {
-      activity: preferences.activity,
-      users: matchedUsers,
-      activities: matchedActivities,
-      distance: '2 km away',
-      joinedTime: '3 mins ago'
-    };
-  }, [users, currentUser, crewActivities]);
-
   const createTemporaryGroupChat = useCallback(async (activityName, userIds) => {
     await new Promise(resolve => setTimeout(resolve, 300));
     
@@ -1124,27 +1540,64 @@ export function DataProvider({ children }) {
   }, []);
 
   const addGroupMember = useCallback(async (convId, userId) => {
+    const joinedUser = Object.values(users).find(u => u.id === userId) || users[userId];
+    const joinedName = joinedUser ? joinedUser.username : 'someone';
+    const sysMsg = { id: Date.now(), type: 'system', text: `@${joinedName} has joined`, time: 'Just now' };
+
     setConversations(prev => prev.map(c => {
-      if (c.id === convId && !c.members.includes(userId)) {
-        return { ...c, members: [...c.members, userId] };
+      const isMember = c.members ? c.members.includes(userId) : (c.participants ? c.participants.includes(userId) : false);
+      if (c.id === convId && !isMember) {
+        return { 
+          ...c, 
+          members: c.members ? [...c.members, userId] : [userId],
+          participants: c.participants ? [...c.participants, userId] : [userId],
+          messages: [...(c.messages || []), sysMsg],
+          lastMsg: `@${joinedName} has joined`,
+          time: 'Just now',
+          timestamp: Date.now()
+        };
       }
       return c;
     }));
-  }, []);
+  }, [users]);
 
   const removeGroupMember = useCallback(async (convId, userId) => {
+    const removedUser = Object.values(users).find(u => u.id === userId) || users[userId];
+    const removedName = removedUser ? removedUser.username : 'someone';
+    const removerName = currentUser?.username || 'admin';
+    const sysMsg = { id: Date.now(), type: 'system', text: `@${removedName} has been removed by @${removerName}`, time: 'Just now' };
+
     setConversations(prev => prev.map(c => {
       if (c.id === convId) {
-        return { ...c, members: c.members.filter(id => id !== userId) };
+        return { 
+          ...c, 
+          members: c.members ? c.members.filter(id => id !== userId) : c.members,
+          participants: c.participants ? c.participants.filter(id => id !== userId) : c.participants,
+          messages: [...(c.messages || []), sysMsg],
+          lastMsg: `@${removedName} has been removed by @${removerName}`,
+          time: 'Just now',
+          timestamp: Date.now()
+        };
       }
       return c;
     }));
-  }, []);
+  }, [users, currentUser]);
 
   const leaveGroup = useCallback(async (convId) => {
+    const leaverName = currentUser?.username || 'someone';
+    const sysMsg = { id: Date.now(), type: 'system', text: `@${leaverName} has left`, time: 'Just now' };
+
     setConversations(prev => prev.map(c => {
       if (c.id === convId) {
-        return { ...c, members: c.members.filter(id => id !== currentUser?.id) };
+        return { 
+          ...c, 
+          members: c.members ? c.members.filter(id => id !== currentUser?.id) : c.members,
+          participants: c.participants ? c.participants.filter(id => id !== currentUser?.id) : c.participants,
+          messages: [...(c.messages || []), sysMsg],
+          lastMsg: `@${leaverName} has left`,
+          time: 'Just now',
+          timestamp: Date.now()
+        };
       }
       return c;
     }));
@@ -1159,32 +1612,101 @@ export function DataProvider({ children }) {
     return acc;
   }, {});
 
-  // Enrich conversations with latest user avatars/names
+  // Enrich conversations with latest user avatars/names and activity host logos
   const enrichedConversations = useMemo(() => {
-    return conversations.map(conv => {
-      if (conv.isGroup) return conv;
+    return conversations.map((conv, idx) => {
+      let enriched = { ...conv };
       
-      const targetUser = conv.username 
-        ? users[conv.username] 
-        : Object.values(users).find(u => u.displayName === conv.name || u.name === conv.name);
-        
-      if (targetUser) {
-        return {
-          ...conv,
-          name: targetUser.displayName || targetUser.name || conv.name,
-          avatar: targetUser.avatarUrl || targetUser.avatar || conv.avatar
-        };
+      if (conv.isActivityChat) {
+        const activity = crewActivities?.find(a => a.id === conv.activityId || `act_${a.id}` === conv.id || a.id === conv.id);
+        if (activity?.title) {
+          enriched.name = activity.title;
+        }
+        if (activity?.hostId) {
+          const hostUser = Object.values(users).find(u => u.id === activity.hostId);
+          if (hostUser) {
+            enriched.avatar = hostUser.avatarUrl || hostUser.avatar || conv.avatar;
+            enriched.hostUsername = hostUser.username;
+          }
+        }
+      } else if (!conv.isGroup) {
+        const targetUser = conv.username 
+          ? users[conv.username] 
+          : Object.values(users).find(u => u.displayName === conv.name || u.name === conv.name);
+          
+        if (targetUser) {
+          enriched.name = targetUser.displayName || targetUser.name || conv.name;
+          enriched.avatar = targetUser.avatarUrl || targetUser.avatar || conv.avatar;
+          enriched.username = targetUser.username || conv.username;
+          enriched.userId = targetUser.id || conv.userId;
+          const canSee = canSeeOnlineStatus(currentUser, targetUser);
+          enriched.online = canSee ? !!targetUser.isOnline : false;
+        }
       }
-      return conv;
+      
+      if (!enriched.timestamp) {
+        enriched.timestamp = Date.now() - idx * 60000;
+      }
+      
+      return enriched;
     });
-  }, [conversations, users]);
+  }, [conversations, users, crewActivities]);
 
   const toggleSaveActivity = useCallback((activityId) => {
-    setSavedActivities(prev => 
-      prev.includes(activityId) 
+    setSavedActivities(prev =>
+      prev.includes(activityId)
         ? prev.filter(id => id !== activityId)
         : [...prev, activityId]
     );
+  }, []);
+
+  const reportPost = useCallback((postId) => {
+    setReportedPosts(prev =>
+      prev.includes(postId) ? prev : [...prev, postId]
+    );
+  }, []);
+
+  // Reset all DataContext state on logout (so switching users starts fresh)
+  const resetDataState = useCallback(() => {
+    setUsers(() => {
+      const initialized = { ...initialUsers };
+      Object.keys(initialized).forEach(username => {
+        const u = initialized[username];
+        if (!u.followingList) u.followingList = [];
+        if (!u.followersList) u.followersList = [];
+      });
+      return initialized;
+    });
+    setPosts(() => {
+      const mapWithTimestamps = (items) => items.map(item => ({
+        ...item,
+        createdAt: item.createdAt || Date.now(),
+        replies: item.replies ? mapWithTimestamps(item.replies) : undefined
+      }));
+      const commPosts = Object.values(initialCommunities).flatMap(comm =>
+        comm.posts.map((p, i) => ({
+          id: p.id || `c_post_${comm.id}_${i}`,
+          authorId: p.authorId || 'u1',
+          time: p.time,
+          text: p.text,
+          likes: p.likes || 0,
+          comments: p.comments || 0,
+          isLikedByMe: false,
+          replies: [],
+          communityId: comm.id
+        }))
+      );
+      return mapWithTimestamps([...initialPosts, ...commPosts]);
+    });
+    setCommunitiesState(initialCommunities);
+    setConversations(initialMessages);
+    setCrewActivities(generateCrewActivities(initialUsers));
+    setSavedActivities([]);
+    setReportedPosts([]);
+    // Clear persisted data for all data keys
+    ['meetifyy_users','meetifyy_posts','meetifyy_communities','meetifyy_conversations',
+     'meetifyy_crew_activities','meetifyy_saved_activities','meetifyy_reported_posts',
+     'meetifyy_notifications'].forEach(k => localStorage.removeItem(k));
   }, []);
 
   return (
@@ -1196,6 +1718,8 @@ export function DataProvider({ children }) {
       crewActivities,
       savedActivities,
       toggleSaveActivity,
+      reportedPosts,
+      reportPost,
       currentUser: liveCurrentUser,
       searchQuery,
       setSearchQuery,
@@ -1230,10 +1754,12 @@ export function DataProvider({ children }) {
       joinCrewActivity,
       requestToJoinActivity,
       acceptJoinRequest,
+      rejectJoinRequest,
       declineCrewInvitation,
       addCrewActivity,
-      startInstantMatch,
+      endCrewActivity,
       createTemporaryGroupChat,
+      resetDataState,
       setOnNotify
     }}>
       {children}

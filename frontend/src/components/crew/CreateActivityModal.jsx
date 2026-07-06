@@ -143,7 +143,7 @@ export default function CreateActivityModal({ isOpen, onClose, onPublish, initia
     const timeStr = `${String(formData.timeHour).padStart(2, '0')}:${String(formData.timeMinute).padStart(2, '0')} ${formData.timeAmPm}`;
 
     const newActivity = {
-      id: `act_${Date.now()}`,
+      id: `crew_${Date.now()}`,
       hostId: currentUser?.id || 'current_user',
       hostName: currentUser?.displayName || 'You',
       hostUsername: currentUser?.username || 'currentUser',

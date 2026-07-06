@@ -127,7 +127,7 @@
 
 .sendBtn {
   background: var(--color-primary);
-  color: var(--color-bg-white);
+  color: #ffffff;
   border: none;
   padding: 6px 16px;
   border-radius: 20px;

@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Search, Users, Activity, UsersRound, UserPlus, UserCheck, MapPin, Clock, UsersIcon } from 'lucide-react';
+import { Search, Users, Activity, UsersRound, UserPlus, UserCheck, MapPin, Clock, UsersIcon, ThumbsUp, MessageCircle } from 'lucide-react';
 import { useGlobalSearch } from '../hooks/useGlobalSearch';
 import { useData } from '../context/DataContext';
 import { useSmartBack } from '../hooks/useSmartBack';
@@ -9,11 +9,16 @@ import GlobalSearch from '../components/search/GlobalSearch';
 import { isImageUrl } from '../utils/avatar';
 import DefaultAvatar from '../components/common/DefaultAvatar';
 import Skeleton from '../components/common/Skeleton';
+import PageLayout from '../components/layout/PageLayout';
+import PageHeader from '../components/layout/PageHeader';
+import ActivityJoinedModal from '../components/crew/ActivityJoinedModal';
 import styles from './SearchResultsRoute.module.css';
 
 // Compact horizontal activity row
 function ActivityRow({ activity, onClick }) {
   const { joinCrewActivity, requestToJoinActivity, currentUser } = useData();
+  const navigate = useNavigate();
+  const [showJoinedModal, setShowJoinedModal] = useState(false);
   const isJoined = activity.participants?.includes(currentUser?.id);
   const hasRequested = activity.pendingRequests?.includes(currentUser?.id);
   const isApproval = activity.participationType === 'approval';
@@ -51,15 +56,29 @@ function ActivityRow({ activity, onClick }) {
       </div>
       <button
         className={`${styles.rowActionBtn} ${(isJoined || hasRequested) ? styles.rowActionBtnActive : ''}`}
-        onClick={(e) => {
+        onClick={async (e) => {
           e.stopPropagation();
-          if (isJoined || hasRequested) return;
-          if (isApproval) requestToJoinActivity(activity.id);
-          else joinCrewActivity(activity.id);
+          if (hasRequested) return;
+          if (isJoined) {
+            const chatId = String(activity.id).startsWith('act_') ? activity.id : `act_${activity.id}`;
+            navigate(`/messages/${chatId}`);
+            return;
+          }
+          if (isApproval) {
+            requestToJoinActivity(activity.id);
+          } else {
+            await joinCrewActivity(activity.id);
+            setShowJoinedModal(true);
+          }
         }}
       >
         {isJoined ? 'Joined' : hasRequested ? 'Requested' : isApproval ? 'Request' : 'Join'}
       </button>
+      <ActivityJoinedModal
+        isOpen={showJoinedModal}
+        onClose={() => setShowJoinedModal(false)}
+        activity={activity}
+      />
     </div>
   );
 }
@@ -237,46 +256,17 @@ export default function SearchResultsRoute() {
   const showPeopleOnly = !q.trim() && activeSection === 'users';
 
   return (
-    <div ref={containerRef} className={`centre centre-wide ${styles.container}`}>
-      {/* Header */}
-      <div className={styles.headerArea}>
-        {/* Mobile back row — hidden on desktop */}
-        <div className={styles.mobileBackRow}>
-          <button className={styles.backBtn} onClick={() => goBack('/home')} aria-label="Go back">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-          </button>
-          <h1 className={styles.backTitle}>Search</h1>
-        </div>
-
-        {/* Desktop title */}
-        <h1 className={styles.pageTitle}>Search</h1>
-        <p className={styles.pageSubtitle}>Find people, activities, and communities ✨</p>
-        
-        <div className={styles.searchRow}>
-          <div className={styles.searchWrapper}>
-            <GlobalSearch variant="mobileSearchPage" />
-          </div>
-        </div>
-
-        <div className={styles.sectionTabs}>
-          {sections.map(sec => {
-            const Icon = sec.icon;
-            return (
-              <button
-                key={sec.id}
-                className={`${styles.sectionTabBtn} ${activeSection === sec.id ? styles.activeSectionTab : ''}`}
-                onClick={() => setActiveSection(sec.id)}
-              >
-                <Icon size={15} className={styles.tabIcon} />
-                {sec.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+    <PageLayout containerRef={containerRef}>
+      <PageHeader
+        title="Search"
+        subtitle="Find people, activities, and communities ✨"
+        backPath="/home"
+        searchBar={<GlobalSearch variant="pageHeader" />}
+        tabs={sections}
+        activeTab={activeSection}
+        onTabChange={setActiveSection}
+        tabVariant="underline"
+      />
 
       {/* Explore page (no search query) */}
       {!q.trim() ? (
@@ -362,8 +352,8 @@ export default function SearchResultsRoute() {
                               <span className={styles.topPostName}>{author?.displayName || 'Someone'}</span>
                               <p className={styles.topPostText}>{post.text?.substring(0, 80)}{post.text?.length > 80 ? '...' : ''}</p>
                               <div className={styles.topPostMeta}>
-                                <span>❤️ {post.likes || 0}</span>
-                                <span>💬 {post.comments || 0}</span>
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><ThumbsUp size={13} /> {post.likes || 0}</span>
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><MessageCircle size={13} /> {post.comments || 0}</span>
                               </div>
                             </div>
                           </button>
@@ -498,6 +488,6 @@ export default function SearchResultsRoute() {
           )}
         </div>
       )}
-    </div>
+    </PageLayout>
   );
 }

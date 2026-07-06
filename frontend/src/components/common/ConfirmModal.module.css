@@ -1,7 +1,7 @@
 .confirmOverlay {
   position: fixed;
   inset: 0;
-  z-index: 999;
+  z-index: 2000;
   background: rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -21,16 +21,14 @@
 }
 
 .confirmModal {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: var(--color-bg-white);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
   padding: 1.75rem 2rem 1.5rem;
   width: 320px;
   max-width: 90vw;
   text-align: left;
-  box-shadow:(--shadow-sm);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   transform: scale(0.92) translateY(8px);
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   margin: auto;
@@ -85,12 +83,13 @@
 }
 
 .confirmBtnCancel {
-  background: rgba(0, 0, 0, 0.06);
-  color: var(--color-border-dark);
+  background: transparent;
+  color: var(--color-text-main);
+  border: 1px solid var(--color-border);
 }
 
 .confirmBtnCancel:hover {
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--color-bg-alt, rgba(255, 255, 255, 0.05));
 }
 
 .confirmBtnLeave {

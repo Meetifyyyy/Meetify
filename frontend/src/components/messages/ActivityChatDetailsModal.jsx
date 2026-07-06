@@ -1,23 +1,42 @@
+import { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import { Link } from 'react-router-dom';
 import DefaultAvatar from '../common/DefaultAvatar';
+import ConfirmModal from '../common/ConfirmModal';
 import { isImageUrl } from '../../utils/avatar';
 import styles from './ActivityChatDetailsModal.module.css';
 
-export default function ActivityChatDetailsModal({ conversation, onClose }) {
-  const { crewActivities, users } = useData();
+export default function ActivityChatDetailsModal({ conversation, onClose, onEndActivity }) {
+  const { currentUser } = useAuth();
+  const { crewActivities, users, endCrewActivity } = useData();
+  const [showEndConfirm, setShowEndConfirm] = useState(false);
 
   if (!conversation || !conversation.activityId) return null;
 
   const activity = crewActivities.find(a => a.id === conversation.activityId);
   if (!activity) return null;
 
+  const isHost = activity.hostId === currentUser?.id;
+
+  const handleEndActivity = () => {
+    setShowEndConfirm(true);
+  };
+
+  const confirmEndActivity = async () => {
+    setShowEndConfirm(false);
+    await endCrewActivity(activity.id);
+    if (onEndActivity) onEndActivity();
+    else onClose();
+  };
+
   // Use conversation participants or fallback to activity participants
   const participantIds = conversation.participants || activity.participants || [];
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={e => e.stopPropagation()}>
+    <>
+      <div className={styles.overlay} onClick={onClose}>
+        <div className={styles.modal} onClick={e => e.stopPropagation()}>
         <div className={styles.header}>
           <h2 className={styles.title}>{activity.title}</h2>
           <button className={styles.closeBtn} onClick={onClose} title="Close">
@@ -93,9 +112,23 @@ export default function ActivityChatDetailsModal({ conversation, onClose }) {
                 );
               })}
             </div>
+            {isHost && (
+              <button className={styles.endBtn} onClick={handleEndActivity}>
+                End Activity
+              </button>
+            )}
           </div>
         </div>
       </div>
-    </div>
+      </div>
+      <ConfirmModal
+        title="End Activity"
+        desc="Are you sure you want to end this activity? This will also delete the group chat."
+        visible={showEndConfirm}
+        onCancel={() => setShowEndConfirm(false)}
+        onConfirm={confirmEndActivity}
+        confirmText="End Activity"
+      />
+    </>
   );
 }
