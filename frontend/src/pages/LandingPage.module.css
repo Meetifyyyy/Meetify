@@ -22,14 +22,14 @@
 .brandLeft {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.35rem;
   cursor: pointer;
   transition: opacity var(--transition-fast);
 }
 .brandLeft:hover { opacity: 0.75; }
 
 .logo {
-  height: 38px;
+  height: 56px;
   width: auto;
   display: block;
   border-radius: var(--radius-sm);
@@ -38,7 +38,7 @@
 .brandName {
   font-family: 'Inter Tight', sans-serif;
   font-weight: 650;
-  font-size: 1.05rem;
+  font-size: 1.45rem;
   color: var(--color-text-main);
   letter-spacing: -0.03em;
 }
@@ -57,8 +57,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   transition: background var(--transition-fast);
 }
@@ -81,8 +81,9 @@
   cursor: pointer;
   font-family: var(--font-family-sans);
   font-weight: 500;
-  font-size: 0.85rem;
-  padding: 0.55rem 1rem;
+  font-size: 1rem;
+  height: 56px;
+  padding: 0 1.2rem;
   border-radius: var(--radius-full);
   transition: all var(--transition-fast);
 }
@@ -823,6 +824,18 @@
     font-size: clamp(1.8rem, 4vw, 2.7rem);
   }
 }
+@media (min-width: 769px) {
+  .themeBtn {
+    width: 42px;
+    height: 42px;
+  }
+
+  .loginBtn {
+    height: 42px;
+    padding: 0 1.1rem;
+    font-size: 0.95rem;
+  }
+}
 @media (max-width: 480px) {
   .header {
     top: 0.65rem;
@@ -832,16 +845,21 @@
   }
 
   .brandName {
-    font-size: 1rem;
+    font-size: 1.25rem;
   }
 
   .logo {
-    height: 30px;
+    height: 42px;
   }
 
   .themeBtn {
-    width: 34px;
-    height: 34px;
+    width: 42px;
+    height: 42px;
+  }
+
+  .loginBtn {
+    height: 42px;
+    padding: 0 1rem;
   }
 
   .hero {
