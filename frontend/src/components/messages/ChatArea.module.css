@@ -338,6 +338,13 @@
   /* Darker, richer blue */
   color: white;
   border-bottom-right-radius: 4px;
+  --link-color: white;
+}
+
+.msgBubbleTransparent {
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
 }
 
 .msgText {
@@ -2295,4 +2302,10 @@
 .voiceSpeedBtn:hover {
   background: rgba(128, 128, 128, 0.35);
   transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .msgEmojiBtn {
+    display: none;
+  }
 }

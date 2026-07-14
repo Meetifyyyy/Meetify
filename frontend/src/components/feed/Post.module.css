@@ -3,7 +3,7 @@
   background: var(--color-bg-white);
   border: 1px solid var(--color-border-light);
   border-radius: var(--radius-lg);
-  padding: 1.25rem;
+  padding: 1rem;
   box-shadow: var(--shadow-sm);
   transition: background 0.2s ease, border-color 0.2s ease;
   text-align: left !important;
@@ -18,7 +18,8 @@
   text-align: left !important;
 }
 
-.postAvatar {  composes: ui-avatar from global;
+.postAvatar {
+  composes: ui-avatar from global;
   width: 36px;
   height: 36px;
   font-family: var(--font-family-display);
@@ -28,7 +29,8 @@
   transition: filter 0.2s ease;
 }
 
-.postAvatarImg {  composes: ui-avatar-img from global;
+.postAvatarImg {
+  composes: ui-avatar-img from global;
 }
 
 .postAvatar:hover {
@@ -88,7 +90,9 @@
   font-weight: 400;
   line-height: 1.6;
   color: var(--color-text-main);
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.5rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
   text-align: left !important;
 }
 
@@ -241,10 +245,22 @@
 }
 
 @keyframes likePop {
-  0% { transform: scale(1); }
-  40% { transform: scale(1.35); fill: var(--color-primary); }
-  60% { transform: scale(0.9); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.35);
+    fill: var(--color-primary);
+  }
+
+  60% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 .liked svg {
@@ -432,7 +448,8 @@
   vertical-align: middle;
 }
 
-.postAvatarImg {  composes: ui-avatar-img from global;
+.postAvatarImg {
+  composes: ui-avatar-img from global;
   border-radius: 50%;
   border: 1px solid var(--color-border-light);
 }
@@ -465,12 +482,14 @@
     flex-wrap: wrap;
     gap: 0.5rem;
   }
+
   .postCommTag {
     order: 3;
     margin-left: 0;
     margin-top: 0.25rem;
     width: fit-content;
   }
+
   .postMenuWrapper {
     margin-left: auto;
   }
@@ -480,6 +499,7 @@
   .shareText {
     display: none;
   }
+
   .postActionBtn {
     padding: 0.35rem 0.55rem;
     gap: 0.25rem;
@@ -530,7 +550,8 @@
   border-color: rgba(24, 24, 27, 0.2);
 }
 
-.communityPillAvatar {  composes: ui-avatar from global;
+.communityPillAvatar {
+  composes: ui-avatar from global;
   width: 18px;
   height: 18px;
   font-size: 0.55rem;

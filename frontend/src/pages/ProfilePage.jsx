@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
+import { useSmartBack } from '../hooks/useSmartBack';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { useSimulatedFetch } from '../hooks/useSimulatedFetch';
@@ -57,6 +58,7 @@ function ProfileSkeleton() {
 export default function ProfilePage() {
   const { profileUsername } = useParams();
   const navigate = useNavigate();
+  const goBack = useSmartBack();
   const { username, logout } = useAuth();
   const { getUserByUsername, currentUser, getUserPosts, startConversation } = useData();
 
@@ -130,7 +132,7 @@ export default function ProfilePage() {
                 className={s.coverPhoto}
                 style={{ backgroundImage: `url(${profileUser.cover || defaultCover})` }}
               />
-              <button className={s.mobileBackBtn} onClick={() => navigate(-1)} aria-label="Go back">
+              <button className={s.mobileBackBtn} onClick={() => goBack('/home')} aria-label="Go back">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="19" y1="12" x2="5" y2="12" />
                   <polyline points="12 19 5 12 12 5" />
@@ -138,10 +140,10 @@ export default function ProfilePage() {
               </button>
               <div className={s.menuWrap} ref={menuRef}>
                 <button className={s.mobileMenuBtn} aria-label="More options" onClick={() => setMenuOpen(v => !v)}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="12" cy="5" r="1.5" />
-                    <circle cx="12" cy="12" r="1.5" />
-                    <circle cx="12" cy="19" r="1.5" />
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="1"></circle>
+                    <circle cx="12" cy="5" r="1"></circle>
+                    <circle cx="12" cy="19" r="1"></circle>
                   </svg>
                 </button>
                 {menuOpen && (

@@ -1,14 +1,19 @@
 export function timeAgo(timestamp) {
   const seconds = Math.floor((Date.now() - timestamp) / 1000);
-  if (seconds < 60) return 'just now';
+  if (seconds < 60) return 'Now';
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 60) return `${minutes}m`;
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days === 1) return 'Yesterday';
-  if (days < 7) return `${days}d ago`;
-  return `${Math.floor(days / 7)}w ago`;
+  if (hours < 24) return `${hours}h`;
+  
+  const date = new Date(timestamp);
+  const options = { month: 'short', day: 'numeric' };
+  if (date.getFullYear() !== new Date().getFullYear()) {
+    options.year = 'numeric';
+  }
+  
+  const formatted = date.toLocaleDateString('en-US', options);
+  return formatted;
 }
 
 export function parseTimeString(timeStr) {

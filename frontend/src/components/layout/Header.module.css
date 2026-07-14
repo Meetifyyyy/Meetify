@@ -264,7 +264,7 @@
   position: relative;
 }
 
-.dropdown button svg {
+.dropdown button:not(.dropdownProfileBtn) svg {
   color: var(--color-text-muted);
   transition: color var(--transition-fast);
 }
@@ -432,6 +432,12 @@
   z-index: 999;
 }
 
+@media (min-width: 769px) {
+  .mobileDrawer, .drawerOverlay {
+    display: none !important;
+  }
+}
+
 .drawerHeader {
   display: flex;
   align-items: center;
@@ -457,6 +463,12 @@
   flex: 1;
   overflow-y: auto;
   min-height: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.drawerContent::-webkit-scrollbar {
+  display: none;
 }
 
 /* Drawer Profile Card styling */

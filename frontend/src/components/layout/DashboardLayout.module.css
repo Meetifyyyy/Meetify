@@ -34,7 +34,7 @@
   .dashboard,
   .dashboardWide {
     grid-template-columns: minmax(0, 1fr);
-    padding: 0 0.75rem 0;
+    padding: 0 0.5rem 0;
     gap: 0;
   }
 

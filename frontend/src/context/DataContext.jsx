@@ -16,6 +16,11 @@ export function DataProvider({ children }) {
 
   // Compute once, not at module level, so it's inside React lifecycle
   const [users, setUsers] = useState(() => {
+    const USERS_SEED_VERSION = '2';
+    if (localStorage.getItem('meetifyy_users_seed_v') !== USERS_SEED_VERSION) {
+      localStorage.removeItem('meetifyy_users');
+      localStorage.setItem('meetifyy_users_seed_v', USERS_SEED_VERSION);
+    }
     const saved = localStorage.getItem('meetifyy_users');
     if (saved) {
       try {
@@ -1097,7 +1102,7 @@ export function DataProvider({ children }) {
     });
   }, [currentUser, notify]);
 
-  const sendDirectMessage = useCallback(async (convId, text, replyTo = null, inviteData = null, mentions = [], mediaUrl = null, mediaType = null) => {
+  const sendDirectMessage = useCallback(async (convId, text, replyTo = null, inviteData = null, mentions = [], mediaUrl = null, mediaType = null, explicitLinkPreview = null) => {
     await new Promise(resolve => setTimeout(resolve, 300));
     const now = new Date();
     const timeStr = now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
@@ -1129,7 +1134,7 @@ export function DataProvider({ children }) {
             mentions: validMentions,
             mediaUrl: mediaUrl || null,
             mediaType: mediaType || null,
-            linkPreview: text ? (getLinkPreview(text) || undefined) : undefined
+            linkPreview: explicitLinkPreview || (text ? (getLinkPreview(text) || undefined) : undefined)
           }
         ],
         lastMsg: mediaUrl ? (mediaType === 'video' ? '📹 Video' : '🖼 Image') : text,

@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSmartBack } from '../hooks/useSmartBack';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import styles from './CampusPage.module.css';
@@ -8,6 +9,7 @@ import { Plus, Search, ArrowLeft } from 'lucide-react';
 
 export default function ActivitiesPage() {
   const navigate = useNavigate();
+  const goBack = useSmartBack();
   const { currentUser } = useAuth();
   const { crewActivities, communities } = useData();
 
@@ -70,7 +72,7 @@ export default function ActivitiesPage() {
           ) : (
             <>
               <div className={styles.headerLeftGroup}>
-                <button className={styles.headerSquareBtn} onClick={() => navigate('/campus')} title="Back">
+                <button className={styles.headerSquareBtn} onClick={() => goBack('/campus')} title="Back">
                   <ArrowLeft size={20} />
                 </button>
                 <h1 className={styles.collegeTitle} style={{ margin: 0 }}>Campus Activities</h1>

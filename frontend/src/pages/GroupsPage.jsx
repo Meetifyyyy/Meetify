@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSmartBack } from '../hooks/useSmartBack';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { useTheme } from '../context/ThemeContext';
@@ -11,6 +12,7 @@ import GroupCreationModal from '../components/common/GroupCreationModal';
 
 export default function GroupsPage() {
   const navigate = useNavigate();
+  const goBack = useSmartBack();
   const { currentUser } = useAuth();
   const { campusGroups, toggleJoinCampusGroup, createCampusGroup } = useData();
   const { theme } = useTheme();
@@ -105,7 +107,7 @@ export default function GroupsPage() {
           ) : (
             <>
               <div className={styles.headerLeftGroup}>
-                <button className={styles.headerSquareBtn} onClick={() => navigate('/campus')} title="Back to Campus">
+                <button className={styles.headerSquareBtn} onClick={() => goBack('/campus')} title="Back to Campus">
                   <ArrowLeft size={20} />
                 </button>
                 <h1 className={styles.collegeTitle} style={{ margin: 0 }}>Campus Groups</h1>

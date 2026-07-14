@@ -98,13 +98,12 @@ export default function BottomNav() {
         className={`${styles.bottomNavItem}${isProfileActive ? ` ${styles.active}` : ''}`}
         onClick={() => handleTabClick(`/profile/${username}`)}
       >
-        <div className={`${styles.avatarContainer}${isProfileActive ? ` ${styles.activeAvatar}` : ''}`}>
-          <Avatar
-            src={currentUser?.avatar}
-            name={currentUser?.displayName}
-            size="24px"
-          />
-        </div>
+        <Avatar
+          src={currentUser?.avatar}
+          name={currentUser?.displayName}
+          size="24px"
+          className={isProfileActive ? styles.activeAvatarBorder : ''}
+        />
         <span>Profile</span>
       </button>
     </div>

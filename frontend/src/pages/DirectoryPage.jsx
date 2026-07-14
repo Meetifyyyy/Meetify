@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSmartBack } from '../hooks/useSmartBack';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { showToast } from '../utils/toast';
@@ -425,6 +426,7 @@ const CustomClassYearSelect = ({ value, onChange, years }) => {
 
 export default function DirectoryPage() {
   const navigate = useNavigate();
+  const goBack = useSmartBack();
   const { currentUser } = useAuth();
   const { users } = useData();
 
@@ -489,7 +491,7 @@ export default function DirectoryPage() {
           ) : (
             <>
               <div className={styles.headerLeftGroup}>
-                <button className={styles.headerSquareBtn} onClick={() => navigate('/campus')} title="Back to Campus">
+                <button className={styles.headerSquareBtn} onClick={() => goBack('/campus')} title="Back to Campus">
                   <ArrowLeft size={20} />
                 </button>
                 <h1 className={styles.collegeTitle} style={{ margin: 0 }}>Student Directory</h1>

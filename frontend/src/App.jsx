@@ -1,34 +1,43 @@
+import { lazy, Suspense } from 'react';
 import { createBrowserRouter, RouterProvider, Navigate, Outlet, ScrollRestoration, useLocation } from 'react-router-dom';
 import { SmartBackTracker } from './hooks/useSmartBack';
 import { useAuth } from './context/AuthContext';
-import LandingPage from './pages/LandingPage';
 import DashboardLayoutWrapper from './pages/DashboardLayoutWrapper';
-import FeedRoute from './pages/FeedRoute';
-import CommunitiesRoute from './pages/CommunitiesRoute';
-import CommunityDetailRoute from './pages/CommunityDetailRoute';
-import PostDetailRoute from './pages/PostDetailRoute';
-import MessagesRoute from './pages/MessagesRoute';
-import ProfilePage from './pages/ProfilePage';
-import SearchResultsRoute from './pages/SearchResultsRoute';
-import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ErrorBoundary, { RouteErrorBoundary } from './components/common/ErrorBoundary';
 import InstallPopup from './components/common/InstallPopup';
-import OnboardingRoute from './pages/onboarding/OnboardingRoute';
-import SettingsRoute from './pages/settings/SettingsRoute';
-import FindYourCrewPage from './components/crew/FindYourCrewPage';
-import ActivityDetailPage from './components/crew/ActivityDetailPage';
-import CreateActivityPage from './components/crew/CreateActivityPage';
-import NotificationsRoute from './pages/NotificationsRoute';
-import CampusPage from './pages/CampusPage';
-import DirectoryPage from './pages/DirectoryPage';
-import ActivitiesPage from './pages/ActivitiesPage';
-import GroupsPage from './pages/GroupsPage';
 
-/** Wraps a route element with a scoped error boundary */
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const FeedRoute = lazy(() => import('./pages/FeedRoute'));
+const CommunitiesRoute = lazy(() => import('./pages/CommunitiesRoute'));
+const CommunityDetailRoute = lazy(() => import('./pages/CommunityDetailRoute'));
+const PostDetailRoute = lazy(() => import('./pages/PostDetailRoute'));
+const MessagesRoute = lazy(() => import('./pages/MessagesRoute'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const SearchResultsRoute = lazy(() => import('./pages/SearchResultsRoute'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const SignupPage = lazy(() => import('./pages/SignupPage'));
+const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
+const OnboardingRoute = lazy(() => import('./pages/onboarding/OnboardingRoute'));
+const SettingsRoute = lazy(() => import('./pages/settings/SettingsRoute'));
+const FindYourCrewPage = lazy(() => import('./components/crew/FindYourCrewPage'));
+const ActivityDetailPage = lazy(() => import('./components/crew/ActivityDetailPage'));
+const CreateActivityPage = lazy(() => import('./components/crew/CreateActivityPage'));
+const NotificationsRoute = lazy(() => import('./pages/NotificationsRoute'));
+const CampusPage = lazy(() => import('./pages/CampusPage'));
+const DirectoryPage = lazy(() => import('./pages/DirectoryPage'));
+const ActivitiesPage = lazy(() => import('./pages/ActivitiesPage'));
+const GroupsPage = lazy(() => import('./pages/GroupsPage'));
+const SavedPage = lazy(() => import('./pages/SavedPage'));
+
+/** Wraps a route element with a scoped error boundary and suspense fallback */
 function withBoundary(element) {
-  return <RouteErrorBoundary>{element}</RouteErrorBoundary>;
+  return (
+    <RouteErrorBoundary>
+      <Suspense fallback={null}>
+        {element}
+      </Suspense>
+    </RouteErrorBoundary>
+  );
 }
 
 function ProtectedRoute({ children }) {
@@ -154,6 +163,7 @@ export default function App() {
             { path: '/crew',                       element: withBoundary(<FindYourCrewPage />), handle: { wide: true } },
             { path: '/crew/create',                element: withBoundary(<CreateActivityPage />), handle: { wide: true } },
             { path: '/crew/:id',                   element: withBoundary(<ActivityDetailPage />), handle: { wide: true } },
+            { path: '/saved',                      element: withBoundary(<SavedPage />) },
             { path: '*',                           element: withBoundary(<NotFound />) },
           ],
         },

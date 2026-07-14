@@ -259,9 +259,9 @@
 .saveBtn {
   width: 28px;
   height: 28px;
-  background: var(--color-bg-white);
-  border: 1px solid var(--color-border, #e2e8f0);
-  color: #000000;
+  background: #888888;
+  border: none;
+  color: #ffffff;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -273,31 +273,27 @@
 
 :global([data-theme="dark"]) .saveBtn,
 [data-theme="dark"] .saveBtn {
-  color: #ffffff;
+  background: #888888;
 }
 
 .saveBtn:hover {
-  background: var(--color-bg-soft, #f8fafc);
-  color: #000000;
-  border-color: #000000;
+  background: #666666;
 }
 
 :global([data-theme="dark"]) .saveBtn:hover {
-  background: var(--color-bg-soft, #2a2a2a);
-  color: #ffffff;
-  border-color: #ffffff;
+  background: #a3a3a3;
 }
 
 .saved {
-  color: #000000 !important;
-  background: rgba(0, 0, 0, 0.06) !important;
-  border-color: rgba(0, 0, 0, 0.15) !important;
+  color: #ffffff !important;
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
 }
 
 :global([data-theme="dark"]) .saved {
   color: #ffffff !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  border-color: rgba(255, 255, 255, 0.25) !important;
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
 }
 
 @media (max-width: 768px) {

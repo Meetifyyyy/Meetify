@@ -62,8 +62,8 @@ export default function MessagesLayout() {
     goBack('/messages', { replace: true });
   };
 
-  const handleSend = (convId, text, replyTo = null, mentions = [], mediaUrl = null, mediaType = null) => {
-    sendDirectMessage(convId, text, replyTo, null, mentions, mediaUrl, mediaType);
+  const handleSend = (convId, text, replyTo = null, mentions = [], mediaUrl = null, mediaType = null, explicitLinkPreview = null, explicitInviteData = null) => {
+    sendDirectMessage(convId, text, replyTo, explicitInviteData, mentions, mediaUrl, mediaType, explicitLinkPreview);
   };
 
   const handleReact = (convId, messageIndex, reaction) => {

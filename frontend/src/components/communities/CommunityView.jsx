@@ -99,12 +99,214 @@ function HeroSection({ comm, joined, onToggleJoin, onCreatePost, userCommunities
         )}
       </div>
       <div className={styles.heroContent}>
-        <div className={styles.heroTopRow}>
-          <div className={styles.avatarWrapper}>
+        {/* DESKTOP LAYOUT */}
+        <div className={styles.desktopHeroLayout}>
+          <div className={styles.heroTopRow}>
+            <div className={styles.avatarWrapper}>
+              <div 
+                className={`${styles.heroAvatar} ${isAdmin ? styles.heroAvatarEditable : ''}`} 
+                style={{ background: (!isImageUrl(comm.avatar) || imgError) ? (comm.color || 'var(--color-primary)') : 'var(--color-bg-white)' }}
+                onClick={isAdmin ? () => avatarInputRef.current?.click() : undefined}
+              >
+                {isImageUrl(comm.avatar) && !imgError ? (
+                  <img src={comm.avatar} alt={comm.name} className={styles.heroAvatarImg} onError={() => setImgError(true)} />
+                ) : (
+                  <span className={styles.heroLetter}>
+                    {comm.avatar || (comm.name ? comm.name.charAt(0).toUpperCase() : '')}
+                  </span>
+                )}
+                {isAdmin && (
+                  <>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      ref={avatarInputRef} 
+                      style={{ display: 'none' }} 
+                      onChange={e => handleImageUpload(e, 'avatar')} 
+                    />
+                    <div className={styles.avatarEditOverlay} title="Change Avatar">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+                        <circle cx="12" cy="13" r="3" />
+                      </svg>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+            
+            <div className={styles.heroMeta}>
+              <div className={styles.heroNameRow}>
+                <h2 className={styles.heroName}>{comm.name}</h2>
+                {comm.trending && (
+                  <span className={styles.trendingBadge}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                      <polyline points="17 6 23 6 23 12" />
+                    </svg>
+                    Trending
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className={styles.heroActions}>
+              {joined && (
+                <button
+                  type="button"
+                  className={styles.notificationBtn}
+                  onClick={onMuteClick}
+                  title={isMuted ? "Unmute community" : "Mute community"}
+                >
+                  {isMuted ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M10.268 21a2 2 0 0 0 3.464 0" />
+                      <path d="M17 17H4a1 1 0 0 1-.74-1.673C4.59 13.956 6 12.499 6 8a6 6 0 0 1 .258-1.742" />
+                      <path d="m2 2 20 20" />
+                      <path d="M8.668 3.01A6 6 0 0 1 18 8c0 2.687.77 4.653 1.707 6.05" />
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M18 8A6 6 0 0 0 6 8v7a2 2 0 0 0-2 2v0a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v0a2 2 0 0 0-2-2z" />
+                      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                    </svg>
+                  )}
+                </button>
+              )}
+              <button
+                className={`${styles.heroJoinBtn}${joined ? ` ${styles.joined}` : ''}`}
+                onClick={onToggleJoin}
+              >
+                {joined ? (
+                  <>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Joined
+                  </>
+                ) : (
+                  'Join Community'
+                )}
+              </button>
+
+              <div className={styles.dropdownContainer} ref={dropdownRef}>
+                <button 
+                  type="button"
+                  className={styles.threeDotBtn}
+                  onClick={() => setShowDropdown(prev => !prev)}
+                  title="More Options"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="1.5"></circle>
+                    <circle cx="12" cy="5" r="1.5"></circle>
+                    <circle cx="12" cy="19" r="1.5"></circle>
+                  </svg>
+                </button>
+                {showDropdown && (
+                  <div className={styles.dropdownMenu}>
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        setShowShareModal(true);
+                        setShowDropdown(false);
+                      }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '0.5rem' }}>
+                        <circle cx="18" cy="5" r="3" />
+                        <circle cx="6" cy="12" r="3" />
+                        <circle cx="18" cy="19" r="3" />
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                      </svg>
+                      Share
+                    </button>
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        onViewMembers();
+                        setShowDropdown(false);
+                      }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '0.5rem' }}>
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                      </svg>
+                      Members
+                    </button>
+                    {isAdmin && (
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          onOpenAdmin();
+                          setShowDropdown(false);
+                        }}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '0.5rem' }}>
+                          <circle cx="12" cy="12" r="3" />
+                          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                        </svg>
+                        Settings
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          <div className={styles.heroBottomRow}>
             <div 
-              className={`${styles.heroAvatar} ${isAdmin ? styles.heroAvatarEditable : ''}`} 
+              className={styles.memberStackClickable} 
+              onClick={() => {
+                if (onViewMembers) onViewMembers();
+              }} 
+              style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}
+              title="View members"
+            >
+              <div className={styles.memberStack}>
+                {(comm.memberList?.length ? comm.memberList : []).slice(0, 4).map((m, i) => (
+                  <div
+                    key={i}
+                    className={styles.memberAvatar}
+                    style={{ zIndex: 4 - i, background: 'var(--color-bg-alt)', padding: 0, overflow: 'hidden' }}
+                  >
+                    {isImageUrl(m.avatar) ? (
+                      <img
+                        src={m.avatar}
+                        alt={m.name || ''}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: '50%' }}
+                      />
+                    ) : (
+                      <DefaultAvatar style={{ width: '100%', height: '100%', borderRadius: '50%', fontSize: '0.65rem' }} />
+                    )}
+                  </div>
+                ))}
+                {comm.members > 4 && (
+                  <div className={styles.memberOverflow}>
+                    +{formatCount(comm.members - 4)}
+                  </div>
+                )}
+              </div>
+              <div className={styles.heroCounts}>
+                <span className={styles.heroCount}>
+                  <strong>{formatCount(Math.max(comm.members || 0, comm.memberList?.length || 0))}</strong> members
+                </span>
+                <span className={styles.heroCount}>
+                  <span className={styles.onlineDot} />
+                  <strong>{formatCount(comm.online)}</strong> active now
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* MOBILE LAYOUT */}
+        <div className={styles.mobileHeroLayout}>
+          <div className={styles.mobileHeroTopRow}>
+            <div 
+              className={styles.mobileAvatar}
               style={{ background: (!isImageUrl(comm.avatar) || imgError) ? (comm.color || 'var(--color-primary)') : 'var(--color-bg-white)' }}
-              onClick={isAdmin ? () => avatarInputRef.current?.click() : undefined}
             >
               {isImageUrl(comm.avatar) && !imgError ? (
                 <img src={comm.avatar} alt={comm.name} className={styles.heroAvatarImg} onError={() => setImgError(true)} />
@@ -113,47 +315,35 @@ function HeroSection({ comm, joined, onToggleJoin, onCreatePost, userCommunities
                   {comm.avatar || (comm.name ? comm.name.charAt(0).toUpperCase() : '')}
                 </span>
               )}
-              {isAdmin && (
-                <>
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    ref={avatarInputRef} 
-                    style={{ display: 'none' }} 
-                    onChange={e => handleImageUpload(e, 'avatar')} 
-                  />
-                  <div className={styles.avatarEditOverlay} title="Change Avatar">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
-                      <circle cx="12" cy="13" r="3" />
-                    </svg>
-                  </div>
-                </>
-              )}
             </div>
-          </div>
-          
-          <div className={styles.heroMeta}>
-            <div className={styles.heroNameRow}>
-              <h2 className={styles.heroName}>{comm.name}</h2>
-              {comm.trending && (
-                <span className={styles.trendingBadge}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-                    <polyline points="17 6 23 6 23 12" />
+            
+            <div className={styles.mobileHeroMetaInfo}>
+              <div className={styles.mobileHeroTitleRow}>
+                <h2 className={styles.mobileHeroTitle}>{comm.name}</h2>
+                <div className={styles.mobileTitleArrow}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
                   </svg>
-                  Trending
-                </span>
-              )}
+                </div>
+              </div>
+              <div className={styles.mobileHeroSubtext}>
+                {formatCount(Math.max(comm.members || 0, comm.memberList?.length || 0))} members &nbsp; {formatCount(comm.online)} active
+              </div>
             </div>
           </div>
-          <div className={styles.heroActions}>
+
+          <div className={styles.mobileHeroDescWrapper}>
+            <p className={styles.mobileHeroDescLine}>
+              {comm.desc}
+            </p>
+          </div>
+
+          <div className={styles.mobileHeroButtonsRow}>
             {joined && (
               <button
                 type="button"
-                className={styles.notificationBtn}
+                className={styles.mobileNotificationBtn}
                 onClick={onMuteClick}
-                title={isMuted ? "Unmute community" : "Mute community"}
               >
                 {isMuted ? (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -171,129 +361,20 @@ function HeroSection({ comm, joined, onToggleJoin, onCreatePost, userCommunities
               </button>
             )}
             <button
-              className={`${styles.heroJoinBtn}${joined ? ` ${styles.joined}` : ''}`}
+              className={`${styles.mobileJoinBtn}${joined ? ` ${styles.joined}` : ''}`}
               onClick={onToggleJoin}
             >
               {joined ? (
                 <>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                   Joined
                 </>
               ) : (
-                'Join Community'
+                'Join'
               )}
             </button>
-
-            <div className={styles.dropdownContainer} ref={dropdownRef}>
-              <button 
-                type="button"
-                className={styles.threeDotBtn}
-                onClick={() => setShowDropdown(prev => !prev)}
-                title="More Options"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="1.5"></circle>
-                  <circle cx="12" cy="5" r="1.5"></circle>
-                  <circle cx="12" cy="19" r="1.5"></circle>
-                </svg>
-              </button>
-              {showDropdown && (
-                <div className={styles.dropdownMenu}>
-                  <button 
-                    type="button"
-                    onClick={() => {
-                      setShowShareModal(true);
-                      setShowDropdown(false);
-                    }}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '0.5rem' }}>
-                      <circle cx="18" cy="5" r="3" />
-                      <circle cx="6" cy="12" r="3" />
-                      <circle cx="18" cy="19" r="3" />
-                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-                    </svg>
-                    Share
-                  </button>
-                  <button 
-                    type="button"
-                    onClick={() => {
-                      onViewMembers();
-                      setShowDropdown(false);
-                    }}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '0.5rem' }}>
-                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                      <circle cx="9" cy="7" r="4" />
-                      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                    </svg>
-                    Members
-                  </button>
-                  {isAdmin && (
-                    <button 
-                      type="button"
-                      onClick={() => {
-                        onOpenAdmin();
-                        setShowDropdown(false);
-                      }}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '0.5rem' }}>
-                        <circle cx="12" cy="12" r="3" />
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                      </svg>
-                      Settings
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-        <div className={styles.heroBottomRow}>
-          <div 
-            className={styles.memberStackClickable} 
-            onClick={() => {
-              if (onViewMembers) onViewMembers();
-            }} 
-            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}
-            title="View members"
-          >
-            <div className={styles.memberStack}>
-              {(comm.memberList?.length ? comm.memberList : []).slice(0, 4).map((m, i) => (
-                <div
-                  key={i}
-                  className={styles.memberAvatar}
-                  style={{ zIndex: 4 - i, background: 'var(--color-bg-alt)', padding: 0, overflow: 'hidden' }}
-                >
-                  {isImageUrl(m.avatar) ? (
-                    <img
-                      src={m.avatar}
-                      alt={m.name || ''}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: '50%' }}
-                    />
-                  ) : (
-                    <DefaultAvatar style={{ width: '100%', height: '100%', borderRadius: '50%', fontSize: '0.65rem' }} />
-                  )}
-                </div>
-              ))}
-              {comm.members > 4 && (
-                <div className={styles.memberOverflow}>
-                  +{formatCount(comm.members - 4)}
-                </div>
-              )}
-            </div>
-            <div className={styles.heroCounts}>
-              <span className={styles.heroCount}>
-                <strong>{formatCount(Math.max(comm.members || 0, comm.memberList?.length || 0))}</strong> members
-              </span>
-              <span className={styles.heroCount}>
-                <span className={styles.onlineDot} />
-                <strong>{formatCount(comm.online)}</strong> active now
-              </span>
-            </div>
           </div>
         </div>
       </div>
@@ -558,7 +639,6 @@ export default function CommunityView({ communityId, onBack, onPostClick }) {
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
         </button>
-        <h1 className={styles.mobileTitle}>{comm.name}</h1>
         <div style={{ position: 'relative' }}>
           <button 
             className={styles.backBtn}

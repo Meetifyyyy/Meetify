@@ -22,6 +22,8 @@ import styles from './ChatArea.module.css';
 import { useMediaViewer } from '../../context/MediaViewerContext';
 import { SharedPostPreview } from '../chat/SharedPostPreview';
 import { SharedProfilePreview } from '../chat/SharedProfilePreview';
+import { SharedCommunityPreview } from '../chat/SharedCommunityPreview';
+
 
 const Picker = lazy(() => import('@emoji-mart/react'));
 
@@ -161,6 +163,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
   const { isLoading, data: loadedMessages, error, retry } = useSimulatedFetch(conversation?.messages || [], 800, [conversation?.id]);
   const [inputValue, setInputValue] = useState({ text: '', mentions: [] });
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
   const fileInputRef = useRef(null);
 
   const handleAttachClick = () => {
@@ -383,7 +386,8 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
     const text = (typeof inputValue === 'string' ? inputValue : (inputValue?.text || '')).trim();
     const mentions = inputValue?.mentions || [];
     if (!text || conversation.blocked) return;
-    onSendMessage(conversation.id, text, replyingTo, mentions, null, null);
+
+    onSendMessage(conversation.id, text, replyingTo, mentions, null, null, null, null);
     setInputValue({ text: '', mentions: [] });
     setShowEmojiPicker(false);
     setReplyingTo(null);
@@ -764,49 +768,11 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                       </div>
                     )}
 
-                    {(msg.text || msg.linkPreview || msg.inviteData) && (
-                    <div className={`${styles.msgBubble} ${msg.from === 'me' ? styles.msgBubbleMe : styles.msgBubbleThem} ${(isGroupInvite || ((msg.inviteData?.type === 'activityShare' || msg.inviteData?.type === 'postShare' || msg.inviteData?.type === 'profileShare' || msg.inviteData?.type === 'collegeShare') && !msg.text)) ? styles.msgBubbleTransparent : ''}`}>
-                      <div className={styles.msgText}>
-                      {/* ── Text content ── */}
-                      {msg.text && !isGroupInvite && (searchQuery && hasQuery ? (
-                        (() => {
-                          const idx = msg.text.toLowerCase().indexOf(searchQuery.toLowerCase());
-                          const length = searchQuery.length;
-                          return (
-                            <>
-                              {msg.text.substring(0, idx)}
-                              <mark className={styles.msgSearchHighlight}>{msg.text.substring(idx, idx + length)}</mark>
-                              {msg.text.substring(idx + length)}
-                            </>
-                          );
-                        })()
-                      ) : (
-                        <RichText content={msg.text} mentions={msg.mentions} urlLimit={40} />
-                      ))}
-
-                      {msg.linkPreview && (
-                        <a
-                          href={msg.linkPreview.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={styles.msgLinkPreview}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {msg.linkPreview.image && (
-                            <img src={msg.linkPreview.image} alt="" className={styles.msgLinkPreviewImg} />
-                          )}
-                          <div className={styles.msgLinkPreviewBody}>
-                            {msg.linkPreview.site && (
-                              <span className={styles.msgLinkPreviewSite}>{msg.linkPreview.site}</span>
-                            )}
-                            <span className={styles.msgLinkPreviewTitle}>{msg.linkPreview.title}</span>
-                            {msg.linkPreview.description && (
-                              <span className={styles.msgLinkPreviewDesc}>{msg.linkPreview.description}</span>
-                            )}
-                          </div>
-                        </a>
-                      )}
-
+                    {(msg.text || msg.inviteData) && (
+                    <div className={`${styles.msgBubble} ${msg.from === 'me' ? styles.msgBubbleMe : styles.msgBubbleThem} ${msg.inviteData && !msg.text ? styles.msgBubbleTransparent : ''}`}>
+                      <div className={styles.msgText} style={{ display: 'flex', flexDirection: 'column' }}>
+                      {/* ── Invite Data FIRST ── */}
+                      <div style={{ position: 'relative', zIndex: 1 }}>
                       
                       {msg.inviteData && msg.inviteData.type === 'activityShare' ? (
                         (() => {
@@ -846,42 +812,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                           currentUserId={currentUser?.id} 
                         />
                       ) : msg.inviteData && msg.inviteData.type === 'communityShare' ? (
-                        <div className={styles.profileShareCard} onClick={() => navigate('/communities/' + msg.inviteData.community.id)}>
-                          <div className={styles.profileShareLeft}>
-                            <div className={styles.profileShareHeader}>
-                              <span className={styles.profileShareBadge} style={{ background: 'var(--color-primary)', color: 'white' }}>Community</span>
-                            </div>
-                            
-                            <div className={styles.profileShareInfo}>
-                              {isImageUrl(msg.inviteData.community.avatar) ? (
-                                <img src={msg.inviteData.community.avatar} alt={msg.inviteData.community.name} className={styles.profileShareAvatar} style={{ borderRadius: '8px', objectFit: 'cover' }} />
-                              ) : (
-                                <div className={styles.profileShareAvatar} style={{ background: msg.inviteData.community.color || 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 800, fontSize: '1.2rem', borderRadius: '8px' }}>
-                                  {msg.inviteData.community.name?.charAt(0).toUpperCase() || 'C'}
-                                </div>
-                              )}
-                              <div className={styles.profileShareDetails}>
-                                <div className={styles.profileShareName}>{msg.inviteData.community.name}</div>
-                                <div className={styles.profileShareUsername}>@{msg.inviteData.community.id}</div>
-                              </div>
-                            </div>
-
-                            {msg.inviteData.community.description && (
-                              <p className={styles.profileShareBio}>{msg.inviteData.community.description}</p>
-                            )}
-
-                            <div className={styles.profileShareStats}>
-                              <span className={styles.profileShareStat}><strong>{msg.inviteData.community.membersCount?.toLocaleString() || 0}</strong> Members</span>
-                            </div>
-                          </div>
-
-                          <div className={styles.profileShareRight}>
-                            <button className={styles.profileShareBtn}>
-                              View
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                            </button>
-                          </div>
-                        </div>
+                        <SharedCommunityPreview community={msg.inviteData.community} currentUserId={currentUser?.id} />
                       ) : msg.inviteData && msg.inviteData.type === 'collegeShare' ? (
                         <div className={styles.profileShareCard} onClick={() => navigate('/campus')}>
                           <div className={styles.profileShareLeft}>
@@ -1021,6 +952,28 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
                         );
                       })()
                       ) : null}
+                      </div>
+                      
+                      {/* ── Text content ── */}
+                      {msg.text && !isGroupInvite && (
+                         <div style={{ marginTop: (msg.inviteData) ? '6px' : '0' }}>
+                            {searchQuery && hasQuery ? (
+                              (() => {
+                                const idx = msg.text.toLowerCase().indexOf(searchQuery.toLowerCase());
+                                const length = searchQuery.length;
+                                return (
+                                  <>
+                                    {msg.text.substring(0, idx)}
+                                    <mark className={styles.msgSearchHighlight}>{msg.text.substring(idx, idx + length)}</mark>
+                                    {msg.text.substring(idx + length)}
+                                  </>
+                                );
+                              })()
+                            ) : (
+                              <RichText content={msg.text} mentions={msg.mentions} urlLimit={40} />
+                            )}
+                         </div>
+                      )}
                     </div>
                     {(isGroupInvite || (msg.inviteData && !msg.text && !msg.linkPreview)) ? (
                       <div style={{ display: 'flex', justifyContent: msg.from === 'me' ? 'flex-end' : 'flex-start', marginTop: '4px' }}>
@@ -1179,6 +1132,7 @@ export default function ChatArea({ conversation, onSendMessage, onReactMessage, 
             </button>
 
             <div className={styles.inputWrapper}>
+
               <MentionInput
                 className={styles.msgInput}
                 placeholder="Type a message..."

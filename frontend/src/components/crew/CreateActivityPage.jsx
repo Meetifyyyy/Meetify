@@ -278,6 +278,7 @@ function CapacityModal({ value, onSave, onClose }) {
         </div>
         <div className={styles.dtFooter}>
           <button className={styles.capResetBtn} onClick={() => { onSave(999); onClose(); }}>Unlimited</button>
+          <button className={styles.capResetBtn} onClick={() => { onSave(2); onClose(); }}>One-on-one</button>
           <button className={styles.dtDone} onClick={save}>Save</button>
         </div>
       </div>
@@ -630,7 +631,7 @@ export default function CreateActivityPage() {
               {!hasInteractedWithDT ? (
                 <span className={styles.fieldBtnLabel}>Date &amp; Time</span>
               ) : (
-                <span className={styles.fieldBtnValue} style={{ marginLeft: 0, textAlign: 'left', flex: 1, color: 'var(--color-text-main)' }}>{fmtDateTime()}</span>
+                <span className={styles.fieldBtnValue} style={{ marginLeft: 0, textAlign: 'left', flex: 1, color: '#ffffff' }}>{fmtDateTime()}</span>
               )}
               <ChevronRight size={14} style={{ marginLeft: 'auto' }} />
             </button>
@@ -712,14 +713,15 @@ export default function CreateActivityPage() {
                   <span className={styles.rowTitle}>Who can see this activity</span>
                 </div>
                 <div className={styles.rowRight}>
-                  <span>{formData.whoCanJoin === 'College' ? (currentUser?.university || 'GLA University') : 'Anyone'}</span>
+                  <span>{formData.whoCanJoin === 'College' ? (currentUser?.university || 'GLA University') : formData.whoCanJoin}</span>
                   <ChevronsUpDown size={14} className={styles.selectIcon} />
                 </div>
               </button>
               {showWhoCanJoin && (
                 <div className={styles.reminderDrop}>
-                  {['Anyone', 'College'].map(opt => {
-                    const label = opt === 'College' ? (currentUser?.university || 'GLA University') : 'Anyone';
+                  {['Anyone', 'College', 'No one'].map(opt => {
+                    let label = opt;
+                    if (opt === 'College') label = currentUser?.university || 'GLA University';
                     return (
                       <button key={opt}
                         className={`${styles.reminderOpt} ${formData.whoCanJoin === opt ? styles.reminderOptOn : ''}`}
@@ -739,7 +741,7 @@ export default function CreateActivityPage() {
                   <span className={styles.rowTitle}>Capacity</span>
                 </div>
                 <div className={styles.rowRight}>
-                  <span>{formData.slotsNeeded === 999 ? 'Unlimited' : `${formData.slotsNeeded} spots`}</span>
+                  <span>{formData.slotsNeeded === 999 ? 'Unlimited' : (formData.slotsNeeded === 2 ? 'One-on-one' : `Total ${formData.slotsNeeded} people`)}</span>
                   <ChevronRight size={15} />
                 </div>
               </button>

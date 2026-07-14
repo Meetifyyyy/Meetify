@@ -170,7 +170,7 @@
 
 /* ===== Explore Page ===== */
 .explorePage {
-  padding: 1rem 0 4rem;
+  padding: 0rem 0 4rem;
   animation: none !important;
 }
 
@@ -427,7 +427,7 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
-.goingAvatarCircle + .goingAvatarCircle {
+.goingAvatarCircle+.goingAvatarCircle {
   margin-left: -7px;
 }
 
@@ -550,7 +550,8 @@
   background: var(--color-bg-soft);
 }
 
-.topPostAvatar {  composes: ui-avatar from global;
+.topPostAvatar {
+  composes: ui-avatar from global;
   width: 36px;
   height: 36px;
   background: var(--color-border);
@@ -636,7 +637,8 @@
   background: var(--color-bg-soft);
 }
 
-.sidebarAvatar {  composes: ui-avatar from global;
+.sidebarAvatar {
+  composes: ui-avatar from global;
   width: 40px;
   height: 40px;
 }
@@ -706,7 +708,8 @@
   display: flex;
 }
 
-.mutualAvatar {  composes: ui-avatar from global;
+.mutualAvatar {
+  composes: ui-avatar from global;
   width: 13px;
   height: 13px;
   border: 1.5px solid var(--color-bg-white);

@@ -71,18 +71,15 @@
     height: 34px;
     border-radius: 10px;
     border: none;
-    background: rgba(255, 255, 255, 0.82);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    color: #1a1a2e;
+    background: rgba(0, 0, 0, 0.4);
+    color: #FFFFFF !important;
     cursor: pointer;
     z-index: 10;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
     transition: background 0.18s;
   }
 
   .mobileBackBtn:hover {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(0, 0, 0, 0.55);
   }
 
   .mobileMenuBtn {
@@ -93,17 +90,14 @@
     height: 34px;
     border-radius: 10px;
     border: none;
-    background: rgba(255, 255, 255, 0.82);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    color: #1a1a2e;
+    background: rgba(0, 0, 0, 0.4);
+    color: #FFFFFF !important;
     cursor: pointer;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
     transition: background 0.18s;
   }
 
   .mobileMenuBtn:hover {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(0, 0, 0, 0.55);
   }
 }
 
@@ -118,9 +112,10 @@
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: #1e1e1e;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
   padding: 6px;
   min-width: 170px;
   animation: dropFadeIn 0.18s ease;
@@ -151,12 +146,12 @@
 }
 
 .dropdownItem:hover {
-  background: var(--color-bg-soft, #f4f6fb);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .dropdownDivider {
   height: 1px;
-  background: var(--color-border-light, #eef0f5);
+  background: rgba(255, 255, 255, 0.1);
   margin: 4px 6px;
 }
 
@@ -165,7 +160,7 @@
 }
 
 .dropdownDanger:hover {
-  background: #fff0f0;
+  background: rgba(224, 61, 61, 0.15);
 }
 
 .profileInfo {
@@ -465,12 +460,15 @@
   }
 
   .profileCard {
-    border-radius: 0;
+    border-radius: 0 0 24px 24px;
     border-left: none;
     border-right: none;
+    border-top: none;
+    border-bottom: none;
     margin-bottom: 0.75rem;
     width: 100% !important;
     max-width: 100% !important;
+    box-shadow: none;
   }
 
   .profileInfo {
