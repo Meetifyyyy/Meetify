@@ -1,429 +1,420 @@
 export const initialUsers = {
-  alicechen: {
+  ethanwong: {
     id: 'u1',
-    username: 'alicechen',
-    displayName: 'Alice Chen',
-    avatar: 'A',
+    username: 'ethanwong',
+    displayName: 'Ethan Wong',
+    avatar: 'E',
     avatarUrl: null,
-    bio: 'Building cool stuff & meeting awesome people. I love experimenting with new technologies, creating unique user experiences, and exploring the unknown.',
-    location: 'New York, NY',
-    role: 'Full-stack Developer',
-    email: 'alicechen@meetifyy.app',
-    followingList: ['marcusrivera', 'priyasharma', 'sammydoe'],
-    followersList: ['marcusrivera', 'priyasharma', 'sammydoe', 'alexq', 'chrisb', 'johnsonw', 'sarahj', 'student'],
-    followers: 8401,
-    following: 161,
-    communities: ['Startup Hub', 'Hackathon Heroes'],
-    course: 'B.Tech CS',
+    bio: 'Full stack builder. Passionate about decentralization, web3 technologies, and rust development.',
+    location: 'Vancouver, BC',
+    role: 'Core Developer',
+    email: 'ethanwong@meetifyy.app',
+    followingList: ['zoemiller', 'kabirverma', 'sophiali'],
+    followersList: ['zoemiller', 'kabirverma', 'sophiali', 'liamdavies', 'emmawatson', 'lucasgray', 'hannahkim', 'student'],
+    followers: 9400,
+    following: 180,
+    communities: ['Robotics Alliance', 'Sustainability Guild'],
+    course: 'B.Sc Computer Science',
     year: '4th Year',
     collegeId: 'gla',
     verified: true,
-    interests: ['AI', 'Startups', 'Product Design', 'Web Development', 'Hackathons', 'Open Source'],
-    skills: ['React', 'Node.js', 'Figma', 'Python', 'Machine Learning', 'TypeScript', 'Next.js'],
+    interests: ['Rust', 'Blockchain', 'Distributed Systems', 'Cryptography', 'P2P networks'],
+    skills: ['Rust', 'Go', 'React', 'Solidity', 'Linux Systems', 'Docker', 'Kubernetes'],
     projects: [
       {
         id: 'proj_1',
-        title: 'Meetifyy',
-        description: 'Social platform connecting college students through shared interests, communities, and events.',
-        technologies: ['React', 'Node.js', 'MongoDB', 'WebSocket'],
-        image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=400&fit=crop',
+        title: 'DeChat',
+        description: 'A completely decentralized, end-to-end encrypted messaging protocol built on top of WebRTC.',
+        technologies: ['Rust', 'WebRTC', 'WASM', 'TypeScript'],
+        image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&h=400&fit=crop',
         link: '#',
         type: 'Project'
       },
       {
         id: 'proj_2',
-        title: 'AI Study Buddy',
-        description: 'An AI-powered study assistant built during a 48-hour hackathon using Whisper + GPT-4o.',
-        technologies: ['Python', 'OpenAI', 'React Native', 'FastAPI'],
-        image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&h=400&fit=crop',
+        title: 'ChainKeep',
+        description: 'Multi-signature smart contract wallet for secure institutional custody of digital assets.',
+        technologies: ['Solidity', 'Hardhat', 'Next.js', 'Ethers.js'],
+        image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=600&h=400&fit=crop',
         link: '#',
         type: 'Hackathon Project'
       }
     ],
     achievements: [
-      { id: 'ach_1', title: 'Best Hackathon Project', description: 'Won first place at HackMIT 2025', icon: '🏆', date: 'Mar 2025' },
-      { id: 'ach_2', title: '100 Days of Code', description: 'Completed 100 consecutive days of coding', icon: '💻', date: 'Jan 2025' },
-      { id: 'ach_3', title: 'Top Contributor', description: 'Most active member in Startup Hub community', icon: '⭐', date: 'Dec 2024' }
+      { id: 'ach_1', title: 'Solana Hackathon Grand Prize', description: 'Won first prize for decentralized storage layer', icon: '🏆', date: 'May 2025' },
+      { id: 'ach_2', title: 'Open Source Contributor', description: 'Main contributor to a major libp2p implementation', icon: '💻', date: 'Feb 2025' },
+      { id: 'ach_3', title: 'Top Leaderboard', description: 'Ranked top developer in Robotics Alliance', icon: '⭐', date: 'Jan 2025' }
     ],
     activityLog: [
-      { type: 'post', text: 'Built a project at Hackathon Heroes', icon: '🚀', time: '2 hours ago', link: '#' },
-      { type: 'post', text: 'Posted in AI/ML Enthusiasts', icon: '🤖', time: '5 hours ago', link: '#' },
-      { type: 'join', text: 'Joined Startup Hub', icon: '🎉', time: '3 days ago', link: '/communities/startup' },
-      { type: 'achievement', text: 'Won a design challenge', icon: '🏆', time: '1 week ago', link: '#' },
-      { type: 'milestone', text: 'Reached 8K followers', icon: '🌟', time: '2 weeks ago', link: '#' },
-      { type: 'event', text: 'Attended Tech Fest 2026', icon: '📅', time: '3 weeks ago', link: '#' },
-      { type: 'discussion', text: 'Started discussion in GLA University', icon: '💬', time: '1 month ago', link: '#' }
+      { type: 'post', text: 'Released DeChat open beta version', icon: '🚀', time: '1 hour ago', link: '#' },
+      { type: 'join', text: 'Joined Sustainability Guild', icon: '🎉', time: '4 days ago', link: '/communities/sustainability' },
+      { type: 'milestone', text: 'Exceeded 9k followers milestone', icon: '🌟', time: '2 weeks ago', link: '#' }
     ],
     socialLinks: {
-      github: 'https://github.com/alicechen',
-      linkedin: 'https://linkedin.com/in/alicechen',
-      twitter: 'https://twitter.com/alicechen',
-      website: 'https://alicechen.dev'
+      github: 'https://github.com/ethanwong',
+      linkedin: 'https://linkedin.com/in/ethanwong',
+      twitter: 'https://twitter.com/ethanwong'
     },
-    communitiesJoined: 5,
-    eventsAttended: 12,
-    connectionsMade: 48,
-    projectsShared: 7,
-    postsThisMonth: 12,
-    profileVisitsThisWeek: 47,
-    newConnectionsThisWeek: 3,
+    communitiesJoined: 4,
+    eventsAttended: 10,
+    connectionsMade: 52,
+    projectsShared: 6,
+    postsThisMonth: 15,
+    profileVisitsThisWeek: 64,
+    newConnectionsThisWeek: 5,
     recentlyActive: true,
-    memberSince: 'Aug 2023'
+    memberSince: 'Sep 2023'
   },
-  marcusrivera: {
+  zoemiller: {
     id: 'u2',
-    username: 'marcusrivera',
-    displayName: 'Marcus Rivera',
-    avatar: 'M',
+    username: 'zoemiller',
+    displayName: 'Zoe Miller',
+    avatar: 'Z',
     avatarUrl: null,
-    bio: 'Product Designer focused on mental wellness and accessible UX. Always looking for new challenges.',
-    location: 'San Francisco, CA',
-    role: 'UI/UX Designer',
-    email: 'marcus@meetifyy.app',
-    followingList: ['alicechen', 'chrisb', 'priyasharma'],
-    followersList: ['alicechen', 'priyasharma', 'alexq', 'chrisb', 'sarahj', 'student'],
-    followers: 5230,
-    following: 340,
-    communities: ['Design Buddies', 'IIT Delhi', 'Startup Hub'],
-    course: 'B.Tech IT',
+    bio: 'Product Designer. Focused on immersive design, glassmorphism, and clean interfaces.',
+    location: 'Portland, OR',
+    role: 'Creative Lead',
+    email: 'zoemiller@meetifyy.app',
+    followingList: ['ethanwong', 'emmawatson', 'kabirverma'],
+    followersList: ['ethanwong', 'kabirverma', 'liamdavies', 'emmawatson', 'hannahkim', 'student'],
+    followers: 6100,
+    following: 290,
+    communities: ['Creative Studio', 'IIT Delhi', 'Robotics Alliance'],
+    course: 'B.Des Interaction Design',
     year: '3rd Year',
     collegeId: 'iitdelhi',
     verified: false,
-    interests: ['UI/UX Design', 'Mental Health Tech', 'Accessibility', 'Design Systems', 'Branding'],
-    skills: ['Figma', 'Adobe XD', 'Prototyping', 'User Research', 'CSS/SCSS', 'Design Tokens'],
+    interests: ['Glassmorphism', 'UI Animation', 'Design Systems', '3D UI', 'Figma Plugins'],
+    skills: ['Figma', 'Spline', 'Framer', 'Three.js', 'CSS/SCSS', 'HTML5', 'After Effects'],
     projects: [
       {
         id: 'proj_3',
-        title: 'MindWell App',
-        description: 'Mental wellness app focused on accessible UX and inclusive design principles.',
-        technologies: ['Figma', 'React Native', 'TypeScript'],
-        image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&h=400&fit=crop',
+        title: 'GlassyUI Kit',
+        description: 'An open-source library of highly customisable glassmorphic react components.',
+        technologies: ['Figma', 'React', 'TailwindCSS'],
+        image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&h=400&fit=crop',
         link: '#',
         type: 'Project'
       }
     ],
     achievements: [
-      { id: 'ach_4', title: 'Design System Award', description: 'Recognized for building a comprehensive design system', icon: '🎨', date: 'Feb 2025' }
+      { id: 'ach_4', title: 'Awwwards Honorable Mention', description: 'Design layout award for creative portfolio site', icon: '🎨', date: 'Mar 2025' }
     ],
     activityLog: [
-      { type: 'post', text: 'Shared a UX research case study', icon: '📝', time: '1 day ago', link: '#' },
-      { type: 'join', text: 'Joined Design Buddies', icon: '🎉', time: '1 week ago', link: '/communities/design' },
-      { type: 'event', text: 'Attended UX Summit 2026', icon: '📅', time: '2 weeks ago', link: '#' }
+      { type: 'post', text: 'Shared new glassmorphism dashboard design', icon: '📝', time: '4 hours ago', link: '#' },
+      { type: 'join', text: 'Joined Creative Studio', icon: '🎉', time: '1 week ago', link: '/communities/creatives' }
     ],
     socialLinks: {
-      linkedin: 'https://linkedin.com/in/marcusrivera',
-      website: 'https://marcusrivera.design'
+      linkedin: 'https://linkedin.com/in/zoemiller',
+      website: 'https://zoemiller.design'
     },
     communitiesJoined: 3,
-    eventsAttended: 8,
-    connectionsMade: 24,
-    projectsShared: 3,
-    postsThisMonth: 5,
-    profileVisitsThisWeek: 32,
-    newConnectionsThisWeek: 1,
+    eventsAttended: 7,
+    connectionsMade: 28,
+    projectsShared: 4,
+    postsThisMonth: 6,
+    profileVisitsThisWeek: 41,
+    newConnectionsThisWeek: 2,
     recentlyActive: true,
-    memberSince: 'Oct 2023'
+    memberSince: 'Nov 2023'
   },
-  priyasharma: {
+  kabirverma: {
     id: 'u3',
-    username: 'priyasharma',
-    displayName: 'Priya Sharma',
-    avatar: 'P',
+    username: 'kabirverma',
+    displayName: 'Kabir Verma',
+    avatar: 'K',
     avatarUrl: null,
-    bio: 'Self-taught ML Engineer. Passionate about democratizing AI education.',
-    location: 'Remote',
-    role: 'ML Engineer',
-    email: 'priya@meetifyy.app',
-    followingList: ['alicechen', 'marcusrivera', 'sammydoe'],
-    followersList: ['alicechen', 'marcusrivera', 'sammydoe', 'johnsonw', 'student'],
-    followers: 12500,
-    following: 50,
-    communities: ['AI/ML Enthusiasts', 'Hackathon Heroes'],
-    course: 'BCA',
+    bio: 'AI researcher and model optimizer. Exploring sparse attention models and Edge AI deployment.',
+    location: 'New Delhi, IN',
+    role: 'Research Assistant',
+    email: 'kabirverma@meetifyy.app',
+    followingList: ['ethanwong', 'zoemiller', 'sophiali'],
+    followersList: ['ethanwong', 'zoemiller', 'sophiali', 'lucasgray', 'student'],
+    followers: 13100,
+    following: 65,
+    communities: ['Fintech Labs', 'Sustainability Guild'],
+    course: 'M.Tech AI & Data Science',
     year: '2nd Year',
     collegeId: 'gla',
     verified: true,
-    interests: ['Machine Learning', 'AI Education', 'Open Source', 'NLP', 'Deep Learning'],
-    skills: ['Python', 'TensorFlow', 'PyTorch', 'Scikit-learn', 'Hugging Face', 'SQL'],
+    interests: ['Edge AI', 'Transformers', 'Model Pruning', 'Quantization', 'PyTorch'],
+    skills: ['Python', 'PyTorch', 'TensorFlow Lite', 'CUDA', 'C++', 'ONNX', 'OpenCV'],
     projects: [
       {
         id: 'proj_4',
-        title: 'EduAI Platform',
-        description: 'Democratizing AI education through interactive tutorials and hands-on projects.',
-        technologies: ['Python', 'Streamlit', 'Hugging Face', 'Docker'],
-        image: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=600&h=400&fit=crop',
+        title: 'EdgeVision',
+        description: 'Real-time object detection model optimized to run efficiently on low-power devices.',
+        technologies: ['C++', 'ONNX Runtime', 'Python', 'YOLOv8'],
+        image: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=600&h=400&fit=crop',
         link: '#',
         type: 'Project'
       }
     ],
     achievements: [
-      { id: 'ach_5', title: 'AI Educator Award', description: 'Recognized for contributions to AI education', icon: '🎓', date: 'Jan 2025' },
-      { id: 'ach_6', title: 'Paper Published', description: 'Co-authored a paper on accessible ML education', icon: '📄', date: 'Nov 2024' }
+      { id: 'ach_5', title: 'Intel Edge AI Innovator Award', description: 'Awarded for novel quantization technique', icon: '🎓', date: 'Feb 2025' }
     ],
     activityLog: [
-      { type: 'post', text: 'Shared ML learning resources', icon: '🤖', time: '3 hours ago', link: '#' },
-      { type: 'milestone', text: 'Reached 12.5K followers', icon: '🌟', time: '1 week ago', link: '#' },
-      { type: 'discussion', text: 'Started AI study group', icon: '💬', time: '2 weeks ago', link: '#' }
+      { type: 'post', text: 'Published benchmarking results on edge accelerators', icon: '🤖', time: '5 hours ago', link: '#' },
+      { type: 'milestone', text: 'Reached 13K followers on platform', icon: '🌟', time: '1 week ago', link: '#' }
     ],
     socialLinks: {
-      github: 'https://github.com/priyasharma',
-      twitter: 'https://twitter.com/priyasharma'
+      github: 'https://github.com/kabirverma',
+      twitter: 'https://twitter.com/kabirverma'
     },
     communitiesJoined: 4,
-    eventsAttended: 15,
-    connectionsMade: 89,
+    eventsAttended: 14,
+    connectionsMade: 92,
     projectsShared: 5,
-    postsThisMonth: 18,
-    profileVisitsThisWeek: 89,
-    newConnectionsThisWeek: 7,
+    postsThisMonth: 16,
+    profileVisitsThisWeek: 95,
+    newConnectionsThisWeek: 8,
     recentlyActive: true,
-    memberSince: 'Jan 2024'
+    memberSince: 'Feb 2024'
   },
-  sammydoe: {
+  sophiali: {
     id: 'u4',
-    username: 'sammydoe',
-    displayName: 'Sammy Doe',
+    username: 'sophiali',
+    displayName: 'Sophia Li',
     avatar: 'S',
-    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=150&h=150',
-    bio: 'Frontend enthusiast. Glassmorphism is the future.',
-    location: 'London, UK',
+    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?fit=crop&w=150&h=150',
+    bio: 'Frontend Developer obsessed with animations. Making the web beautiful one frame at a time.',
+    location: 'Toronto, ON',
     role: 'Frontend Dev',
-    email: 'sammy@meetifyy.app',
-    followingList: ['alicechen', 'priyasharma', 'alexq', 'johnsonw'],
-    followersList: ['alicechen', 'priyasharma', 'johnsonw'],
-    followers: 1200,
-    following: 400,
-    communities: ['Design Buddies', 'IIT Delhi', 'Gaming & E-Sports'],
-    course: 'MCA',
+    email: 'sophiali@meetifyy.app',
+    followingList: ['ethanwong', 'kabirverma', 'liamdavies', 'lucasgray'],
+    followersList: ['ethanwong', 'kabirverma', 'lucasgray'],
+    followers: 1400,
+    following: 420,
+    communities: ['Creative Studio', 'IIT Delhi', 'Game Jam Guild'],
+    course: 'B.Sc Interactive Media',
     year: '1st Year',
     collegeId: 'iitdelhi',
     verified: false,
-    interests: ['Frontend', 'CSS Art', 'WebGL', 'Three.js', 'UI Animation'],
-    skills: ['React', 'Three.js', 'CSS/SASS', 'JavaScript', 'WebGL', 'GSAP'],
+    interests: ['Framer Motion', 'WebGL', 'GSAP Animations', 'CSS Layouts', 'Creative Coding'],
+    skills: ['React', 'Framer Motion', 'JavaScript', 'WebGL', 'SASS/SCSS', 'GSAP', 'Next.js'],
     projects: [],
     achievements: [],
     activityLog: [
-      { type: 'post', text: 'Deployed portfolio with Three.js', icon: '🌍', time: '2 days ago', link: '#' }
+      { type: 'post', text: 'Deployed animated site landing page', icon: '🌍', time: '3 days ago', link: '#' }
     ],
     socialLinks: {
-      github: 'https://github.com/sammydoe',
-      website: 'https://sammydoe.dev'
+      github: 'https://github.com/sophiali',
+      website: 'https://sophiali.dev'
     },
     communitiesJoined: 3,
-    eventsAttended: 2,
-    connectionsMade: 15,
+    eventsAttended: 3,
+    connectionsMade: 18,
     projectsShared: 1,
-    postsThisMonth: 3,
-    profileVisitsThisWeek: 12,
-    newConnectionsThisWeek: 0,
+    postsThisMonth: 4,
+    profileVisitsThisWeek: 16,
+    newConnectionsThisWeek: 1,
     recentlyActive: false,
-    memberSince: 'Mar 2024'
+    memberSince: 'Apr 2024'
   },
-  alexq: {
+  liamdavies: {
     id: 'u5',
-    username: 'alexq',
-    displayName: 'Alex Q.',
-    avatar: 'A',
+    username: 'liamdavies',
+    displayName: 'Liam Davies',
+    avatar: 'L',
     avatarUrl: null,
-    bio: 'Hardware engineer turning software. Building IoT projects and exploring Rust for embedded systems.',
-    location: 'Austin, TX',
-    role: 'Software Engineer',
-    email: 'alexq@meetifyy.app',
-    followingList: ['alicechen', 'marcusrivera', 'sarahj'],
-    followersList: ['sammydoe', 'sarahj'],
-    followers: 890,
-    following: 120,
-    communities: ['AI/ML Enthusiasts'],
-    course: 'B.Tech ME',
+    bio: 'Systems software engineering student. Working on custom network stack architectures and hardware.',
+    location: 'London, UK',
+    role: 'Systems Engineer',
+    email: 'liamdavies@meetifyy.app',
+    followingList: ['ethanwong', 'zoemiller', 'hannahkim'],
+    followersList: ['sophiali', 'hannahkim'],
+    followers: 950,
+    following: 130,
+    communities: ['Fintech Labs'],
+    course: 'B.Eng Electronic Engineering',
     year: '4th Year',
     collegeId: 'gla',
     verified: false,
-    interests: ['Embedded Systems', 'IoT', 'Rust', 'AI'],
-    skills: ['C++', 'Rust', 'Python', 'Arduino', 'Embedded Linux'],
+    interests: ['Embedded Systems', 'Network Protocols', 'C++', 'Hardware Design', 'Kernel Modules'],
+    skills: ['C++', 'C', 'Assembly x86', 'SystemVerilog', 'Wireshark', 'Linux Kernel'],
     projects: [
       {
-        id: 'proj_alex_1',
-        title: 'SmartHome Controller',
-        description: 'A Rust-based embedded controller for home automation, running on Raspberry Pi.',
-        technologies: ['Rust', 'MQTT', 'Raspberry Pi', 'React'],
-        image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop',
+        id: 'proj_liam_1',
+        title: 'MicroStack',
+        description: 'A minimal TCP/IP stack implemented from scratch in C for microcontrollers.',
+        technologies: ['C', 'lwIP', 'Ethernet Interface'],
+        image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&h=400&fit=crop',
         link: '#',
         type: 'Project'
       }
     ],
     achievements: [
-      { id: 'ach_alex_1', title: 'Open Source Contributor', description: 'Merged 10 PRs into embedded Rust projects', icon: '🦀', date: 'Apr 2025' }
+      { id: 'ach_liam_1', title: 'Undergrad Research Fellow', description: 'Awarded research grant for protocol optimization', icon: '🦀', date: 'May 2025' }
     ],
     activityLog: [
-      { type: 'post', text: 'Posted about Rust & ML integration', icon: '🦀', time: '2 days ago', link: '#' },
-      { type: 'join', text: 'Joined AI/ML Enthusiasts', icon: '🎉', time: '2 months ago', link: '/communities/aiml' }
+      { type: 'post', text: 'Shared benchmark report on MicroStack latency', icon: '📡', time: '3 days ago', link: '#' },
+      { type: 'join', text: 'Joined Fintech Labs', icon: '🎉', time: '2 months ago', link: '/communities/fintech' }
     ],
     socialLinks: {},
     communitiesJoined: 2,
-    eventsAttended: 4,
-    connectionsMade: 8,
-    projectsShared: 0,
-    postsThisMonth: 1,
-    profileVisitsThisWeek: 5,
-    newConnectionsThisWeek: 0,
+    eventsAttended: 5,
+    connectionsMade: 10,
+    projectsShared: 1,
+    postsThisMonth: 2,
+    profileVisitsThisWeek: 8,
+    newConnectionsThisWeek: 1,
     recentlyActive: false,
-    memberSince: 'Jun 2024'
+    memberSince: 'Jul 2024'
   },
-  chrisb: {
+  emmawatson: {
     id: 'u6',
-    username: 'chrisb',
-    displayName: 'Chris B.',
-    avatar: 'C',
+    username: 'emmawatson',
+    displayName: 'Emma Watson',
+    avatar: 'E',
     avatarUrl: null,
-    bio: 'Design system advocate & PM. Building bridges between design and engineering teams.',
-    location: 'Toronto, CA',
+    bio: 'Product owner and sprint leader. Loving agile methodology, wireframing, and team growth.',
+    location: 'Boston, MA',
     role: 'Product Manager',
-    email: 'chrisb@meetifyy.app',
-    followingList: ['marcusrivera', 'alicechen'],
-    followersList: ['marcusrivera'],
-    followers: 3400,
-    following: 200,
-    communities: ['Design Buddies', 'IIT Delhi', 'Startup Hub'],
-    course: 'BBA',
+    email: 'emmawatson@meetifyy.app',
+    followingList: ['zoemiller', 'ethanwong'],
+    followersList: ['zoemiller'],
+    followers: 3600,
+    following: 220,
+    communities: ['Creative Studio', 'IIT Delhi', 'Sustainability Guild'],
+    course: 'MBA Tech',
     year: '3rd Year',
     collegeId: 'iitdelhi',
     verified: false,
-    interests: ['Product Management', 'Design Systems', 'Agile', 'User Research'],
-    skills: ['Jira', 'Figma', 'Analytics', 'A/B Testing', 'Roadmapping'],
+    interests: ['Product Strategy', 'Wireframing', 'Agile Leadership', 'Customer Discovery'],
+    skills: ['Confluence', 'Jira', 'Figma', 'Product Analytics', 'Miro', 'Roadmapping'],
     projects: [
       {
-        id: 'proj_chris_1',
-        title: 'DesignOps Playbook',
-        description: 'An open-source guide for scaling design systems across large product teams.',
-        technologies: ['Figma', 'Notion', 'Storybook'],
-        image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=600&h=400&fit=crop',
+        id: 'proj_emma_1',
+        title: 'SprintKit Playbook',
+        description: 'An open-source roadmap template for startup founders to scale sprints quickly.',
+        technologies: ['Notion', 'Figma', 'Miro'],
+        image: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=600&h=400&fit=crop',
         link: '#',
         type: 'Resource'
       }
     ],
     achievements: [
-      { id: 'ach_chris_1', title: 'Product Lead', description: 'Led product launch for a 0-to-1 SaaS tool with 500 beta users', icon: '🚀', date: 'May 2025' }
+      { id: 'ach_emma_1', title: 'Product Launch of the Year', description: 'Managed launch for a collaboration tool with 1k active users', icon: '🚀', date: 'Jun 2025' }
     ],
     activityLog: [
-      { type: 'post', text: 'Shared DesignOps playbook', icon: '📋', time: '1 week ago', link: '#' },
-      { type: 'join', text: 'Joined Design Buddies', icon: '🎉', time: '3 months ago', link: '/communities/design' }
+      { type: 'post', text: 'Published SprintKit Playbook on Notion', icon: '📋', time: '1 week ago', link: '#' },
+      { type: 'join', text: 'Joined Creative Studio', icon: '🎉', time: '3 months ago', link: '/communities/creatives' }
     ],
     socialLinks: {
-      linkedin: 'https://linkedin.com/in/chrisb'
+      linkedin: 'https://linkedin.com/in/emmawatson'
     },
     communitiesJoined: 3,
-    eventsAttended: 6,
-    connectionsMade: 32,
-    projectsShared: 0,
-    postsThisMonth: 2,
-    profileVisitsThisWeek: 18,
-    newConnectionsThisWeek: 1,
+    eventsAttended: 8,
+    connectionsMade: 35,
+    projectsShared: 1,
+    postsThisMonth: 3,
+    profileVisitsThisWeek: 21,
+    newConnectionsThisWeek: 2,
     recentlyActive: false,
-    memberSince: 'Apr 2024'
+    memberSince: 'May 2024'
   },
-  johnsonw: {
+  lucasgray: {
     id: 'u7',
-    username: 'johnsonw',
-    displayName: 'Johnson Wood',
-    avatar: 'J',
-    bio: 'Tech enthusiast & gamer. Exploring web3 and game dev.',
+    username: 'lucasgray',
+    displayName: 'Lucas Gray',
+    avatar: 'L',
+    bio: 'Mobile and game graphics programmer. Working in Unity & Vulkan bindings.',
     location: 'Seattle, WA',
-    role: 'Game Developer',
-    email: 'johnson@meetifyy.app',
-    followingList: ['alicechen', 'priyasharma', 'sammydoe'],
-    followersList: ['sammydoe', 'sarahj'],
-    followers: 1450,
-    following: 210,
-    communities: ['Hackathon Heroes', 'Gaming & E-Sports', 'GLA University'],
-    course: 'B.Sc Gaming',
+    role: 'VFX programmer',
+    email: 'lucasgray@meetifyy.app',
+    followingList: ['ethanwong', 'kabirverma', 'sophiali'],
+    followersList: ['sophiali', 'hannahkim'],
+    followers: 1620,
+    following: 230,
+    communities: ['Sustainability Guild', 'Game Jam Guild', 'GLA University'],
+    course: 'B.Sc Game Design',
     year: '2nd Year',
     collegeId: 'gla',
     verified: false,
-    interests: ['Game Development', 'Web3', 'Unity', 'Unreal Engine', 'Pixel Art'],
-    skills: ['Unity', 'C#', 'Blender', 'Unreal Engine', 'Solidity'],
+    interests: ['Shader Programming', 'Vulkan API', 'Ray Tracing', 'Unity', 'Procedural Generation'],
+    skills: ['Unity', 'C#', 'HLSL', 'C++', 'Vulkan', 'Blender'],
     projects: [
       {
         id: 'proj_5',
-        title: 'Pixel Quest',
-        description: 'A 2D platformer built in Unity with procedurally generated levels.',
-        technologies: ['Unity', 'C#', 'Aseprite'],
-        image: 'https://images.unsplash.com/photo-1551103782-8ab07afd45c1?w=600&h=400&fit=crop',
+        title: 'VoxelWorld Engine',
+        description: 'A procedural voxel engine built with Vulkan rendering backend and custom lighting.',
+        technologies: ['C++', 'Vulkan', 'GLSL'],
+        image: 'https://images.unsplash.com/photo-1612287230202-1bf1d85d1bdf?w=600&h=400&fit=crop',
         link: '#',
         type: 'Game'
       }
     ],
     achievements: [
-      { id: 'ach_7', title: 'Game Jam Winner', description: 'Won Global Game Jam 2025', icon: '🎮', date: 'Jan 2025' }
+      { id: 'ach_7', title: 'Top VFX Contributor', description: 'Awarded at Seattle Indie Game Jam', icon: '🎮', date: 'Jan 2025' }
     ],
     activityLog: [
-      { type: 'post', text: 'Looking for 3D artist for game jam', icon: '🎮', time: '3 days ago', link: '#' }
+      { type: 'post', text: 'Showcasing real-time voxel raymarching engine', icon: '🎮', time: '3 days ago', link: '#' }
     ],
     socialLinks: {
-      github: 'https://github.com/johnsonw',
-      website: 'https://johnsonw.dev'
+      github: 'https://github.com/lucasgray',
+      website: 'https://lucasgray.dev'
     },
     communitiesJoined: 3,
-    eventsAttended: 7,
-    connectionsMade: 22,
+    eventsAttended: 6,
+    connectionsMade: 25,
     projectsShared: 2,
-    postsThisMonth: 4,
-    profileVisitsThisWeek: 15,
-    newConnectionsThisWeek: 2,
+    postsThisMonth: 5,
+    profileVisitsThisWeek: 19,
+    newConnectionsThisWeek: 3,
     recentlyActive: true,
-    memberSince: 'May 2024'
+    memberSince: 'Jun 2024'
   },
-  sarahj: {
+  hannahkim: {
     id: 'u8',
-    username: 'sarahj',
-    displayName: 'Sarah Jones',
-    avatar: 'S',
+    username: 'hannahkim',
+    displayName: 'Hannah Kim',
+    avatar: 'H',
     avatarUrl: null,
-    bio: 'Backend wizard. Rust ace. Contributor to open-source distributed systems projects.',
-    location: 'Berlin, DE',
-    role: 'Backend Engineer',
-    email: 'sarahj@meetifyy.app',
-    followingList: ['alicechen', 'marcusrivera', 'johnsonw', 'alexq'],
-    followersList: ['alexq', 'johnsonw'],
-    followers: 4300,
-    following: 120,
-    communities: ['Startup Hub', 'IIT Delhi', 'Hackathon Heroes'],
+    bio: 'Distributed databases developer. Expert in replication mechanisms, consensus protocols, and Go routing.',
+    location: 'Geneva, CH',
+    role: 'Database Engineer',
+    email: 'hannahkim@meetifyy.app',
+    followingList: ['ethanwong', 'zoemiller', 'lucasgray', 'liamdavies'],
+    followersList: ['liamdavies', 'lucasgray'],
+    followers: 4500,
+    following: 140,
+    communities: ['Sustainability Guild', 'IIT Delhi', 'Fintech Labs'],
     course: 'M.Tech CSE',
     year: '2nd Year',
     collegeId: 'iitdelhi',
     verified: false,
-    interests: ['Backend', 'Rust', 'Systems Programming', 'Distributed Systems'],
-    skills: ['Rust', 'Go', 'PostgreSQL', 'Redis', 'Docker', 'Kubernetes'],
+    interests: ['Distributed Databases', 'Raft Consensus', 'Go', 'Cassandra', 'Data Pipelines'],
+    skills: ['Go', 'Raft', 'PostgreSQL', 'Docker', 'Kubernetes', 'Cassandra', 'Kafka'],
     projects: [
       {
-        id: 'proj_sarah_1',
-        title: 'RustDB',
-        description: 'A lightweight key-value store written in Rust, inspired by Redis.',
-        technologies: ['Rust', 'Tokio', 'RESP Protocol'],
-        image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&h=400&fit=crop',
+        id: 'proj_hannah_1',
+        title: 'LiteRaft DB',
+        description: 'A resilient, highly available distributed key-value store leveraging Raft consensus in Go.',
+        technologies: ['Go', 'gRPC', 'Protobuf'],
+        image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=600&h=400&fit=crop',
         link: '#',
         type: 'Open Source'
       }
     ],
     achievements: [
-      { id: 'ach_sarah_1', title: 'Distributed Systems Award', description: 'Contributed a critical fix to a major open-source project', icon: '🔧', date: 'Mar 2025' }
+      { id: 'ach_hannah_1', title: 'IEEE Distributed Systems Award', description: 'Awarded for work on consensus state-machine safety', icon: '🔧', date: 'Apr 2025' }
     ],
     activityLog: [
-      { type: 'post', text: 'Shared Rust library for ML inference', icon: '🦀', time: '4 hours ago', link: '#' },
-      { type: 'milestone', text: 'Hit 4K followers', icon: '🌟', time: '2 weeks ago', link: '#' },
-      { type: 'join', text: 'Joined Hackathon Heroes', icon: '🎉', time: '4 months ago', link: '/communities/hackathon' }
+      { type: 'post', text: 'Wrote a new blog post explaining Raft cluster membership changes', icon: '📝', time: '4 hours ago', link: '#' },
+      { type: 'milestone', text: 'Reached 4.5K followers milestone', icon: '🌟', time: '2 weeks ago', link: '#' }
     ],
     socialLinks: {
-      github: 'https://github.com/sarahj'
+      github: 'https://github.com/hannahkim'
     },
     communitiesJoined: 3,
-    eventsAttended: 9,
-    connectionsMade: 40,
+    eventsAttended: 11,
+    connectionsMade: 45,
     projectsShared: 1,
-    postsThisMonth: 2,
-    profileVisitsThisWeek: 22,
-    newConnectionsThisWeek: 0,
+    postsThisMonth: 3,
+    profileVisitsThisWeek: 26,
+    newConnectionsThisWeek: 2,
     recentlyActive: false,
-    memberSince: 'Sep 2023'
+    memberSince: 'Oct 2023'
   },
   student: {
     id: 'u9',
@@ -436,8 +427,8 @@ export const initialUsers = {
     location: 'Mathura, India',
     role: 'Student',
     email: 'student@gla.ac.in',
-    followingList: ['alicechen', 'marcusrivera', 'priyasharma'],
-    followersList: ['alicechen'],
+    followingList: ['ethanwong', 'zoemiller', 'kabirverma'],
+    followersList: ['ethanwong'],
     followers: 12,
     following: 34,
     communities: [],
@@ -468,16 +459,16 @@ export const initialPosts = [
     id: 'f_main_1',
     authorId: 'u1',
     time: '2 hours ago',
-    text: "Just wrapped our 48-hour hackathon with @marcusrivera and @priyasharma 🚀 We built an AI-powered study assistant that generates flashcards from your lecture notes in real time. Couldn't have shipped it without this crew!",
+    text: "Just completed building an end-to-end encrypted messaging engine with @zoemiller and @kabirverma 🚀 We leveraged WebRTC and WASM for direct browser-to-browser tunnels. Deployed the beta and works perfectly!",
     mentions: [
-      { userId: 'u2', username: 'marcusrivera', start: 40, end: 53 },
-      { userId: 'u3', username: 'priyasharma', start: 58, end: 71 }
+      { userId: 'u2', username: 'zoemiller', start: 57, end: 67 },
+      { userId: 'u3', username: 'kabirverma', start: 72, end: 83 }
     ],
-    media: { type: 'image', url: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=900&h=550&fit=crop' },
+    media: { type: 'image', url: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=900&h=550&fit=crop' },
     poll: {
-      question: 'Which feature should we ship next?',
-      options: ['Voice-interactive tutor', 'Figma plugin', 'Auto flashcard generation', 'Spaced repetition scheduler'],
-      votes: [18, 9, 34, 22],
+      question: 'Which browser support should we optimize next?',
+      options: ['Safari Mobile', 'Firefox Focus', 'Chromium Embedded', 'Brave Shield integration'],
+      votes: [25, 14, 40, 18],
       selectedUsers: {}
     },
     likes: 142,
@@ -487,8 +478,8 @@ export const initialPosts = [
         id: 'r_1_1',
         authorId: 'u4',
         time: '1 hour ago',
-        text: 'This is genuinely impressive @alicechen — the flashcard idea is going to be huge for exam season.',
-        mentions: [{ userId: 'u1', username: 'alicechen', start: 28, end: 38 }],
+        text: 'This is absolutely gorgeous @ethanwong — the WebRTC protocol implementation is stellar.',
+        mentions: [{ userId: 'u1', username: 'ethanwong', start: 29, end: 39 }],
         likes: 11,
         isLikedByMe: false,
         replies: [
@@ -496,8 +487,8 @@ export const initialPosts = [
             id: 'r_1_1_1',
             authorId: 'u2',
             time: '45 min ago',
-            text: 'Agreed with @alexq — we should push this to Product Hunt next week!',
-            mentions: [{ userId: 'u4', username: 'alexq', start: 12, end: 18 }],
+            text: 'Agree with @sophiali — we definitely should host a walkthrough session!',
+            mentions: [{ userId: 'u4', username: 'sophiali', start: 12, end: 21 }],
             likes: 4,
             isLikedByMe: false,
             replies: []
@@ -508,7 +499,7 @@ export const initialPosts = [
         id: 'r_1_2',
         authorId: 'u5',
         time: '30 min ago',
-        text: 'Voted for spaced repetition — that is the missing piece in every study app I have tried.',
+        text: 'Voted for Chromium Embedded. Solid integration targets will expand utility dramatically.',
         mentions: [],
         likes: 6,
         isLikedByMe: false,
@@ -520,10 +511,10 @@ export const initialPosts = [
     id: 'f_main_2',
     authorId: 'u2',
     time: '5 hours ago',
-    text: "New video drop 🎬 Here is a quick demo of the WebGL fluid simulation shader @alexq and I spent the last two weekends on. The vortex dynamics are finally looking buttery smooth. Full open-source release next week — cc @chrisb for the architecture review!",
+    text: "Latest design drop 🎬 Here is the glassmorphic analytics dashboard template @sophiali and I spent the weekend detailing out. Smooth background blurs and vibrant gradients. Full Figma design system coming next week — cc @emmawatson for feedback!",
     mentions: [
-      { userId: 'u4', username: 'alexq', start: 74, end: 80 },
-      { userId: 'u5', username: 'chrisb', start: 226, end: 232 }
+      { userId: 'u4', username: 'sophiali', start: 58, end: 67 },
+      { userId: 'u6', username: 'emmawatson', start: 228, end: 239 }
     ],
     media: { type: 'video', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' },
     likes: 203,
@@ -534,15 +525,15 @@ export const initialPosts = [
     id: 'f_main_3',
     authorId: 'u3',
     time: 'Yesterday',
-    text: "Design systems deep-dive this Saturday 4 PM EST with @chrisb as our special guest — he will walk through his atomic token architecture that scales from mobile to desktop without a single override. Drop your questions below 👇",
+    text: "Deep-dive session this Saturday at 4 PM EST with @emmawatson as our guest speaker! We will analyze early product validation frameworks and roadmaps. Post your queries below 👇",
     mentions: [
-      { userId: 'u5', username: 'chrisb', start: 53, end: 59 }
+      { userId: 'u6', username: 'emmawatson', start: 51, end: 62 }
     ],
     media: { type: 'image', url: 'https://images.unsplash.com/photo-1558655146-d09347e92766?w=900&h=500&fit=crop' },
     poll: {
-      question: 'Which token format does your team use?',
-      options: ['W3C Design Tokens (JSON)', 'Tailwind config', 'CSS Custom Properties', 'Style Dictionary'],
-      votes: [41, 28, 62, 17],
+      question: 'Which framework does your product team prioritize?',
+      options: ['User Story Mapping', 'Lean Canvas Validation', 'Jobs To Be Done (JTBD)', 'Product Opportunity Tree'],
+      votes: [35, 52, 44, 21],
       selectedUsers: {}
     },
     likes: 89,
@@ -553,17 +544,17 @@ export const initialPosts = [
     id: 'f_main_4',
     authorId: 'u4',
     time: '2 days ago',
-    text: "Big news 🎮 Our mobile game engine just passed 60 FPS on a mid-range Android device with full skeletal animation running. Shoutout to @alicechen for the physics integration and @sarahj for profiling the render thread bottlenecks.",
+    text: "Milestone alert! 🎮 The skeletal animation system we designed for our web framework now hits a stable 90 FPS. Shoutout to @ethanwong for math optimizations and @hannahkim for verifying memory management constraints.",
     mentions: [
-      { userId: 'u1', username: 'alicechen', start: 135, end: 145 },
-      { userId: 'u8', username: 'sarahj', start: 151, end: 158 }
+      { userId: 'u1', username: 'ethanwong', start: 114, end: 124 },
+      { userId: 'u8', username: 'hannahkim', start: 147, end: 157 }
     ],
     media: { type: 'video', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
     linkPreview: {
       url: 'https://github.com/',
       site: 'github.com',
-      title: 'Mobile Game Engine — open beta out now',
-      description: 'A lightweight, cross-platform 2D/3D game engine built in C++ with Kotlin bindings for Android.',
+      title: '90FPS Web Animation System',
+      description: 'A compact skeletal model animator compiled to WASM with Rust and JS canvas bindings.',
       image: 'https://images.unsplash.com/photo-1556438064-2d7646166914?w=300&h=160&fit=crop'
     },
     likes: 317,
@@ -574,21 +565,21 @@ export const initialPosts = [
     id: 'f_main_5',
     authorId: 'u1',
     time: '2 days ago',
-    text: "AI code review is now part of my daily workflow thanks to @johnsonw's recommendation 🧠 Dropped my bug rate by ~40% in the first week. Here is the article that started it all — highly recommend reading it with your morning coffee ☕",
+    text: "Just integrated consensus checks into my logging pipeline on @lucasgray's recommendation 🧠 Reduced data recovery time by 30% under stress test. Check out this guide, it makes the math intuitive ☕",
     mentions: [
-      { userId: 'u6', username: 'johnsonw', start: 57, end: 66 }
+      { userId: 'u7', username: 'lucasgray', start: 62, end: 72 }
     ],
     linkPreview: {
       url: 'https://martinfowler.com/',
       site: 'martinfowler.com',
-      title: 'Patterns of AI-Assisted Code Review',
-      description: 'How to integrate large language models into your pull-request workflow without losing the human touch.',
+      title: 'Consensus Systems Explained Simply',
+      description: 'A deep look at consensus logs, replication checks, and cluster safety guarantees.',
       image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=300&h=160&fit=crop'
     },
     poll: {
-      question: 'Do you use AI coding assistants daily?',
-      options: ['Yes, for everything', 'Just debugging & boilerplate', 'Occasionally', 'Not yet'],
-      votes: [112, 58, 34, 14],
+      question: 'Do you leverage Raft or Paxos databases?',
+      options: ['Raft in production', 'Paxos variant', 'No consensus databases', 'Unsure'],
+      votes: [88, 41, 102, 34],
       selectedUsers: {}
     },
     likes: 241,
@@ -599,9 +590,9 @@ export const initialPosts = [
     id: 'f_main_6',
     authorId: 'u7',
     time: '3 days ago',
-    text: "Global Game Jam is 6 weeks away and I am looking for a team! I handle 3D environments and VFX. @sarahj — your distributed-systems background could be wild for the networking layer if you are in 👀",
+    text: "Indie Game Jam starts soon and I need a team! I'm doing shaders and Vulkan rendering. @hannahkim — if you want to run networking logic, let's team up! 👀",
     mentions: [
-      { userId: 'u8', username: 'sarahj', start: 95, end: 102 }
+      { userId: 'u8', username: 'hannahkim', start: 79, end: 89 }
     ],
     media: { type: 'video', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4' },
     likes: 54,
@@ -612,16 +603,16 @@ export const initialPosts = [
     id: 'f_main_7',
     authorId: 'u5',
     time: '4 days ago',
-    text: "Gave a talk at the Startup Hub last night on component-driven architecture. Slides and recording are live — link below. Huge thanks to @marcusrivera for moderating and keeping the Q&A civilised 😄",
+    text: "Delivered a workshop at Robotics Alliance on embedded protocol safety rules. Slides and diagrams are posted! Special thanks to @zoemiller for polishing the custom system diagrams! 😄",
     mentions: [
-      { userId: 'u2', username: 'marcusrivera', start: 137, end: 150 }
+      { userId: 'u2', username: 'zoemiller', start: 104, end: 114 }
     ],
     media: { type: 'image', url: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=900&h=500&fit=crop' },
     linkPreview: {
       url: 'https://speakerdeck.com/',
       site: 'speakerdeck.com',
-      title: 'Component-Driven Architecture at Scale — Slides',
-      description: '46 slides covering atomic design, token pipelines, and micro-frontend orchestration from a real production system.',
+      title: 'Embedded Network Protocol Slides',
+      description: 'Safety design tips, buffer overflow mitigations, and performance charts.',
       image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=300&h=160&fit=crop'
     },
     likes: 178,
@@ -632,15 +623,15 @@ export const initialPosts = [
     id: 'f_main_8',
     authorId: 'u6',
     time: '5 days ago',
-    text: "Hot take 🌶️ Most junior devs would grow faster by reading 10 carefully chosen blog posts than by grinding LeetCode for a month. Here is my reading list — @alicechen and @priyasharma both vouched for most of these. What would you add?",
+    text: "Hot take 🌶️ Junior engineers should focus on reading open source code repositories rather than doing online tutorials. @ethanwong and @kabirverma agreed on this reading list. What would you add?",
     mentions: [
-      { userId: 'u1', username: 'alicechen', start: 161, end: 171 },
-      { userId: 'u3', username: 'priyasharma', start: 176, end: 188 }
+      { userId: 'u1', username: 'ethanwong', start: 111, end: 121 },
+      { userId: 'u3', username: 'kabirverma', start: 126, end: 137 }
     ],
     poll: {
-      question: 'Best way to level up as a junior dev?',
-      options: ['Build side projects', 'LeetCode grind', 'Read engineering blogs', 'Contribute to open source'],
-      votes: [198, 74, 112, 89],
+      question: 'Which open source code format is easiest to read?',
+      options: ['Small modular packages', 'Large popular libraries', 'Standard library code', 'CLI tools'],
+      votes: [120, 60, 90, 80],
       selectedUsers: {}
     },
     likes: 412,
@@ -650,7 +641,7 @@ export const initialPosts = [
         id: 'r_8_1',
         authorId: 'u3',
         time: '4 days ago',
-        text: "Can confirm — \"A Philosophy of Software Design\" changed how I write code more than any LeetCode problem ever did.",
+        text: "Fully agree — studying the Go standard library taught me more about design than any coding course did.",
         mentions: [],
         likes: 34,
         isLikedByMe: false,
@@ -659,4 +650,3 @@ export const initialPosts = [
     ]
   }
 ];
-

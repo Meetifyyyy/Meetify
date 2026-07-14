@@ -5,20 +5,20 @@ const ACTIVITY_CATEGORIES = [
 ];
 
 const ACTIVITY_TEMPLATES = [
-  { category: 'Learning', title: 'Finals library study session', description: 'Looking for a quiet study session at the main library to prep for finals. Bring your own snacks.', groupSize: 'Small Group', participationType: 'open', tags: ['study', 'quiet'], location: 'Main Library, 2nd Floor', isOnline: false },
-  { category: 'Learning', title: 'Interview coding practice', description: 'We will be doing mock interviews and Leetcode pair programming. Good for anyone prepping for software engineering roles.', groupSize: 'Small Group', participationType: 'approval', tags: ['coding', 'interviews'], location: 'Computer Science Building, Room 102', isOnline: false },
-  { category: 'Technology', title: 'Late-night DSA prep session', description: 'Deep dive into Data Structures and Algorithms. Need a partner to stay accountable.', groupSize: '1-on-1', participationType: 'approval', tags: ['DSA', 'CS'], location: 'Online - Discord', isOnline: true },
-  { category: 'Technology', title: 'HackMIT weekend teaming', description: 'I have an idea for an AI-powered education tool. Need a frontend dev and designer.', groupSize: 'Small Group', participationType: 'approval', tags: ['hackathon', 'ai'], location: 'MIT Campus', isOnline: false },
-  { category: 'Social', title: 'Casual coffee meetup', description: 'Just looking to meet new people over some good coffee. No agenda, just vibes.', groupSize: 'Small Group', participationType: 'open', tags: ['coffee', 'casual'], location: 'Blue Bottle Coffee Downtown', isOnline: false },
-  { category: 'Sports', title: '3v3 basketball: Need 2 players', description: 'We play casually every weekend. Need two more to make it a 3v3.', groupSize: 'Small Group', participationType: 'open', tags: ['basketball', 'sports'], location: 'Campus Rec Center Courts', isOnline: false },
-  { category: 'Health & Fitness', title: 'Morning campus run group', description: 'A slow-paced 5k run around the campus perimeter. All levels welcome.', groupSize: 'Open', participationType: 'open', tags: ['running', 'fitness'], location: 'Main Gate', isOnline: false },
-  { category: 'Sports', title: 'Tennis doubles match', description: 'Looking for an intermediate pair to play against. We have the court booked.', groupSize: 'Small Group', participationType: 'approval', tags: ['tennis', 'doubles'], location: 'City Tennis Club', isOnline: false },
-  { category: 'Travel', title: 'Weekend trip to the mountains', description: 'Planning a hike and an overnight stay in a cabin. Splitting costs.', groupSize: 'Small Group', participationType: 'approval', tags: ['hiking', 'travel'], location: 'Mountain Base Camp', isOnline: false },
-  { category: 'Creative', title: 'Photography Walk Downtown', description: 'Exploring the architecture and street scenes. Bring whatever camera you have.', groupSize: 'Open', participationType: 'open', tags: ['photography', 'art'], location: 'Downtown Square', isOnline: false },
-  { category: 'Social', title: 'Movie Night: Interstellar', description: 'Hosting a watch party for Interstellar. I have a projector and popcorn.', groupSize: 'Small Group', participationType: 'open', tags: ['movies', 'scifi'], location: 'My Apartment (Will share address)', isOnline: false },
-  { category: 'Health & Fitness', title: 'Evening gym partner', description: 'Looking for someone to spot me and stay consistent with a PPL split.', groupSize: '1-on-1', participationType: 'approval', tags: ['gym', 'lifting'], location: 'Campus Gym', isOnline: false },
-  { category: 'Professional', title: 'Startup founders lunch meetup', description: 'Casual networking for early-stage founders to share struggles and wins.', groupSize: 'Small Group', participationType: 'approval', tags: ['startup', 'networking'], location: 'Innovation Hub Cafe', isOnline: false },
-  { category: 'Professional', title: 'Portfolio review session', description: 'Let\'s review each other\'s design portfolios and give honest feedback.', groupSize: '1-on-1', participationType: 'approval', tags: ['design', 'portfolio'], location: 'Online - Google Meet', isOnline: true },
+  { category: 'Learning', title: 'Calculus group study session', description: 'Prepping for the midterm next week. Let\'s solve sample papers together at the CS lounge.', groupSize: 'Small Group', participationType: 'open', tags: ['calculus', 'study'], location: 'CS Lounge, Block AB', isOnline: false },
+  { category: 'Learning', title: 'System design practice', description: 'Practicing mock system design questions (scaling databases, queues, CDNs). Great for backend prep.', groupSize: 'Small Group', participationType: 'approval', tags: ['system-design', 'architecture'], location: 'Online - Zoom', isOnline: true },
+  { category: 'Technology', title: 'Embedded systems troubleshooting', description: 'Tinkering with custom microcontrollers and control loops. Bring your logic analyzers!', groupSize: '1-on-1', participationType: 'approval', tags: ['arduino', 'hardware'], location: 'Robotics Lab, Room 204', isOnline: false },
+  { category: 'Technology', title: 'Web3 smart contracts review', description: 'Peer-reviewing security audits on Solidity token layers. Let\'s optimize gas fees.', groupSize: 'Small Group', participationType: 'approval', tags: ['blockchain', 'security'], location: 'Innovation Lab', isOnline: false },
+  { category: 'Social', title: 'Bobatea and chat session', description: 'Casual meetup to talk about web animations, custom transitions, or anything frontend-related.', groupSize: 'Small Group', participationType: 'open', tags: ['boba', 'casual'], location: 'Sweet Treat Cafe', isOnline: false },
+  { category: 'Sports', title: 'Billiards double match', description: 'Intermediate game of pool. Looking for two players to make it a team challenge.', groupSize: 'Small Group', participationType: 'open', tags: ['billiards', 'sports'], location: 'Student Union Games Room', isOnline: false },
+  { category: 'Health & Fitness', title: 'Morning yoga and stretch', description: 'A relaxing morning outdoor session. Bring your own yoga mat.', groupSize: 'Open', participationType: 'open', tags: ['yoga', 'mindfulness'], location: 'Campus Green Belt', isOnline: false },
+  { category: 'Sports', title: 'Table tennis tournament prep', description: 'Looking for a competitive partner to drill serves and blocks before the upcoming cup.', groupSize: '1-on-1', participationType: 'approval', tags: ['pingpong', 'sports'], location: 'Indoor Sports Complex', isOnline: false },
+  { category: 'Travel', title: 'Day hike to standard falls', description: 'Carpooling for a scenic trail hike. Splitting fuel expenses.', groupSize: 'Small Group', participationType: 'approval', tags: ['hiking', 'adventure'], location: 'Falls Parking Gate', isOnline: false },
+  { category: 'Creative', title: 'Vector Illustration workshop', description: 'Sharing tips on custom SVG patterns and layout illustrations. Beginner friendly.', groupSize: 'Open', participationType: 'open', tags: ['vector', 'design'], location: 'Main Seminar Hall', isOnline: false },
+  { category: 'Social', title: 'Board games afternoon', description: 'Playing Settlers of Catan, Ticket to Ride, and custom card games. Snacks provided.', groupSize: 'Small Group', participationType: 'open', tags: ['boardgames', 'fun'], location: 'Student Hub', isOnline: false },
+  { category: 'Health & Fitness', title: 'Gym partner - leg day routine', description: 'Need a lift partner for squating and deadlifts support. Keeping each other accountable.', groupSize: '1-on-1', participationType: 'approval', tags: ['weights', 'fitness'], location: 'Main Gym Centre', isOnline: false },
+  { category: 'Professional', title: 'Venture pitch deck review', description: 'Co-founders review session. Giving honest critiques on slides, metrics, and business models.', groupSize: 'Small Group', participationType: 'approval', tags: ['pitch', 'business'], location: 'Startup Incubation Cell', isOnline: false },
+  { category: 'Professional', title: 'Interaction portfolio reviews', description: 'Constructive reviews of interaction design, user maps, and wireframe prototypes.', groupSize: '1-on-1', participationType: 'approval', tags: ['ux', 'portfolio'], location: 'Online - Google Meet', isOnline: true },
 ];
 
 const DATES = [
@@ -55,7 +55,7 @@ function getCollegeName(users, host) {
   return host.collegeId === 'gla' ? 'GLA University' : host.collegeId === 'iitdelhi' ? 'IIT Delhi' : 'University';
 }
 
-function generateCrewActivities(users) {
+export function generateCrewActivities(users) {
   const userList = Object.values(users);
   const activities = [];
 
@@ -123,12 +123,10 @@ function generateCrewActivities(users) {
 
 // Helper to group activities by context
 export function getRecommendedByContext(currentUser, activities, allUsers) {
-  // Simplistic mock: We will just group by some logic to simulate the requested sections.
-  
   const recommended = shuffle(activities).slice(0, 4);
   const happeningNearby = shuffle(activities).filter(a => !a.isOnline).slice(0, 4);
   const startingSoon = activities.filter(a => a.dateLabel === 'Today' || a.dateLabel === 'Tomorrow').slice(0, 4);
-  const recentlyAdded = activities.slice(0, 4); // assume first few are recently added
+  const recentlyAdded = activities.slice(0, 4); 
   const popular = [...activities].sort((a, b) => b.slotsFilled - a.slotsFilled).slice(0, 4);
 
   return {
@@ -157,4 +155,4 @@ export function getUpcomingPlans(currentUser, activities) {
   return activities.filter(a => a.participants.includes(currentUser.id) || a.hostId === currentUser.id).slice(0, 4);
 }
 
-export { generateCrewActivities, ACTIVITY_CATEGORIES };
+export { ACTIVITY_CATEGORIES };

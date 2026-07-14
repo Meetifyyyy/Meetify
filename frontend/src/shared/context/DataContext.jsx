@@ -16,7 +16,7 @@ export function DataProvider({ children }) {
 
   // Compute once, not at module level, so it's inside React lifecycle
   const [users, setUsers] = useState(() => {
-    const USERS_SEED_VERSION = '2';
+    const USERS_SEED_VERSION = '3';
     if (localStorage.getItem('meetifyy_users_seed_v') !== USERS_SEED_VERSION) {
       localStorage.removeItem('meetifyy_users');
       localStorage.setItem('meetifyy_users_seed_v', USERS_SEED_VERSION);
@@ -64,7 +64,7 @@ export function DataProvider({ children }) {
     }));
 
     // Bump this version whenever initialPosts is replaced so cached data is evicted
-    const POSTS_SEED_VERSION = '3';
+    const POSTS_SEED_VERSION = '4';
     const storedVersion = localStorage.getItem('meetifyy_posts_seed_v');
     if (storedVersion !== POSTS_SEED_VERSION) {
       localStorage.removeItem('meetifyy_posts');
@@ -96,7 +96,7 @@ export function DataProvider({ children }) {
   });
 
   const [communitiesState, setCommunitiesState] = useState(() => {
-    const COMMUNITIES_SEED_VERSION = '2';
+    const COMMUNITIES_SEED_VERSION = '3';
     const storedVersion = localStorage.getItem('meetifyy_communities_seed_v');
     if (storedVersion !== COMMUNITIES_SEED_VERSION) {
       localStorage.removeItem('meetifyy_communities');
@@ -127,6 +127,12 @@ export function DataProvider({ children }) {
   });
 
   const [conversations, setConversations] = useState(() => {
+    const CONVERSATIONS_SEED_VERSION = '2';
+    const storedVersion = localStorage.getItem('meetifyy_conversations_seed_v');
+    if (storedVersion !== CONVERSATIONS_SEED_VERSION) {
+      localStorage.removeItem('meetifyy_conversations');
+      localStorage.setItem('meetifyy_conversations_seed_v', CONVERSATIONS_SEED_VERSION);
+    }
     const saved = localStorage.getItem('meetifyy_conversations');
     if (saved) {
       try {
@@ -139,6 +145,12 @@ export function DataProvider({ children }) {
   });
 
   const [crewActivities, setCrewActivities] = useState(() => {
+    const CREW_ACTIVITIES_SEED_VERSION = '2';
+    const storedVersion = localStorage.getItem('meetifyy_crew_activities_seed_v');
+    if (storedVersion !== CREW_ACTIVITIES_SEED_VERSION) {
+      localStorage.removeItem('meetifyy_crew_activities');
+      localStorage.setItem('meetifyy_crew_activities_seed_v', CREW_ACTIVITIES_SEED_VERSION);
+    }
     const saved = localStorage.getItem('meetifyy_crew_activities');
     if (saved) {
       try {
