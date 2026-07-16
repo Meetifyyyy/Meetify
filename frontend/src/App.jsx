@@ -18,7 +18,7 @@ import SearchSkeleton from './features/search/components/skeletons/SearchSkeleto
 import SettingsSkeleton from './features/settings/components/skeletons/SettingsSkeleton';
 import SavedPageSkeleton from './features/feed/components/skeletons/SavedPageSkeleton';
 
-const LandingPage = lazy(() => import('./features/auth/pages/LandingPage'));
+import LandingPage from './features/auth/pages/LandingPage';
 const FeedRoute = lazy(() => import('./features/feed/pages/FeedRoute'));
 const CommunitiesRoute = lazy(() => import('./features/communities/pages/CommunitiesRoute'));
 const CommunityDetailRoute = lazy(() => import('./features/communities/pages/CommunityDetailRoute'));
@@ -124,7 +124,7 @@ export default function App() {
           path: '/',
           element: (
             <PublicRoute>
-              {withBoundary(<LandingPage />)}
+              {withBoundary(<LandingPage />, null)}
             </PublicRoute>
           ),
         },

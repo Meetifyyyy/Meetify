@@ -118,4 +118,10 @@
   line-height: 1.5;
 }
 
+@media (max-width: 768px) {
+  .hideOnMobile {
+    display: none !important;
+  }
+}
+
 

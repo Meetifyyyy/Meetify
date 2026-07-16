@@ -34,6 +34,12 @@
   --bg-gradient-mid: #f0f5fc;
   --bg-gradient-edge: #d1e3f8;
 
+  /* Landing page brand tokens */
+  --color-brand-primary: #5C47FA;
+  --color-brand-accent:  #7965FB;
+  --color-brand-tint:    #F0EEFF;
+  --color-brand-dark:    #0A0F1D;
+
   /* === Typography === */
   --font-family-display: 'Inter', sans-serif;
   --font-family-sans: 'Inter', sans-serif;

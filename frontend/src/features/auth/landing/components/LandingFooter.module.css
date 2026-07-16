@@ -1,0 +1,160 @@
+.footer {
+  background: #000000;
+  padding: 2.5rem 0;
+  color: #9ca3af;
+  border-top: 1px solid #1c1917;
+}
+
+.container {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #1c1917;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.brandCol {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+}
+
+.logoImg {
+  width: 2.75rem;
+  height: 2.75rem;
+  object-fit: contain;
+  transition: transform 0.3s;
+}
+
+.brandName {
+  font-size: 1.75rem;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  color: #fff;
+  transition: color 0.2s;
+}
+
+.brand:hover .brandName {
+  color: var(--color-brand-accent);
+}
+
+.tagline {
+  margin-top: 1rem;
+  font-size: 0.84rem;
+  line-height: 1.625;
+  color: #78716c;
+  max-width: 16rem;
+}
+
+.colTitle {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #57534e;
+  margin-bottom: 1.125rem;
+}
+
+.linkList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.linkButton {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.2s;
+}
+
+.linkButton:hover {
+  color: #fff;
+}
+
+.link {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.link:hover {
+  color: #fff;
+}
+
+/* --- Bottom --- */
+.bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .bottom {
+    flex-direction: row;
+  }
+}
+
+.copy {
+  font-size: 0.8125rem;
+  color: #57534e;
+  font-weight: 500;
+  margin: 0;
+}
+
+.socials {
+  display: flex;
+  gap: 1rem;
+}
+
+.socialLink {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.socialLink:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}

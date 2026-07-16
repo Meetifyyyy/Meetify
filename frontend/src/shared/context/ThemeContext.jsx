@@ -45,7 +45,11 @@ export function ThemeProvider({ children }) {
   };
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
+    if (window.location.pathname === '/') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+      document.documentElement.setAttribute('data-theme', theme);
+    }
     localStorage.setItem('theme', theme);
   }, [theme]);
 
