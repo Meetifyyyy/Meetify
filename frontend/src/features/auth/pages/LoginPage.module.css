@@ -12,6 +12,39 @@
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
+
+  /* Force light mode variables */
+  --color-bg-main: #F8F7F4;
+  --color-bg-white: #FFFFFF;
+  --color-bg-white-rgb: 255, 255, 255;
+  --color-bg-soft: #F1F5F9;
+  --color-bg-alt: #F1F5F9;
+  --color-bg-dark: #0F172A;
+  
+  --color-activity-card-grad-start: #E2E8F0;
+  --color-activity-card-grad-end: #F1F5F9;
+  
+  --color-text-main: #0F172A;
+  --color-text-muted: #334155;
+  --color-text-light: #475569;
+  --color-text-inverse: #FFFFFF;
+  --color-icon-base: #475569;
+
+  --color-border: #E2E8F0;
+  --color-border-light: #F1F5F9;
+  --color-border-dark: #CBD5E1;
+
+  --bg-gradient-center: #ffffff;
+  --bg-gradient-mid: #f0f5fc;
+  --bg-gradient-edge: #d1e3f8;
+
+  --bg-glass: rgba(255, 255, 255, 0.75);
+  --border-glass: 1px solid rgba(255, 255, 255, 0.4);
+
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.03);
+  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.04);
+  --shadow-premium: 0 16px 40px rgba(15, 23, 42, 0.06), 0 4px 8px rgba(15, 23, 42, 0.03);
 }
 
 .loginContainer::before {
